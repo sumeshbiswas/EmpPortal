@@ -136,10 +136,7 @@ namespace travelexpensemanagement.Controllers.EmployeePortal
             using SqlConnection con = _dbConnection.GetErpConnection();
             con.Open();
 
-            using SqlCommand cmdCount = new SqlCommand(@"  SELECT COUNT(MOBILE_NO) 
-                            FROM EmpPortalLogin 
-                            WHERE MOBILE_NO = @Mobile AND COMP_CODE = @CompCode", con);
-
+            using SqlCommand cmdCount = new SqlCommand(@"  SELECT COUNT(MOBILE_NO)  FROM EmpPortalLogin WHERE MOBILE_NO = @Mobile AND COMP_CODE = @CompCode", con);
             cmdCount.Parameters.AddWithValue("@Mobile", mobile);
             cmdCount.Parameters.AddWithValue("@CompCode", compCode);
 
@@ -149,7 +146,6 @@ namespace travelexpensemanagement.Controllers.EmployeePortal
             {
                 return Json(new { success = false, message = "User already exists" });
             }
-
 
             SqlCommand cmd = new SqlCommand(@"SELECT OTP_CODE, OTP_EXPIRY FROM EmpPortalLogin WHERE MOBILE_NO=@Mobile AND COMP_CODE=@CompCode", con);
 
@@ -173,12 +169,10 @@ namespace travelexpensemanagement.Controllers.EmployeePortal
 
             SqlCommand up = new SqlCommand(@"UPDATE EmpPortalLogin SET PIN=@Pin, ACTIVE=1, OTP_CODE=NULL, OTP_EXPIRY=NULL
             WHERE MOBILE_NO=@Mobile AND COMP_CODE=@CompCode", con);
-
             up.Parameters.AddWithValue("@Pin", hashedPin);
             up.Parameters.AddWithValue("@Mobile", mobile);
             up.Parameters.AddWithValue("@CompCode", compCode);
             up.ExecuteNonQuery();
-
             return Json(new { success = true, message = "Registration successful" });
         }
 

@@ -100,12 +100,12 @@
                                     </p>
 
                                     <div class="emploginmodal-pin-wrapper">
-                                        <input type="password" maxlength="1" class="emploginmodal-pin" id="Num_OTP" />
-                                        <input type="password" maxlength="1" class="emploginmodal-pin" id="OTP2" />
-                                        <input type="password" maxlength="1" class="emploginmodal-pin" id="OTP3" />
-                                        <input type="password" maxlength="1" class="emploginmodal-pin" id="OTP4" />
-                                        <input type="password" maxlength="1" class="emploginmodal-pin" id="OTP5" />
-                                        <input type="password" maxlength="1" class="emploginmodal-pin" id="OTP6" />
+                                        <input type="password" maxlength="1" class="emploginmodal-pin" id="Num_OTP1" />
+                                        <input type="password" maxlength="1" class="emploginmodal-pin" id="Num_OTP2" />
+                                        <input type="password" maxlength="1" class="emploginmodal-pin" id="Num_OTP3" />
+                                        <input type="password" maxlength="1" class="emploginmodal-pin" id="Num_OTP4" />
+                                        <input type="password" maxlength="1" class="emploginmodal-pin" id="Num_OTP5" />
+                                        <input type="password" maxlength="1" class="emploginmodal-pin" id="Num_OTP6" />
                                     </div>
 
                                     @* <label for="Num_OTP">OTP</label>
@@ -143,12 +143,12 @@
                                 Please Enter OTP
                             </p>
                             <div class="emploginmodal-pin-wrapper">
-                                <input type="password" maxlength="1" class="emploginmodal-pin" id="regOTP" />
-                                <input type="password" maxlength="1" class="emploginmodal-pin" id="OTP2" />
-                                <input type="password" maxlength="1" class="emploginmodal-pin" id="OTP3" />
-                                <input type="password" maxlength="1" class="emploginmodal-pin" id="OTP4" />
-                                <input type="password" maxlength="1" class="emploginmodal-pin" id="OTP5" />
-                                <input type="password" maxlength="1" class="emploginmodal-pin" id="OTP6" />
+                                <input type="password" maxlength="1" class="emploginmodal-pin" id="regOTP1" />
+                                <input type="password" maxlength="1" class="emploginmodal-pin" id="regOTP2" />
+                                <input type="password" maxlength="1" class="emploginmodal-pin" id="regOTP3" />
+                                <input type="password" maxlength="1" class="emploginmodal-pin" id="regOTP4" />
+                                <input type="password" maxlength="1" class="emploginmodal-pin" id="regOTP5" />
+                                <input type="password" maxlength="1" class="emploginmodal-pin" id="regOTP6" />
                             </div>
                            @*  <input type="text" id="regOTP" placeholder="Enter OTP"> *@
                         </div>
@@ -201,16 +201,39 @@
             $("#forgotPinModal").addClass("d-none");
             $("#modalNewPin, #modalConfirmPin").val('');
         });
+
         $('#btnModalResetPin').on('click', function(){
            debugger
             let mob = $("#loginMob").val().trim();
             let comp = $("#loginCompany").val();
             let pin = $("#modalNewPin").val().trim();
             let Newpin = $("#modalConfirmPin").val().trim();
-            let otp = $("#Num_OTP").val().trim();
+            var OTP1  = $('#Num_OTP1').val();
+            var OTP2  = $('#Num_OTP2').val();
+            var OTP3  = $('#Num_OTP3').val();
+            var OTP4  = $('#Num_OTP4').val();
+            var OTP5  = $('#Num_OTP5').val();
+            var OTP6  = $('#Num_OTP6').val();
+
+            if(!OTP1 || !OTP2 || !OTP3 || !OTP4 || !OTP5 || !OTP6)
+            {
+                toastr.error("Please Enter Correct OTP");
+                return;
+            }
+
+            var otp = `${OTP1}${OTP2}${OTP3}${OTP4}${OTP5}${OTP6}`;
+
+            var pinPattern = /^(?=.*[0-9])(?=.*[!@@#$%^&*]).{7,}$/;
+
+            if (!pinPattern.test(pin))
+            return toastr.error("PIN must include at least 1 number and 1 special character");
 
             if (!pin)
-            return toastr.error("Enter  Password");
+            return toastr.error("Enter Enter PIN");
+
+            if (pin.length <= 6)
+            return toastr.error("PIN must be more than 6 characters");
+  
 
             if (!Newpin)
             return toastr.error("Enter Confirm Password");
@@ -245,6 +268,7 @@
         });
 
         $('#btnVerifyPin').on('click', function() {
+
          var OTP1  = $('#OTP1').val();
          var OTP2  = $('#OTP2').val();
          var OTP3  = $('#OTP3').val();
@@ -252,12 +276,11 @@
          var OTP5  = $('#OTP5').val();
          var OTP6  = $('#OTP6').val();
         
-         if(!OTP1 || !OTP2 || !OTP3 || !OTP4 || !OTP5 || !OTP6)
-         {
-             toastr.error("Please Enter Correct OTP");
-             return;
-         }    
-         
+        if(!OTP1 || !OTP2 || !OTP3 || !OTP4 || !OTP5 || !OTP6)
+        {
+            toastr.error("Please Enter Correct OTP");
+            return;
+        }             
           loginUser();
 
         });
@@ -265,12 +288,8 @@
 
 
         $('#btnLogin').on('click' , function() {
-
            sendOTPLogin();
-
-
-          $('#emploginmodal_overlay').show();
-        
+          $('#emploginmodal_overlay').show();       
         });
 
 
@@ -312,64 +331,118 @@
         });
     }
 
-    function verifyOTP() {
+         function verifyOTP() {
+             debugger ;
+            let pin = $("#regPin").val().trim();
+            let rePin = $("#regRetypePin").val().trim();             
 
-        let pin = $("#regPin").val();
-        let rePin = $("#regRetypePin").val();
+                var pinPattern = /^(?=.*[0-9])(?=.*[!@@#$%^&*]).{7,}$/;
 
-        if (pin !== rePin)
-            return toastr.error("Password not matching");
+                if (!pinPattern.test(pin))
+                return toastr.error("PIN must include at least 1 number and 1 special character");
 
-        $.post("/EmpLogin/VerifyOTP", {
-            mobile: $("#regMob").val(),
-            compCode: $("#regCompany").val(),
-            otp: $("#regOTP").val(),
-            pin: pin
-        }, res => {
-            if (res.success) {
-                toastr.success("Registration successful");
-                toggleForms(true);
-            } else {
-                toastr.error(res.message);
-            }
-        });
-    }
+            if (!pin)
+                return toastr.error("Enter Enter PIN");
 
-    function loginUser() {
-        debugger;
-        let mob = $("#loginMob").val().trim();
-        let pin = $("#loginPin").val().trim();
-        let comp = $("#loginCompany").val();
+          if (pin.length <= 6)
+            return toastr.error("PIN must be more than 6 characters");
+
+
+            if (pin !== rePin)
+                return toastr.error("PIN not matching");
+
+            // OTP values
+            var OTP1 = $('#regOTP1').val();
+            var OTP2 = $('#regOTP2').val();
+            var OTP3 = $('#regOTP3').val();
+            var OTP4 = $('#regOTP4').val();
+            var OTP5 = $('#regOTP5').val();
+            var OTP6 = $('#regOTP6').val();
+
+            // check empty OTP
+            if (!OTP1 || !OTP2 || !OTP3 || !OTP4 || !OTP5 || !OTP6)
+                return toastr.error("Please enter 6 digit OTP");
+
+            var otp = `${OTP1}${OTP2}${OTP3}${OTP4}${OTP5}${OTP6}`;
+
+            // API call
+            $.post("/EmpLogin/
+            ", {
+                mobile: $("#regMob").val(),
+                compCode: $("#regCompany").val(),
+                otp: otp,
+                pin: pin
+            }, res => {
+
+                if (res.success) {
+                    toastr.success("Registration successful");
+                    toggleForms(true);
+                }
+                else {
+                    toastr.error(res.message);
+                }
+
+            });
+        }
+
+        function loginUser() {
         
-        if (mob.length !== 10)
-        return toastr.error("Enter valid mobile");
+            let mob = $("#loginMob").val().trim();
+            let pin = $("#loginPin").val().trim();
+            let comp = $("#loginCompany").val();
+
+        // mobile check
+        if (mob.length != 10)
+            return toastr.error("Enter valid 10 digit mobile number");
 
         if (!pin)
-        return toastr.error("Enter atleast 6 Digit Password");
+            return toastr.error("Enter 6 character PIN");
 
+        // company
         if (!comp)
-        return toastr.error("Select company");
+            return toastr.error("Select company");
 
+        // OTP combine
+        var COMBINEOTP =
+            $("#OTP1").val() +
+            $("#OTP2").val() +
+            $("#OTP3").val() +
+            $("#OTP4").val() +
+            $("#OTP5").val() +
+            $("#OTP6").val();
 
+        if (COMBINEOTP.length != 6)
+            return toastr.error("Enter 6 digit OTP");
 
-        var OTP1  = $('#OTP1').val();
-        var OTP2  = $('#OTP2').val();
-        var OTP3  = $('#OTP3').val();
-        var OTP4  = $('#OTP4').val();
-        var OTP5  = $('#OTP5').val();
-        var OTP6  = $('#OTP6').val();
-
-     var COMBINEOTP = `${OTP1}${OTP2}${OTP3}${OTP4}${OTP5}${OTP6}`;
-
+        // submit
         $.post("/EmpLogin/EmployeeLogin", {
             mobile: mob,
             pin: pin,
             compCode: comp,
-            COMBINEOTP : COMBINEOTP
-        }, res => {
-            res.success ? location.href = "/EmployeeDashboard" : toastr.error(res.message);
+            COMBINEOTP: COMBINEOTP
+        }, function (res) {
+
+            if (res.success) {
+                toastr.success("Login successful");
+                window.location.href = "/EmployeeDashboard";
+            }
+            else {
+                toastr.error(res.message);
+            }
+
         });
+
     }
+
+
+
+
+
+
+
+
+
+
 
     function sendOTPLogin() {
         let mobile = $("#loginMob").val().trim();
