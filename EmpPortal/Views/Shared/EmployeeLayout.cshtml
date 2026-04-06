@@ -1,0 +1,264 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - EmployeePortal</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/EmployeePortalMasterstyle.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/emp_payslip.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/emp_attendance.css" asp-append-version="true" />
+    <!-- CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" />
+
+    <style>
+        .emp_dropdownlist {
+            display: none;
+            position: absolute;
+            padding: 0;
+            font-size: 14px;
+            color: #0d2238;
+            top: 100%;
+            list-style: none;
+            border: 1px solid #d1d1d1;
+            border-radius: 2px;
+            width: 35%;
+            background: #e2e2e2;
+            z-index: 999;
+            border-radius: 10px;
+        }
+
+            .emp_dropdownlist li:hover {
+                background: #3f3f3f;
+                font-weight: 600;
+                color: white;
+                border-radius: 5px;
+            }
+    </style>
+</head>
+
+<body>
+
+    <!-- Overlay -->
+    <div class="emp-overlay" id="empOverlay" onclick="empToggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <div class="emp-sidebar" id="empSidebar">
+
+        <div class="emp-dashboardlogo">
+            <div class="emp-logo-left">
+                <div class="emp-logo-circle">P</div>
+                <span class="emp-logo-text">Employee Portal</span>
+            </div>
+        </div>
+
+        <div class="emp-menu">
+            <a href="@Url.Action("Index", "EmployeeDashboard")">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span class="emp-text">Dashboard</span>
+            </a>
+
+            <a href="@Url.Action("Index", "TimesheetDashboard")">
+                <i class="fa-solid fa-calendar-check"></i>
+                <span class="emp-text">Timesheet Dashboard</span>
+            </a>
+
+            <a href="@Url.Action("Index", "EmpAttendance")">
+                <i class="fa-regular fa-clock"></i>
+                <span class="emp-text">Attendance</span>
+            </a>
+
+            <!-- Payroll -->
+            <a data-bs-toggle="collapse" href="#empPayroll">
+                <i class="fa-solid fa-money-bill-wave"></i>
+                <span class="emp-text">Payroll</span>
+            </a>
+
+            <div class="collapse emp-submenu" id="empPayroll">
+                <a href="@Url.Action("Index", "EmpPayslip")">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                    <span class="emp-text">Salary Slip</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="emp-main">
+
+        <!-- HEADER -->
+        <div class="emp-header">
+            <div class="emp-header-left">
+                <i class="fa-solid fa-bars" onclick="empToggleSidebar()"></i>
+            </div>
+
+            <!-- SEARCH -->
+            <div class="emp-header-center">
+                <div class="emp-search-box">
+                    <i class="fa-solid fa-magnifying-glass emp-search-icon"></i>
+                    <input type="text" id="search_box" placeholder="Search..." />
+                    <ul id="name_list" class="emp_dropdownlist"></ul>
+                </div>
+            </div>
+
+            <!-- LOGOUT -->
+            <div class="emp-header-right">
+              
+                @* New Code *@
+                <button id="logoutBtn" class="emp-logout" title="Logout">
+                    <i class="fa-solid fa-right-from-bracket"> Logout</i>
+                </button>
+            </div>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content-box">
+            @RenderBody()
+        </div>
+    </div>
+
+    <!-- JS LIB -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    @* New Code *@
+    <script>
+              document.addEventListener("DOMContentLoaded", function () {
+
+            let currentUrl = window.location.pathname.toLowerCase();
+
+            document.querySelectorAll(".emp-menu a[href]").forEach(function (link) {
+
+                let linkUrl = link.getAttribute("href").toLowerCase();
+
+                if (currentUrl.includes(linkUrl)) {
+
+                    link.classList.add("active");
+
+                    // open submenu automatically
+                    let parentCollapse = link.closest(".collapse");
+
+                    if (parentCollapse) {
+                        parentCollapse.classList.add("show");
+                    }
+                }
+            });
+
+        });
+
+        $(document).ready(function() {
+            $('#logoutBtn').click(function(e) {
+                e.preventDefault(); // Prevent default button behavior
+
+                $.ajax({
+                    url: '/EmpLogin/Logout', // Controller/Action
+                    type: 'POST',
+                     cache: false, // ✅ prevent caching //new code
+                    success: function(response) {
+                        // // Redirect to login page after logout
+                        // window.location.href = '/EmpLogin/Index';
+                        //new code
+                        if (response.success) {
+                    // ✅ Force fresh reload
+                         // window.location.href = '/EmpLogin/Index';
+                         console.log("Response logout", response);
+                         window.location.href = '@Url.Action("Index", "EmpLogin")';
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Logout failed:', error);
+                    }
+                });
+            });
+        });
+    </script>
+    <!-- ========================= -->
+    <!-- SIDEBAR TOGGLE (SAFE) -->
+    <!-- ========================= -->
+    <script>
+        function empToggleSidebar() {
+            const sidebar = document.getElementById("empSidebar");
+            const overlay = document.getElementById("empOverlay");
+
+            if (!sidebar || !overlay) return;
+
+            if (window.innerWidth <= 768) {
+                sidebar.classList.toggle("emp-mobile-show");
+                overlay.classList.toggle("emp-show");
+            } else {
+                sidebar.classList.toggle("emp-collapsed");
+            }
+        }
+    </script>
+
+    <!-- ========================= -->
+    <!-- SEARCH FUNCTION (SAFE) -->
+    <!-- ========================= -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const searchItems = [
+                { name: "Employee Attendance", url: '@Url.Action("Index", "EmpAttendance")' },
+                { name: "Employee Payslip", url: '@Url.Action("Index", "EmpPayslip")' }
+            ];
+
+            const searchBox = document.getElementById("search_box");
+            const nameList = document.getElementById("name_list");
+
+            if (!searchBox || !nameList) return;
+
+            function showList(items) {
+                nameList.innerHTML = "";
+
+                items.forEach(item => {
+                    const li = document.createElement("li");
+                    li.textContent = item.name;
+                    li.style.padding = "8px";
+                    li.style.cursor = "pointer";
+
+                    li.addEventListener("click", function () {
+                        window.location.href = item.url;
+                    });
+
+                    nameList.appendChild(li);
+                });
+
+                nameList.style.display = "block";
+            }
+
+            searchBox.addEventListener("input", function () {
+                const value = this.value.toLowerCase();
+
+                if (!value) {
+                    nameList.style.display = "none";
+                    return;
+                }
+
+                const filtered = searchItems.filter(item =>
+                    item.name.toLowerCase().includes(value)
+                );
+
+                if (filtered.length > 0) {
+                    showList(filtered);
+                } else {
+                    nameList.innerHTML = "<li style='padding:8px;'>No results found</li>";
+                    nameList.style.display = "block";
+                }
+            });
+
+            document.addEventListener("click", function (e) {
+                if (!searchBox.contains(e.target) && !nameList.contains(e.target)) {
+                    nameList.style.display = "none";
+                }
+            });
+
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

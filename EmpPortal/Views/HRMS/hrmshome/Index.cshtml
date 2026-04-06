@@ -1,0 +1,819 @@
+﻿@{
+    ViewBag.Title = "HRMS Home";
+    Layout = "~/Views/Shared/EmployeeLayout.cshtml";
+}
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+
+
+@await Html.PartialAsync("Partial_Wizard")
+<style>
+    .step-tab.disabled {
+        pointer-events: none;
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    .is-invalid {
+        border-color: red;
+    }
+    #emailError {
+        color: red;
+        display: none;
+        font-size: 0.9rem;
+    }
+</style>
+<div class="form-section" id="formhome">
+    <p class="EmpLabel"><span>Candidate Basic Detail</span></p>
+    <fieldset>
+        <form id="EmpCandidate">
+            <div class="row">
+                <div class="offset-md-8 col-md-4">
+                    <div class="button-right">
+                        <a href="/Hrmshome/DownloadTemplate" class="btn btn-primary"><i class="fa fa-download"></i>Download Template</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="ddlDesignation">Designation Applied For<span class="required">*</span></label>
+                        <select class="form-control" id="ddlDesignation">
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="TxtFullName">Full Name<span class="required">*</span></label>
+                        <div class="input-divide">
+                            <select class="form-control" id="salutation" style="width:30%">
+                                <option value="1">Mr</option>
+                                <option value="2">Mrs</option>
+                                <option value="3">Miss</option>
+                                <option value="4">Dr</option>
+                            </select>
+                            <input type="text" class="form-control" id="TxtFullName" placeholder="Enter Full Name" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="txtFatherName">Father Name</label>
+                        <input type="text" class="form-control" id="txtFatherName" placeholder="Enter Father Name">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="txtContact">Contact No.<span class="required">*</span></label>
+                        <input type="number" class="form-control" id="txtContact" placeholder="Enter Contact Number">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="txtAltContact">Alternate No.</label>
+                        <input type="number" class="form-control" id="txtAltContact" placeholder="Enter Alternate Number">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="txtEmail">Email ID<span class="required">*</span></label>
+                        <input type="email" class="form-control" id="txtEmail" placeholder="Enter Email ID">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="ddlGender">Gender</label>
+                        <select class="form-control" id="ddlGender">
+                            <option value="1">Male</option>
+                            <option value="2">Female</option>
+                            <option value="3">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="ddlMaritalStatus">Marital Status</label>
+                        <select class="form-control" id="ddlMaritalStatus">
+                            <option value="1">Single</option>
+                            <option value="2">Married</option>
+                            <option value="3">Other</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="txtCurrDesignation">Current Designation<span class="required">*</span></label>
+                        <input type="text" class="form-control" id="txtCurrDesignation" placeholder="Enter Current Designation">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="txtOrganization">Current Organization</label>
+                        <input type="text" class="form-control" id="txtOrganization" placeholder="Enter Current Organization">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="NumNotice">Notice Period(Days)</label>
+                        <input type="number" class="form-control" id="NumNotice" placeholder="0">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="ddlNP">Post Applied</label>
+                        <input type="text" class="form-control" id="txtPost1Applied" placeholder="Enter Post Applied">
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="txtCTC">Annual CTC</label>
+                        <input type="number" class="form-control" id="txtCTC" placeholder="0">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="txtExpCTC">Expected CTC</label>
+                        <input type="number" class="form-control" id="txtExpCTC" placeholder="0">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="ddlLocation">Current Location<span class="required">*</span></label>
+                        <select class="form-control" id="ddlLocation">
+                            <option value="">Select Location</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="ddlSalary">Salary Negotiable</label>
+                        <select class="form-control" id="ddlSalary">
+                            <option value="1">Yes</option>
+                            <option value="2">No</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="ddlPrefLocation">Preferred Location</label>
+                        <select class="form-control" id="ddlPrefLocation">
+                            <option>Select Preferred Location</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="ddlInterested">Interested</label>
+                        <select class="form-control" id="ddlInterested">
+                            <option value="1">Yes</option>
+                            <option value="2">No</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="ddlReferredBy">Referred By<span class="required">*</span></label>
+                        <select class="form-control" id="ddlReferredBy">
+                            <option value="">Select Referral Source</option>
+                            <option value="1">Naukri</option>
+                            <option value="2">LinkedIn</option>
+                            <option value="3">Consultant</option>
+                            <option value="4">Reference</option>
+                            <option value="5">Direct application</option>
+                            <option value="6">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="txtRefBy">Referred By</label>
+                        <input type="text" class="form-control" id="txtRefBy" placeholder="Enter Referrer Name">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-10">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="txtContactRefBy">Contact Detail of References</label>
+                                <input type="text" class="form-control" id="txtContactRefBy" placeholder="Enter Referrer Name">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="txtRemarks">Remarks</label>
+                                <textarea typeof="text" class="form-control" id="txtRemarks" rows="2" placeholder="Enter Remarks"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label for="txtOthRemarks">Other Remarks</label>
+                                <textarea typeof="text" class="form-control" id="txtOthRemarks" rows="2" placeholder="Enter Other Remarks"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label for="txtOthUnits">Units</label>
+                                <select class="form-control" id="ddlUnits">
+                                    <option value="">Select Units</option>
+                                    <option value="PPPL">PPPL</option>
+                                    <option value="PLPL">PLPL</option>
+                                    <option value="SRM">SRM</option>
+                                    <option value="PEPL">PEPL</option>
+                                    <option value="STPL">STPL</option>
+                                    <option value="SAURABH CLEANTECH">SAURABH CLEANTECH</option>
+                                    <option value="KTPL">KTPL</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Attachment Resume</label>
+                                <input type="file" class="form-control" id="fileInput1" accept=".pdf, .doc, .docx">
+                                <small id="existingFileName" class="text-muted mt-1" style="display: none;">
+                                    Uploaded file: <a id="existingResumeLink" href="#" target="_blank">Resume.docx</a>
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Automatic Uploaded Excel</label>
+                                <input type="file" class="form-control" id="fileInput2" accept=".xlsx, .xls">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="DtDate">Date</label>
+                                <input type="text" class="form-control" id="DtDate" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="RdCandidateStatus" class="RdStatus">Candidate Status</label>
+                                <label class="radio-label" id="RDActive">
+                                    <input type="radio" name="candidateStatus" value="1">
+                                    Active
+                                </label>
+                                <label class="radio-label" id="RDNonActive">
+                                    <input type="radio" name="candidateStatus" value="0">
+                                    Non Active
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="MRNNo">MRN No</label>
+                                <select class="form-control" id="ddlMRNNo">
+                                    <option value="">Select MRN No</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="photo-box">
+                        <div class="photo-preview" id="photoPreview">
+                            <!-- Image will be shown here -->
+                        </div>
+                        <button class="buttonattach" id="btnBrowse">
+                            <i class="fa fa-binoculars"></i> Browse
+                        </button>
+                        <button class="buttonattach btn-remove" id="btnRemove">
+                            <i class="fa fa-paperclip"></i> Remove
+                        </button>
+                        <input type="file" id="fileInput" accept="image/*" style="display:none">
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-md-3">
+                    <div class="btn-mt">
+                        <button onclick="window.location.href='@Url.Action("Index", "hrmshomeList")'" type="button" class="btn btn-draft">
+                            <i class="fa fa-list"></i>Back to list
+                        </button>
+                    </div>
+                </div>
+                <div class="offset-md-5 col-md-4">
+                    <div class="button-right btn-mt">
+                        <button id="btn_forward" type="button" class="btn btn-success"><i class="fa fa-step-forward"></i>Next</button>
+                        <button id="btn-Next" type="submit" class="btn btn-primary"><i class="fa fa-save"></i>Save</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </fieldset>
+    
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('#fileInput2').on('change', function () {
+            var fileInput = this;
+
+            if (fileInput.files.length === 0) {
+                alert('Please select a file.');
+                return;
+            }
+
+            var formData = new FormData();
+            formData.append('fileInput2', fileInput.files[0]);
+
+            $.ajax({
+                url: '/hrmshome/UploadExcel',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    // alert('Upload Success: ' + response);
+                    // Reset the file input
+                     toastr.success('Upload Success: ' + response);
+                    $('#fileInput2').val('');
+                },
+                error: function (xhr, status, error) {
+                    // alert('Upload Failed: ' + xhr.responseText);
+                     toastr.error('Upload Failed: ' + xhr.responseText);
+                    // Reset the file input even if there's an error
+                    $('#fileInput2').val('');
+                }
+            });
+        });
+
+         $('#txtEmail').on('blur', function () {
+        let emailVal = $(this).val().trim();
+        if (emailVal && !validateEmail(emailVal)) {
+            toastr.warning('Invalid email format');
+            $(this).focus();
+        }
+    });
+    });
+       $('#txtContact').on('input', function () {
+        // Trim input to 10 digits max
+        let value = $(this).val();
+        if (value.length > 10) {
+            $(this).val(value.slice(0, 10));
+        }
+    });
+       $('#txtAltContact').on('input', function () {
+       this.value = this.value.replace(/\D/g, '').slice(0, 10);
+    });
+
+</script>
+
+@* Employee image attachement *@
+<script>
+    function previewImage(event) {
+      const reader = new FileReader();
+      reader.onload = function(){
+        const output = document.getElementById('photoPreview');
+        output.innerHTML = '<img src="'+reader.result+'" alt="Employee Photo">';
+      }
+      reader.readAsDataURL(event.target.files[0]);
+    }
+    function removeImage() {
+      document.getElementById('photoPreview').innerHTML = "";
+      document.getElementById('fileInput').value = "";
+    }
+</script>
+@* Employee image attachement *@
+<script>
+    $(document).ready(function () {
+        // checkTab();
+    let d = new Date();
+    let day = String(d.getDate()).padStart(2, '0');
+    let month = String(d.getMonth() + 1).padStart(2, '0');
+    let year = d.getFullYear();
+    let today = day + '/' + month + '/' + year;
+    $('#DtDate').val(today);
+
+     const storedParams = JSON.parse(sessionStorage.getItem('globalParams') || '{}');
+     const code = parseInt(storedParams.docCode || 0);
+
+    if (code) 
+    {
+        CandidateBasicDetail(code)
+        Checkhrmstab(code);
+    }
+
+    function getQueryParams() {
+     const urlParams = new URLSearchParams(window.location.search);
+     const params = {
+        docCode: urlParams.get('docCode'),
+        readOnly: urlParams.get('readOnly') === 'true'
+     };
+        sessionStorage.setItem('globalParams', JSON.stringify(params));
+        return params;
+     }
+
+    const params = getQueryParams();
+    if (params.readOnly) {
+        $('input, textarea, select, button').prop('disabled', true);
+        $('#editButton, #deleteButton').hide(); // Example
+    }
+    if (params.docCode) {
+        CandidateBasicDetail(params.docCode)
+        // checkTab(params.docCode);
+        Checkhrmstab(params.docCode);
+    }
+       console.log("Doc Code:", params.docCode);
+       console.log("Read Only:", params.readOnly);
+       ddlDesignationApplied();
+       ddlCurrentLocation();
+       GetMRNList();
+       $('#btn-Next').click(function (e) {
+        e.preventDefault();
+        if (!validateRequiredField('#ddlDesignation', 'Designation Applied For')) return;
+        if (!validateRequiredField('#TxtFullName', 'Full Name')) return;
+        if (!validateRequiredField('#txtContact', 'Contact No')) return;
+        if (!validateRequiredField('#txtEmail', 'Email ID')) return;
+        if (!validateRequiredField('#ddlLocation', 'Current Location')) return;
+        if (!validateRequiredField('#ddlReferredBy', 'Referred By')) return;
+        if (!validateRequiredField('#txtCurrDesignation', 'Current Designation')) return;
+
+        const formData = new FormData();
+        formData.append("ddlTitle", $('#salutation').val());
+        formData.append("TxtFullName", $('#TxtFullName').val());
+        formData.append("txtFatherName", $('#txtFatherName').val());
+        formData.append("ddlDesignation", $('#ddlDesignation').val());
+        formData.append("txtContact", $('#txtContact').val());
+        formData.append("txtAltContact", $('#txtAltContact').val());
+        formData.append("txtEmail", $('#txtEmail').val());
+        formData.append("ddlGender", $('#ddlGender').val());
+        formData.append("ddlUnits", $('#ddlUnits').val());
+        formData.append("ddlMaritalStatus", $('#ddlMaritalStatus').val());
+        formData.append("txtCurrDesignation", $('#txtCurrDesignation').val());
+        formData.append("txtOrganization", $('#txtOrganization').val());
+        formData.append("NumNotice", $('#NumNotice').val());
+        formData.append("txtPost1Applied", $('#txtPost1Applied').val());
+        formData.append("txtCTC", $('#txtCTC').val());
+        formData.append("txtExpCTC", $('#txtExpCTC').val());
+        formData.append("ddlLocation", $('#ddlLocation').val());
+        formData.append("ddlPrefLocation", $('#ddlPrefLocation').val());
+        formData.append("ddlSalary", $('#ddlSalary').val());
+        formData.append("ddlReferredBy", $('#ddlReferredBy').val());
+        formData.append("txtRefBy", $('#txtRefBy').val());
+        formData.append("txtContactRefBy", $('#txtContactRefBy').val());
+        formData.append("txtRemarks", $('#txtRemarks').val());
+        formData.append("txtOthRemarks", $('#txtOthRemarks').val());
+        const candidateStatus = $('input[name="candidateStatus"]:checked').val() || "0";
+        formData.append("candidateStatus", candidateStatus);
+        formData.append("ddlMRNNo", $('#ddlMRNNo').val());
+        const action = params.docCode && parseInt(params.docCode) || code > 0 ? "Update" : "Insert";
+        formData.append("Action", action);
+        formData.append("Code", params.docCode);
+
+        const resumeFile = $('#fileInput1')[0].files[0];
+        if (resumeFile) {
+            formData.append("fileInput1", resumeFile);
+        }
+        const imageFile = $('#fileInput')[0].files[0];
+        if (imageFile) {
+            formData.append("fileInput", imageFile);
+        }
+        console.log('formData',formData)
+        $.ajax({
+            url: '/hrmshome/Savedata',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+               toastr.success(response.message)
+            },
+            error: function (xhr) {
+                toastr.error("Error while submitting form: " + xhr.responseText);
+            }
+        });
+    });
+       $('#ddlMRNNo').on('change', function () {
+        var selectedMRN = $(this).val();
+        if (selectedMRN) {
+            $.ajax({
+                url: '@Url.Action("GetMRNDetails", "hrmshome")',
+                type: 'GET',
+                data: { mrnNo: selectedMRN },
+                success: function (response) {
+                    if (response.status && response.data.length > 0) {
+                        var detail = response.data[0];   
+                        ddlDesignationApplied(function () {
+                            $('#ddlDesignation').val(detail.DESG_CODE).trigger('change');
+                        });
+                    }
+                    else {
+                        toastr.error("Data not found");
+                    }
+                },
+                error: function () {
+                    toastr.error("Error loading details");
+                }
+            });
+        }
+    });
+
+    });
+    function ddlDesignationApplied(callback) {
+        $.ajax({
+            url: '/hrmshome/GetddlDesignationApplied',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                const ddl = $('#ddlDesignation');
+                ddl.empty().append('<option value="">-- Select Doc Type --</option>');
+                $.each(data, function (index, item) {
+                    ddl.append(`<option value="${item.value}">${item.text}</option>`);
+                });
+                if (typeof callback === "function") callback();
+            },
+            error: function (xhr) {
+                console.error("Error loading ddlDesignation:", xhr.responseText);
+            }
+        });
+    }
+    function ddlCurrentLocation(callback) {
+        $.ajax({
+            url: '/hrmshome/GetddlCurrentLocation',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                // Populate ddlLocation
+                const ddlLocation = $('#ddlLocation');
+                ddlLocation.empty().append('<option value="">-- Select Doc Type --</option>');
+                const ddlPrefLocation = $('#ddlPrefLocation');
+                ddlPrefLocation.empty().append('<option value="">-- Select Doc Type --</option>');
+                $.each(data, function (index, item) {
+                    ddlLocation.append(`<option value="${item.value}">${item.text}</option>`);
+                    ddlPrefLocation.append(`<option value="${item.value}">${item.text}</option>`);
+                });
+                if (typeof callback === "function") callback();
+            },
+            error: function (xhr) {
+                console.error("Error loading ddlLocation:", xhr.responseText);
+            }
+        });
+    }
+    function checkTab(code) {
+        $.ajax({
+            url: '/hrmshome/GetStepStatus',
+            type: 'GET',
+            data: { code: parseInt(code) },
+            success: function (steps) {
+                // Check if 'hrmshome' step is completed
+                const isStepCompleted = steps.some(step =>
+                    step.stepName.toLowerCase() === 'hrmshome' && step.isComplete
+                );
+
+                if (isStepCompleted) {
+                    $('#btn-Next').prop('disabled', true).addClass('disabled');
+                } else {
+                    // ✅ Make button clickable
+                    $('#btn-Next').prop('disabled', false).removeClass('disabled');
+                }
+                $('.step-tab').addClass('disabled');
+                $('#homeTab').removeClass('disabled');
+                steps.forEach(step => {
+                    if (step.isComplete) {
+                        const tabId = `#${step.stepName.toLowerCase()}Tab`;
+                        $(tabId).removeClass('disabled');
+                    }
+                });
+            },
+            error: function (err) {
+                console.error("Failed to load step status:", err);
+            }
+        });
+    }
+    function CandidateBasicDetail(code) {
+        $.ajax({
+            url: '/hrmshome/GetCandidateBasicDetailList',
+            type: 'GET',
+            data: { code: parseInt(code) },
+            success: function (item) {
+                console.log('Full response:', item);
+                if (item && item.candidateDetail && item.candidateDetail.length > 0) {
+                    var detail = item.candidateDetail[0];
+
+                    ddlDesignationApplied(() => {
+                        $('#ddlDesignation').val(detail.posT_APPLIED);
+                    });
+
+                    $('#TxtFullName').val(detail.firsT_NAME);
+                    $('#txtPost1Applied').val(detail.posT_APPLIED1);
+                    $('#txtFatherName').val(detail.fatheR_NAME);
+                    $('#txtContact').val(detail.contacT_NO);
+                    $('#txtAltContact').val(detail.alternatE_NO);
+                    $('#txtEmail').val(detail.emaiL_ID);
+                    $('#txtCurrDesignation').val(detail.curR_DESG);
+                    $('#txtOrganization').val(detail.curR_ORGNIZATION);
+                    $('#NumNotice').val(detail.noticE_PERIOD);
+                    $('#txtCTC').val(detail.curR_CTC);
+                    $('#txtExpCTC').val(detail.exP_CTC);
+                    $('#ddlLocation').val(detail.curR_LOC);
+                   // Correctionby sarthak   $('#ddlReferredBy').val(detail.referencE_NO);
+                    $('#ddlReferredBy').val(detail.referencE_NAME);
+                    $('#txtRemarks').val(detail.remarks);
+                    $('#txtOthRemarks').val(detail.remarkS2);
+                    $('#ddlGender').val(detail.gender);
+                    $('#ddlMaritalStatus').val(detail.maritaL_STATUS);
+                    $('#ddlSalary').val(detail.salarY_NEGO);
+                    $('#ddlLocation').val(detail.curR_LOC);
+                    $('#ddlPrefLocation').val(detail.preF_LOC);
+                    $('#txtRefBy').val(detail.referencE_NAME1);
+
+
+                      const unitName = (detail.unit || '').trim().toUpperCase();
+
+                 // Normalize option values once
+                 $('#ddlUnits option').each(function () {
+                     $(this).val($(this).val().trim().toUpperCase());
+                 });
+
+                 $('#ddlUnits').val(unitName);
+
+                 // Fallback if value doesn't match any option
+                 if ($('#ddlUnits').val() !== unitName) {
+                     console.warn(`Unit '${unitName}' not found in dropdown options.`);
+                     $('#ddlUnits').val(""); // reset or handle as needed
+                 }
+
+                 let locationCode = null;
+
+                switch (unitName) {
+                    case 'PPPL':
+                    case 'PEPL':
+                    case 'PLPL':
+                        locationCode = '142'; break;
+                    case 'STPL':
+                        locationCode = '33'; break;
+                    case 'KTPL':
+                        locationCode = '481'; break;
+                }
+
+                if (locationCode) {
+                    $('#ddlPrefLocation').val(locationCode);
+                }
+
+                    if (detail.applicatioN_DATE) {
+                        const formattedDate = detail.applicatioN_DATE.split('T')[0];
+                        $('#DtDate').val(formattedDate);
+                    }
+
+                    if (detail.active === true || detail.active === "1") {
+                        $('input[name="candidateStatus"][value="1"]').prop('checked', true);
+                    } else {
+                        $('input[name="candidateStatus"][value="0"]').prop('checked', true);
+                    }
+
+                    // Bind existing file details here
+                    bindResumeFile(detail.filE_NAME);
+
+                } else {
+                    console.warn("No candidate data found.");
+                    $('#existingFileName').hide();
+                    $('#existingResumeLink').hide();
+                }
+            },
+            error: function (err) {
+                console.error("Failed to load candidate details:", err);
+                $('#existingFileName').hide();
+                $('#existingResumeLink').hide();
+            }
+        });
+    }
+    function bindResumeFile(filePath) {
+        if (filePath) {
+            // Extract filename only (e.g. Resume.docx)
+            const fullFileName = filePath.split('/').pop(); // full file name
+            const fileName = fullFileName.includes('_') ? fullFileName.split('_').pop() : fullFileName;
+
+            // Create usable file URL
+            const fileUrl = '/' + filePath.replace(/^\/+/, '');
+
+            // Set link and text
+            $('#existingResumeLink')
+                .attr('href', fileUrl)
+                .text(fileName);  // Set just the name like "Resume.docx"
+
+            // Show the file info section
+            $('#existingFileName').show();
+        } else {
+            $('#existingFileName').hide();
+        }
+    }
+    function Checkhrmstab(code) {
+
+        $.ajax({
+            url: '/hrmshome/Checkhrmstable',
+            type: 'GET',
+            data: { code: code },
+            success: function (data) {
+
+                console.log("Tab Status:", data);
+
+                // Home
+                if (data.basic == 1) {
+                    $('[data-step-index="1"]').addClass("completed");
+                }
+
+                // Personal
+                if (data.personal == 1) {
+                    $('[data-step-index="2"]').addClass("completed");
+                }
+
+                // Family
+                if (data.family == 1) {
+                    $('[data-step-index="3"]').addClass("completed");
+                }
+
+                // Education
+                if (data.education == 1) {
+                    $('[data-step-index="4"]').addClass("completed");
+                }
+
+                // Work
+                if (data.work == 1) {
+                    $('[data-step-index="5"]').addClass("completed");
+                }
+
+                // Reference
+                if (data.reference == 1) {
+                    $('[data-step-index="6"]').addClass("completed");
+                }
+
+                // Interview
+                if (data.interview == 1) {
+                    $('[data-step-index="7"]').addClass("completed");
+                }
+                if (data.letterintent == 1)
+                   {
+                   $('[data-step-index="8"]').addClass("completed");
+                   }
+
+            },
+            error: function (xhr) {
+                console.error("Error:", xhr.responseText);
+            }
+        });
+    }
+    // ====================================================
+
+         function GetMRNList(selectedValue = null) {
+        $.ajax({
+            url: '@Url.Action("GetddlMRN", "hrmshome")',
+            type: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                console.log('kks', response);
+                if (response.status) {
+                    const $dropdown = $('#ddlMRNNo');
+                    $dropdown.empty();
+                    $dropdown.append('<option selected disabled value="">- Select MRN No -</option>');
+                    $.each(response.data, function (index, item) {
+                        $dropdown.append(`
+                            <option value="${item.Code}">
+                                ${item.Name}
+                            </option>`);
+                    });
+                    $dropdown.select2({
+                        placeholder: "- Select MRN No -",
+                        allowClear: true
+                    });
+                    if (selectedValue && $dropdown.find(`option[value="${selectedValue}"]`).length > 0) {
+                        $dropdown.val(selectedValue).trigger('change');
+                    } else {
+                        $dropdown.val('').trigger('change');
+                    }
+                } else {
+                    toastr.error("MRN Load failed");
+                }
+            },
+            error: function (xhr, status, error) {
+                toastr.error("MRN Load failed: " + error);
+            }
+        });
+    }
+
+   
+    // ====================================================
+
+</script>

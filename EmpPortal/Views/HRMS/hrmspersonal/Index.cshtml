@@ -1,0 +1,700 @@
+﻿@{
+    ViewBag.Title = "Employee Recruitment";
+    Layout = "~/Views/Shared/EmployeeLayout.cshtml";
+}
+@await Html.PartialAsync("Partial_Wizard")
+<style>
+    .hrms_heading {
+        font-size: 18px;
+        color: #2e2c2c;
+        border-bottom: 2px solid #34723a;
+        width: max-content;
+        font-weight: 600;
+        margin-top: 10px;
+    }
+</style>
+<div class="form-section" id="formpersonal">
+    <p class="EmpLabel"><span>Personal Detail</span></p>
+    <fieldset>
+        <form id="EmpPersonal">
+            <!-- Personal Information -->
+            
+                <h4 class="hrms_heading">Personal Information</h4>
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="dob">Date of Birth<span class="required">*</span></label>
+                            <input type="date" class="form-control" id="Dtdob">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="age">Age<span class="required">*</span></label>
+                            <input type="number" class="form-control" id="Numage" placeholder="0">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>Marital Status</label>
+                            <select class="form-control" id="ddlmarital">
+                                <option value="1">Single</option>
+                                <option value="2">Married</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="weddingDate">Wedding Date (If Married)</label>
+                            <input type="date" class="form-control" id="DtweddingDate">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="bloodGroup">Blood Group</label>
+                            <select class="form-control" id="ddlbloodgroup">
+                                <option value="">Select Blood Group</option>
+                                <option value="1">A+</option>
+                                <option value="2">A−</option>
+                                <option value="3">B+</option>
+                                <option value="4">B−</option>
+                                <option value="5">AB+</option>
+                                <option value="6">AB−</option>
+                                <option value="7">O+</option>
+                                <option value="8">O−</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+          
+
+            <!-- Address Details -->
+         
+                <h4 class="hrms_heading">Address Details</h4>
+                <!-- Present Address -->
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="presentAddress">Present Address<span class="required">*</span></label>
+                            <textarea typeof="text" class="form-control" id="TxtpresentAddress" placeholder="Enter Present Address"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="presentCity">City<span class="required">*</span></label>
+                            <select class="form-control" id="ddlpresentcity">
+                                <option value="">Select City</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="presentState">State<span class="required">*</span></label>
+                            <select class="form-control" id="ddlpresentState">
+                                <option value="">Select State</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="presentPincode">Pincode<span class="required">*</span></label>
+                            <input type="number" class="form-control" id="NumpresentPincode" placeholder="Enter Pincode">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Same as Present Checkbox -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <label class="checkbox-input">
+                            <input type="checkbox" id="ChkSamePresent" />
+                            Same as Present
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Permanent Address -->
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="permanentAddress">Permanent Address</label>
+                            <textarea typeof="text" class="form-control" id="TxtpermanentAddress" placeholder="Enter Permanent Address"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="permanentCity">City</label>
+                            <select class="form-control" id="ddlpermanentCity">
+                                <option value="">Select State</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="permanentState">State</label>
+                            <select class="form-control" id="ddlpermanentState">
+                                <option value="">Select State</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="permanentPincode">Pincode</label>
+                            <input type="number" class="form-control" id="NumpermanentPincode" placeholder="Enter Pincode">
+                        </div>
+                    </div>
+                </div>
+            
+
+            <!-- Contact Details -->
+           
+                <h4 class="hrms_heading">Contact Details</h4>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="mobileNo">Mobile No</label>
+                            <input type="text" class="form-control" id="TxtmobileNo" placeholder="Enter Mobile No">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="emergencyNo">Emergency No</label>
+                            <input type="text" class="form-control" id="TxtemergencyNo" placeholder="Enter Emergency No">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="emailId">Email ID</label>
+                            <input type="email" class="form-control" id="TxtemailId" placeholder="Enter Email ID">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="passportNo">Passport No</label>
+                            <input type="text" class="form-control" id="TxtpassportNo" placeholder="Enter Passport No">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Passport Attachment</label>
+                            <input type="file" class="form-control" id="fileInputpassport">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="drivingLicenceNo">Driving Licence No</label>
+                            <input type="text" class="form-control" id="TxtdrivingLicenceNo" placeholder="Enter Driving Licence No">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Driving Attachment</label>
+                            <input type="file" class="form-control" id="fileInputDriving">
+                        </div>
+                    </div>
+                </div>
+            
+
+            <!-- Identification Details -->
+           
+                <h4 class="hrms_heading">Identification Details</h4>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="panNo">PAN No</label>
+                            <input type="text" class="form-control" id="TxtpanNo" placeholder="Enter PAN No">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Pan Attachment</label>
+                            <input type="file" class="form-control" id="fileInputPan">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="voterId">Voter ID</label>
+                            <input type="text" class="form-control" id="TxtvoterId" placeholder="Enter Voter ID">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Voter ID Attachment</label>
+                            <input type="file" class="form-control" id="fileInputVoterID">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="aadharNo">Aadhar No</label>
+                            <input type="number" class="form-control" id="NumaadharNo" placeholder="Enter Aadhar No">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Aadhar Attachment</label>
+                            <input type="file" class="form-control" id="fileInputAddhar">
+                        </div>
+                    </div>
+                </div>
+           
+
+            <!-- Bank Details -->
+            
+                <h4 class="hrms_heading">Bank Details</h4>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="bankName">Bank Name</label>
+                            @* <input type="text" class="form-control" id="TxtbankName" placeholder="Enter Bank Name"> *@
+                        <select class="form-control" id="ddlbankName">
+                        <option value="">Select State</option>
+                        </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="accountNo">A/c No</label>
+                            <input type="number" class="form-control" id="NumaccountNo" placeholder="Enter Account No">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="ifscCode">IFSC Code</label>
+                            <input type="text" class="form-control" id="TxtifscCode" placeholder="Enter IFSC Code">
+                        </div>
+                    </div>
+                </div>
+           
+
+            <!-- Additional Information -->
+                <h4 class="hrms_heading">Additional Information</h4>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="languagesKnown">Language Known</label>
+                            <input type="text" class="form-control" id="TxtlanguagesKnown" placeholder="Enter Language Known">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="hobbies">Hobbies</label>
+                            <input type="text" class="form-control" id="Txthobbies" placeholder="Enter Hobbies">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="lifeGoal">Goal / Aim of Life</label>
+                            <input type="text" class="form-control" id="TxtlifeGoal" placeholder="Enter Life Goal">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="courtCase">Been involved in Court Proceeding</label>
+                            <select class="form-control" id="ddlcourtCase">
+                                <option value="">Select</option>
+                                <option value="1">Yes</option>
+                                <option value="2">No</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <button id="btn_previous" type="button" class="btn btn-draft"><i class="fa fa-step-backward"></i>Previous</button>
+                    <button id="btn_forward" type="button" class="btn btn-success"><i class="fa fa-step-forward"></i>Next</button>
+                </div>
+                <div class="col-md-6">
+                    <div class="button-right">
+                        @*<a asp-controller="hrmshome" asp-action="Index" class="prev-btn">⬅️ Previous</a>
+                    <a asp-controller="hrmsfamily" asp-action="Index" class="next-btn">Next ➡️</a> *@
+
+                        <button id="btn-Next" type="submit" class="btn btn-primary"><i class="fa fa-save"></i>Save</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </fieldset>
+    
+</div>
+
+<script>
+  $(document).ready(function () {
+
+          let d = new Date();
+    let day = String(d.getDate()).padStart(2, '0');
+    let month = String(d.getMonth() + 1).padStart(2, '0');
+    let year = d.getFullYear();
+    let today = day + '/' + month + '/' + year;
+        $('#Dtdob').val(today);
+      $('#DtweddingDate').val(today);
+
+
+    
+
+      const storedParams = JSON.parse(sessionStorage.getItem('globalParams') || '{}');
+      console.log(storedParams)
+
+        if (storedParams.readOnly) {
+          $('input, textarea, select, button').prop('disabled', true);
+          $('#editButton, #deleteButton').hide();
+      }
+
+      if (storedParams.docCode) {
+           PersonalDetail(storedParams.docCode)
+          // checkTab(storedParams.docCode);
+          Checkhrmstab(storedParams.docCode);
+      }
+      ddlAddressDetailsState();
+      ddlAddressDetailsCity();
+
+        ddlBankName();
+       $("#btn-Next").hide();
+        $('#Dtdob').on('change', function () {
+              const dob = new Date($(this).val());
+              const today = new Date();
+
+              if (!isNaN(dob)) {
+                  let age = today.getFullYear() - dob.getFullYear();
+                  const m = today.getMonth() - dob.getMonth();
+
+                  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+                      age--;
+                  }
+
+                  $('#Numage').val(age);
+              } else {
+                  $('#Numage').val('');
+              }
+          });
+
+
+
+
+
+      $('#ChkSamePresent').on('change', function () {
+              if ($(this).is(':checked')) {
+                  copyPresentToPermanent();
+                  disablePermanentFields(true);
+              } else {
+                  clearPermanentFields();
+                  disablePermanentFields(false);
+              }
+          });
+      $('#TxtpresentAddress, #ddlpresentcity, #ddlpresentState, #NumpresentPincode').on('input change', function () {
+                if ($('#ChkSamePresent').is(':checked')) {
+                    copyPresentToPermanent();
+                }
+            });
+      $('#btn-Next').on('click', function (e) {
+          e.preventDefault();
+          debugger
+
+          if (!validateRequiredField('#Dtdob', 'Date of Birth')) return;
+          if (!validateRequiredField('#Numage', 'Age')) return;
+          // if (!validateRequiredField('#ddlbloodgroup', 'Blood Group')) return;
+          if (!validateRequiredField('#TxtpresentAddress', 'Present Address')) return;
+          if (!validateRequiredField('#ddlpresentcity', 'City')) return;
+          if (!validateRequiredField('#ddlpresentState', 'State')) return;
+          if (!validateRequiredField('#NumpresentPincode', 'Pincode')) return;
+
+          // Collect data
+          var formData = new FormData();
+
+          // Personal Information
+          formData.append("DateOfBirth", $('#Dtdob').val());
+          formData.append("Age", $('#Numage').val());
+          formData.append("MaritalStatus", $('#ddlmarital').val());
+          formData.append("WeddingDate", $('#DtweddingDate').val());
+          formData.append("BloodGroup", $('#ddlbloodgroup').val());
+
+          // Address Details
+          formData.append("PresentAddress", $('#TxtpresentAddress').val());
+          formData.append("PresentCity", $('#ddlpresentcity').val());
+          formData.append("PresentState", $('#ddlpresentState').val());
+          formData.append("PresentPincode", $('#NumpresentPincode').val());
+
+          formData.append("SameAsPresent", $('#ChkSamePresent').is(':checked'));
+
+          formData.append("PermanentAddress", $('#TxtpermanentAddress').val());
+          formData.append("PermanentCity", $('#ddlpermanentCity').val());
+          formData.append("PermanentState", $('#ddlpermanentState').val());
+          formData.append("PermanentPincode", $('#NumpermanentPincode').val());
+
+          // Contact Details
+          formData.append("MobileNo", $('#TxtmobileNo').val());
+          formData.append("EmergencyNo", $('#TxtemergencyNo').val());
+          formData.append("EmailId", $('#TxtemailId').val());
+          formData.append("PassportNo", $('#TxtpassportNo').val());
+          formData.append("PassportFile", $('#fileInputpassport')[0].files[0]);
+          formData.append("DrivingLicenceNo", $('#TxtdrivingLicenceNo').val());
+          formData.append("DrivingFile", $('#fileInputDriving')[0].files[0]);
+
+          // Identification
+          formData.append("PANNo", $('#TxtpanNo').val());
+          formData.append("PanFile", $('#fileInputPan')[0].files[0]);
+          formData.append("VoterId", $('#TxtvoterId').val());
+          formData.append("VoterFile", $('#fileInputVoterID')[0].files[0]);
+          formData.append("AadharNo", $('#NumaadharNo').val());
+          formData.append("AadharFile", $('#fileInputAddhar')[0].files[0]);
+
+          // Bank Details
+          formData.append("BankName", $('#ddlpermanentCity').val());
+          formData.append("AccountNo", $('#NumaccountNo').val());
+          formData.append("IFSCCode", $('#TxtifscCode').val());
+
+          // Additional Info
+          formData.append("LanguagesKnown", $('#TxtlanguagesKnown').val());
+          formData.append("Hobbies", $('#Txthobbies').val());
+          formData.append("LifeGoal", $('#TxtlifeGoal').val());
+          formData.append("CourtCase", $('#ddlcourtCase').val());
+          formData.append("Code", storedParams.docCode);
+          const action = storedParams.docCode && parseInt(storedParams.docCode) > 0 ? "Update" : "Insert";
+          formData.append("Action", action);
+
+          // Submit via AJAX
+          $.ajax({
+              url: '/hrmspersonal/SaveEmpPersonal', 
+              type: 'POST',
+              data: formData,
+              processData: false,
+              contentType: false,
+              success: function (response) {
+                    toastr.success("Data saved successfully!");
+                  // Redirect or do something else
+              },
+              error: function (xhr, status, error) {
+                    toastr.error("An error occurred: " + error);
+              }
+          });
+      });
+  });
+
+        function ddlAddressDetailsState(callback) {
+
+        $.ajax({
+            url: '/hrmspersonal/GetdddlAddressDetailsState',
+            type: 'GET',
+            success: function (data) {
+
+                const presentDdl = $('#ddlpresentState');
+                const permanentDdl = $('#ddlpermanentState');
+
+                presentDdl.empty().append('<option value="">-- Select State --</option>');
+                permanentDdl.empty().append('<option value="">-- Select State --</option>');
+
+                $.each(data, function (index, item) {
+
+                    let option = `<option value="${item.value}">${item.text}</option>`;
+                    presentDdl.append(option);
+                    permanentDdl.append(option);
+
+                });
+
+                if (callback) callback();
+            }
+        });
+    }
+
+    function ddlAddressDetailsCity(callback) {
+
+        $.ajax({
+            url: '/hrmspersonal/GetdddlAddressDetailsCity',
+            type: 'GET',
+            success: function (data) {
+
+                const presentDdl = $('#ddlpresentcity');
+                const permanentDdl = $('#ddlpermanentCity');
+
+                presentDdl.empty().append('<option value="">-- Select City --</option>');
+                permanentDdl.empty().append('<option value="">-- Select City --</option>');
+
+                $.each(data, function (index, item) {
+
+                    let option = `<option value="${item.value}">${item.text}</option>`;
+                    presentDdl.append(option);
+                    permanentDdl.append(option);
+
+                });
+
+                if (callback) callback();
+            }
+        });
+    }
+
+ function ddlBankName(callback) {
+    $.ajax({
+          url: '/hrmspersonal/GetddlBankName',
+        type: 'GET',
+        success: function (data) {
+              const Bankdl = $('#ddlbankName');
+              Bankdl.empty().append('<option value="">-- Select Bank --</option>');
+            $.each(data, function (index, item) {
+
+                let option = `<option value="${item.value}">${item.text}</option>`;
+                  Bankdl.append(option);
+            });
+            if (callback) callback();
+        }
+    });
+}
+
+    function copyPresentToPermanent() {
+      $('#TxtpermanentAddress').val($('#TxtpresentAddress').val());
+      $('#ddlpermanentCity').val($('#ddlpresentcity').val());
+      $('#ddlpermanentState').val($('#ddlpresentState').val());
+      $('#NumpermanentPincode').val($('#NumpresentPincode').val());
+     }
+    function clearPermanentFields() {
+       $('#TxtpermanentAddress').val('');
+       $('#ddlpermanentCity').val('');
+       $('#ddlpermanentState').val('');
+       $('#NumpermanentPincode').val('');
+     }
+    function disablePermanentFields(disable) {
+       $('#TxtpermanentAddress').prop('disabled', disable);
+       $('#ddlpermanentCity').prop('disabled', disable);
+       $('#ddlpermanentState').prop('disabled', disable);
+       $('#NumpermanentPincode').prop('disabled', disable);
+     }
+     function PersonalDetail(code) {
+        $.ajax({
+            url: '/hrmspersonal/GetPersonalDetailList',
+            type: 'GET',
+            data: { code: parseInt(code) },
+            success: function (item) {
+                console.log('Full response:', item);
+
+                if (item && item.personalDetail && item.personalDetail.length > 0) {
+                    const detail = item.personalDetail[0];
+
+                    // Personal Information
+                    $('#Dtdob').val(detail.dob?.split('T')[0] || '');
+                    $('#Numage').val(detail.age);
+                    $('#ddlmarital').val(detail.maritaL_STATUS);
+                    $('#DtweddingDate').val(detail.weddinG_DATE?.split('T')[0] || '');
+                    $('#ddlbloodgroup').val(detail.blooD_GROUP);
+
+                    // Present Address
+                    $('#TxtpresentAddress').val(detail.presenT_ADD1);
+                    // $('#ddlpresentcity').val(detail.presenT_CITY);
+                    ddlAddressDetailsCity(function () {
+                        $('#ddlpresentcity').val(detail.presenT_CITY);
+                        $('#ddlpermanentCity').val(detail.permanenT_CITY);
+                    });
+                    ddlAddressDetailsState(function () {
+                        $('#ddlpresentState').val(detail.presenT_STATE);
+                        $('#ddlpermanentState').val(detail.permanenT_STATE);
+                      });
+                    // $('#ddlpresentState').val(detail.presenT_STATE);
+                    $('#NumpresentPincode').val(detail.presenT_PINCODE);
+
+                    // Same Address Checkbox
+                    $('#ChkSamePresent').prop('checked', detail.samE_ADDRESS === '1');
+
+                    // Permanent Address
+                    $('#TxtpermanentAddress').val(detail.permanenT_ADD1);
+                    // $('#ddlpermanentCity').val(detail.permanenT_CITY);
+                    // $('#ddlpermanentState').val(detail.permanenT_STATE);
+                    $('#NumpermanentPincode').val(detail.permanenT_PINCODE);
+
+                    // Contact Details
+                    $('#TxtmobileNo').val(detail.mobilE_NO);
+                    $('#TxtemergencyNo').val(detail.emergencY_NO);
+                    $('#TxtemailId').val(detail.emaiL_ID);
+                    $('#TxtpassportNo').val(detail.passporT_NO);
+                    $('#TxtdrivingLicenceNo').val(detail.drivinG_LICENCENO);
+
+                    // Identification
+                    $('#TxtpanNo').val(detail.paN_NO);
+                    $('#TxtvoterId').val(detail.voteR_ID);
+                    $('#NumaadharNo').val(detail.aadhaR_NO);
+
+                    // Bank Details
+                        // $('#ddlpermanentCity').val(detail.banK_CODE);
+
+                    ddlBankName(function () {
+                       $('#ddlbankName').val(detail.banK_CODE);
+                    });
+
+                    $('#NumaccountNo').val(detail.acT_NO);
+                    $('#TxtifscCode').val(detail.ifsC_CODE);
+
+                    // Additional Information
+                    $('#TxtlanguagesKnown').val(detail.languagE_KNOWN);
+                    $('#Txthobbies').val(detail.hobbies);
+                    $('#TxtlifeGoal').val(detail.goaL_LIFE);
+                    $('#ddlcourtCase').val(detail.involveD_COURT);
+
+                    // Optional: trigger change events for dependent dropdowns
+                    $('#ddlpresentState').trigger('change');
+                    $('#ddlpermanentState').trigger('change');
+                } else {
+                    console.warn("No personal detail data found.");
+                }
+            },
+            error: function (err) {
+                console.error("Failed to load personal details:", err);
+            }
+        });
+    }
+
+     function Checkhrmstab(code) {
+
+          $.ajax({
+              url: '/hrmshome/Checkhrmstable',
+              type: 'GET',
+              data: { code: code },
+              success: function (data) {
+                  console.log("Tab Status:", data);
+                  // Home
+                  if (data.basic == 1) {
+                      $('[data-step-index="1"]').addClass("completed");
+                      $("#btn-Next").show();
+                  }
+                  // Personal
+                  if (data.personal == 1) {
+                      $('[data-step-index="2"]').addClass("completed");
+                       
+                  }
+
+                  // Family
+                  if (data.family == 1) {
+                      $('[data-step-index="3"]').addClass("completed");
+                  }
+
+                  // Education
+                  if (data.education == 1) {
+                      $('[data-step-index="4"]').addClass("completed");
+                  }
+
+                  // Work
+                  if (data.work == 1) {
+                      $('[data-step-index="5"]').addClass("completed");
+                  }
+
+                  // Reference
+                  if (data.reference == 1) {
+                      $('[data-step-index="6"]').addClass("completed");
+                  }
+
+                  // Interview
+                  if (data.interview == 1) {
+                      $('[data-step-index="7"]').addClass("completed");
+                  }
+                     if (data.letterintent == 1)
+                     {
+                     $('[data-step-index="8"]').addClass("completed");
+                     }
+
+              },
+              error: function (xhr) {
+                  console.error("Error:", xhr.responseText);
+              }
+          });
+      }
+
+</script>

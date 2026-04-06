@@ -1,0 +1,446 @@
+﻿@{
+    ViewBag.Title = "HRMS Home";
+    Layout = "~/Views/Shared/EmployeeLayout.cshtml";
+}
+@await Html.PartialAsync("Partial_Wizard")
+<div class="form-section active" id="forminterview">
+    <p class="EmpLabel"><span>Candidate Basic Detail</span></p>
+
+    <div class="row">
+        <div class="col-md-6">
+            <fieldset class="fieldset-sub">
+                <legend class="sub-legend">First Level Interview</legend>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="DtDateFirst">Date</label>
+                            <input type="text" class="form-control" id="DtDateFirst" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="ddlInterviewerNameF">Interviewer Name</label>
+                           @*  <select class="form-control" id="ddlInterviewerNameF">
+                                <option value="">Select Interviewer Name</option>
+                            </select> *@
+                            @* <input type="text" class="form-control" id="ddlInterviewerNameF" placeholder="Enter Recommended Department" /> *@
+                            <input type="text" class="form-control" id="ddlInterviewerNameF" placeholder="Enter Interviewer Name" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="TxtcommentF">Comments</label>
+                            <textarea typeof="text" class="form-control" id="TxtcommentF" style="height: 100px;"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="feedback-section form-group">
+                            <label>Feedback:</label>
+                            <div class="radio-group">
+                                <select class="form-control" id="ddlFeedbackFirstLevel">
+                                    <option value="">Select Feedback </option>
+                                    <option value="1">Reject</option>
+                                    <option value="2">Hold</option>
+                                    <option value="3">Should be Considered</option>
+                                    <option value="4">Strongly Recommended</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    @* Sumesh Code Id change*@
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Recommended for Department</label>
+                            @* <input type="text" class="form-control" id="TxtFRecommendedDepartment" placeholder="Enter Recommended Department" /> *@
+                            <select class="form-control" id="ddlFirstDepartment">
+                                <option value="">Select Feedback </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Recommended for Designation</label>
+                            @* <input type="text" class="form-control" id="TxtFRecommendedDesignation" placeholder="Enter Recommended Designation" /> *@
+                            <select class="form-control" id="ddlFirstDesignation">
+                                <option value="">Select Interviewer Name</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Recommended for Location</label>
+                            <input type="text" class="form-control" id="TxtFirstLocation" placeholder="Enter Recommended Location" />
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <div class="col-md-6">
+            <fieldset class="fieldset-sub">
+                <legend class="sub-legend">Final Level Interview</legend>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="DtDateFirst">Date</label>
+                            <input type="text" class="form-control" id="DtFiDateFirst" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="ddlInterviewerNameF">Interviewer Name</label>
+                           @*  <select class="form-control" id="ddlInterviewerNameFi">
+                                <option value="">Select Interviewer Name</option>
+                            </select> *@
+                            <input type="text" class="form-control" id="ddlInterviewerNameFi" placeholder="Enter Interviewer Name" />
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="TxtcommentF">Comments</label>
+                            <textarea typeof="text" class="form-control" id="TxtcommentFi" style="height: 100px;"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="feedback-section form-group">
+                            <label>Feedback:</label>
+                            <div class="radio-group ">
+
+                                 <select class="form-control" id="ddlFeedbackFinalLevel">
+                                    <option value="">Select Interviewer Name</option>
+                                    <option value="1">Reject</option>
+                                    <option value="2">Hold</option>
+                                    <option value="3">Should be Considered</option>
+                                    <option value="4">Strongly Recommended</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    @* Sumesh Code  *@
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Recommended for Department</label>
+                            @* <input type="text" class="form-control" id="TxtFiRecommendedRoleDepartment" placeholder="Enter Recommended Department" /> *@
+                            <select class="form-control" id="ddlFinalDepartment">
+                                <option value="">Select Interviewer Name</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Recommended for Designation</label>
+                            @* <input type="text" class="form-control" id="TxtTxtFiRecommendedRoleDesignation" placeholder="Enter Recommended Designation" /> *@
+                            <select class="form-control" id="ddlFinalDesignation">
+                                <option value="">Select Interviewer Name</option>
+                            </select>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Recommended for Location</label>
+                        <input type="text" class="form-control" id="TxtFinalLocation" placeholder="Enter Recommended Location" />
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="btn-mt">
+                <button id="" type="button" class="btn btn-draft"><i class="fa fa-step-backward"></i>Previous</button>
+                <button id="" type="button" class="btn btn-success"><i class="fa fa-step-forward"></i>Next</button>
+            </div>
+        </div>
+        <div class="offset-md-2 col-md-4">
+            <div class="button-right btn-mt">
+                <button id="btn-Next" type="submit" class="btn btn-primary"><i class="fa fa-save"></i>Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#btn-Next").hide();
+
+        let d = new Date();
+        let day = String(d.getDate()).padStart(2, '0');
+        let month = String(d.getMonth() + 1).padStart(2, '0');
+        let year = d.getFullYear();
+        let today = day + '/' + month + '/' + year;
+        $('#DtDateFirst').val(today);
+        $('#DtFiDateFirst').val(today);
+
+        const storedParams = JSON.parse(sessionStorage.getItem('globalParams') || '{}');
+        if (storedParams.readOnly) {
+            $('input, textarea, select, button').prop('disabled', true);
+        }
+        // Load dropdowns for NEW entry
+        // ddlInterviewerName();
+        // ddlInterviewerNameFinal();
+        ddlFirstDepartment();
+        ddlFirstDesignation();
+        ddlFinalDepartment();
+        ddlFinalDesignation();
+        // Edit mode
+        if (storedParams.docCode) {
+            InterviewDetail(storedParams.docCode);
+            Checkhrmstab(storedParams.docCode);
+        }
+
+        // ================= SAVE =================
+        $('#btn-Next').on('click', function (e) {
+            e.preventDefault();
+
+            // ===== FIRST LEVEL VALIDATION =====
+            if (!validateRequiredField('#DtDateFirst', 'Date')) return;
+            if (!validateRequiredField('#ddlInterviewerNameF', 'Interviewer Name')) return;
+            if (!validateRequiredField('#TxtcommentF', 'Comments')) return;
+            if (!validateRequiredField('#ddlFeedbackFirstLevel', 'Feedback')) return;
+
+            // ===== FINAL LEVEL CHECK =====
+            const isFinalFilled =
+                $('#DtFiDateFirst').val().trim() !== '' ||
+                $('#ddlInterviewerNameFi').val() !== '' ||
+                $('#TxtcommentFi').val().trim() !== '' ||
+                $('#ddlFeedbackFinalLevel').val() !== '' ||
+                $('#TxtFiRecommendedRoleLocation').val().trim() !== '';
+
+            if (isFinalFilled) {
+                if (!validateRequiredField('#DtFiDateFirst', 'Final Date')) return;
+                if (!validateRequiredField('#ddlInterviewerNameFi', 'Final Interviewer')) return;
+                if (!validateRequiredField('#TxtcommentFi', 'Final Comments')) return;
+                if (!validateRequiredField('#ddlFeedbackFinalLevel', 'Final Feedback')) return;
+            }
+
+            const code = storedParams.docCode || 0;
+            const action = code > 0 ? "Update" : "Insert";
+
+            const data = {
+                Code: parseInt(code) || 0,
+                Action: action,
+
+                FirstLevelDate: $('#DtDateFirst').val(),
+                FirstLevelName: $('#ddlInterviewerNameF').val(),
+                FirstLevelComments: $('#TxtcommentF').val(),
+                FirstLevelFeedback: $('#ddlFeedbackFirstLevel').val(),
+                FirstDepartment: $('#ddlFirstDepartment').val(),
+                FirstDesignation: $('#ddlFirstDesignation').val(),
+                FirstRecommendedLocation: $('#TxtFirstLocation').val(),
+
+                FinalLevelDate: $('#DtFiDateFirst').val(),
+                FinalLevelName: $('#ddlInterviewerNameFi').val(),
+                FinalLevelComments: $('#TxtcommentFi').val(),
+                FinalLevelFeedback: $('#ddlFeedbackFinalLevel').val(),
+                FinalDepartment: $('#ddlFinalDepartment').val(),
+                FinalDesignation: $('#ddlFinalDesignation').val(),
+                FinalRecommendedLocation: $('#TxtFinalLocation').val()
+            };
+
+            $.ajax({
+                url: '/hrmsinterview/SaveInterviewData',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function (res) {
+                    if (res.success) {
+                        toastr.success('Interview data saved successfully');
+                    } else {
+                        toastr.error(res.message);
+                    }
+                },
+                error: function () {
+                    toastr.error('Server error');
+                }
+            });
+        });
+    });
+    // ================= DROPDOWNS =================
+    function ddlInterviewerName(callback) {
+        $.getJSON('/hrmsinterview/GetddlInterviewerName', function (data) {
+            const ddl = $('#ddlInterviewerNameF');
+            ddl.empty().append('<option value="">-- Select Interviewer --</option>');
+            $.each(data, (i, x) => ddl.append(`<option value="${x.value}">${x.text}</option>`));
+            if (callback) callback();
+        });
+    }
+    function ddlInterviewerNameFinal(callback) {
+        $.getJSON('/hrmsinterview/GetddlInterviewerNameFinal', function (data) {
+            const ddl = $('#ddlInterviewerNameFi');
+            ddl.empty().append('<option value="">-- Select Interviewer --</option>');
+            $.each(data, (i, x) => ddl.append(`<option value="${x.value}">${x.text}</option>`));
+            if (callback) callback();
+        });
+    }
+    function ddlFirstDepartment(callback) {
+        $.getJSON('/hrmsinterview/GetddlFirstDepartment', function (data) {
+            const ddl = $('#ddlFirstDepartment');
+            ddl.empty().append('<option value="">-- Select Department --</option>');
+            $.each(data, (i, x) => ddl.append(`<option value="${x.value}">${x.text}</option>`));
+            if (callback) callback();
+        });
+    }
+    function ddlFirstDesignation(callback) {
+        $.getJSON('/hrmsinterview/GetddlFirstDesignation', function (data) {
+            const ddl = $('#ddlFirstDesignation');
+            ddl.empty().append('<option value="">-- Select Designation --</option>');
+            $.each(data, (i, x) => ddl.append(`<option value="${x.value}">${x.text}</option>`));
+            if (callback) callback();
+        });
+    }
+    function ddlFinalDepartment(callback) {
+        $.getJSON('/hrmsinterview/GetddlFinalDepartment', function (data) {
+            const ddl = $('#ddlFinalDepartment');
+            ddl.empty().append('<option value="">-- Select Department --</option>');
+            $.each(data, (i, x) => ddl.append(`<option value="${x.value}">${x.text}</option>`));
+            if (callback) callback();
+        });
+    }
+    function ddlFinalDesignation(callback) {
+        $.getJSON('/hrmsinterview/GetddlFinalDesignation', function (data) {
+            const ddl = $('#ddlFinalDesignation');
+            ddl.empty().append('<option value="">-- Select Designation --</option>');
+            $.each(data, (i, x) => ddl.append(`<option value="${x.value}">${x.text}</option>`));
+            if (callback) callback();
+        });
+    }
+    // ================= EDIT / BIND =================
+    function InterviewDetail(code) {
+        $.ajax({
+            url: '/hrmsinterview/GetInterviewDetailList',
+            type: 'GET',
+            data: { code: parseInt(code) },
+            success: function (res) {
+                console.log('kks', res)
+
+                if (!res || !res.interviewDetail || res.interviewDetail.length === 0)
+                    return;
+
+                const d = res.interviewDetail[0];
+
+                console.log('d.firstLevelName', d.firstLevelName)
+                // Load dropdowns first then bind values
+                // ddlInterviewerName(() => {
+                //     $('#ddlInterviewerNameF').val(d.firstLevelName);
+                // });
+                 $('#ddlInterviewerNameF').val(d.firstLevelName);
+
+                ddlFirstDepartment(() => {
+                    $('#ddlFirstDepartment').val(d.firstDepartment?.toString());
+                });
+
+                ddlFirstDesignation(() => {
+                    $('#ddlFirstDesignation').val(d.firstDesignation?.toString());
+                });
+
+                // ddlInterviewerNameFinal(() => {
+                //     $('#ddlInterviewerNameFi').val(d.finalLevelName);
+                // });
+                 $('#ddlInterviewerNameFi').val(d.finalLevelName);
+
+                ddlFinalDepartment(() => {
+                    $('#ddlFinalDepartment').val(d.finalDepartment?.toString());
+                });
+
+                ddlFinalDesignation(() => {
+                    $('#ddlFinalDesignation').val(d.finalDesignation?.toString());
+                });
+                if (d.firstLevelDate)
+                    $('#DtDateFirst').val(formatDateDDMMYYYY(d.firstLevelDate));
+
+                $('#TxtcommentF').val(d.firstLevelComments);
+                $('#ddlFeedbackFirstLevel').val(d.firstLavelFeedback);
+                $('#TxtFirstLocation').val(d.firstRecommendedLocation);
+                
+                if (d.finalLevelDate)
+                    $('#DtFiDateFirst').val(formatDateDDMMYYYY(d.finalLevelDate));
+
+                $('#TxtcommentFi').val(d.finalLevelComments);
+                $('#ddlFeedbackFinalLevel').val(d.finalLavelFeedback);
+                $('#TxtFinalLocation').val(d.finalRecommendedLocation);
+            }
+        });
+    }
+        function formatDateDDMMYYYY(dateString) {
+        let date = new Date(dateString);
+        let day = String(date.getDate()).padStart(2, '0');
+        let month = String(date.getMonth() + 1).padStart(2, '0');
+        let year = date.getFullYear();
+        return day + '/' + month + '/' + year;
+    }
+     function Checkhrmstab(code) {
+
+        $.ajax({
+            url: '/hrmsinterview/Checkhrmstable',
+            type: 'GET',
+            data: { code: code },
+            success: function (data) {
+                console.log("khushahal singh", data);
+               
+                
+                if (data.firstname && data.firstname.trim() !== "") {
+                $('#ddlInterviewerNameF').val(data.firstname);
+                $('#ddlInterviewerNameFi').val(data.firstname);
+            }
+
+                // Home
+                if (data.basic == 1) {
+                    $('[data-step-index="1"]').addClass("completed");
+                    $("#btn-Next").show();
+                }
+                // Personal
+                if (data.personal == 1) {
+                    $('[data-step-index="2"]').addClass("completed");
+                }
+                // Family
+                if (data.family == 1) {
+                    $('[data-step-index="3"]').addClass("completed");
+                }
+                // Education
+                if (data.education == 1) {
+                    $('[data-step-index="4"]').addClass("completed");
+                }
+                // Work
+                if (data.work == 1) {
+                    $('[data-step-index="5"]').addClass("completed");
+                }
+                // Reference
+                if (data.reference == 1) {
+                    $('[data-step-index="6"]').addClass("completed");
+                }
+                // Interview
+                if (data.interview == 1) {
+                    $('[data-step-index="7"]').addClass("completed");
+                }
+                 if (data.letterintent == 1)
+                   {
+                   $('[data-step-index="8"]').addClass("completed");
+                   }
+
+            },
+            error: function (xhr) {
+                console.error("Error:", xhr.responseText);
+            }
+        });
+    }
+</script>
+
+

@@ -1,0 +1,280 @@
+﻿@{
+    ViewBag.Title = "HRMS Master";
+    Layout = "~/Views/Shared/EmployeeLayout.cshtml";
+}
+<fieldset class="fieldset-sub">
+    <legend class="sub-legend">HRMS Master</legend>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="Txtcandidatestatus">Candidate Status</label>
+                <select class="form-control" id="Txtcandidatestatus">
+                    <option value="">offered</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="btn-mt button-right">
+                <button type="button" class="btn btn-primary" id="Btn_CreateOffer" data-bs-toggle="modal" data-bs-target="#offerModal"><i class="fa fa-plus"></i>Create an Offer Document</button>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="offerModal" tabindex="-1" aria-labelledby="offerModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+
+                    <div class="popup-header">
+                        <h5 class="popup-title" id="offerModalLabel"><i class="fa fa-file-alt"></i> Create Offer Document</h5>
+                        <i class="fa fa-times" data-bs-dismiss="modal" style="cursor: pointer;" aria-label="Close"></i>
+                    </div>
+
+                    <div class="popup-body">
+                        <div class="offer-wizard-container">
+                            <!-- Sidebar -->
+                            <div class="offer-wizard-sidebar">
+                                <ul id="offerWizardSteps">
+                                    <li class="offer-wizard-step active" data-step="1"><i class="fa fa-file-alt me-2"></i> Choose Template</li>
+                                    <li class="offer-wizard-step" data-step="2"><i class="fa fa-edit me-2"></i> Fill Details</li>
+                                    <li class="offer-wizard-step" data-step="3"><i class="fa fa-eye me-2"></i> Preview Document</li>
+                                    <li class="offer-wizard-step" data-step="4"><i class="fa fa-user-check me-2"></i> Request for Approvals</li>
+                                    <li class="offer-wizard-step" data-step="5"><i class="fa fa-clock me-2"></i> Set Expiry</li>
+                                    <li class="offer-wizard-step" data-step="6"><i class="fa fa-upload me-2"></i> Upload Signed Document</li>
+                                </ul>
+                            </div>
+
+                            <!-- Content -->
+                            <div class="offer-wizard-content">
+                                <!-- Step 1 -->
+                                <div class="offer-step-content active" id="offer-step-1">
+                                    <h6 class="offer-modal-heading">Choose a Template</h6>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="offerTemplateSelect">Select a template from the dropdown</label>
+                                                <select class="form-control" id="offerTemplateSelect">
+                                                    <option selected disabled>-- Select Template --</option>
+                                                    <option value="1">Template 1</option>
+                                                    <option value="2">Template 2</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="alert alert-info">
+                                        To add/change letter templates please go to <a href="#">Settings » Templates</a>
+                                    </div>
+                                </div>
+
+                                <!-- Step 2 -->
+                                <div class="offer-step-content" id="offer-step-2">
+                                    <h6 class="offer-modal-heading">Fill Details</h6>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="TxtCandidateFullName">Candidate's Full Name</label>
+                                                <input type="text" class="form-control" id="TxtCandidateFullName" placeholder="Enter Full Name" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="TxtCandidateLocation">Candidate's Location</label>
+                                                <input type="text" class="form-control" id="TxtCandidateLocation" placeholder="Enter Candidate's Location" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="TxtJobTitle">Job Title</label>
+                                                <input type="text" class="form-control" id="TxtJobTitle" placeholder="Enter Job Title" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="TxtJobLocation">Job Location</label>
+                                                <input type="text" class="form-control" id="TxtJobLocation" placeholder="Enter Job Location" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="DtJoiningDate">Joining Date</label>
+                                                <input type="date" class="form-control" id="DtJoiningDate" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="DtCreatedAt">Created At</label>
+                                                <input type="date" class="form-control" id="DtCreatedAt" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Step 3 -->
+                                <div class="offer-step-content" id="offer-step-3">
+                                    <h6 class="offer-modal-heading">Preview Document</h6>
+                                    <p>Here you can preview the document before sending.</p>
+                                </div>
+
+                                <!-- Step 4 -->
+                                <div class="offer-step-content" id="offer-step-4">
+                                    <h6 class="offer-modal-heading">Request for Approvals</h6>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="radio-group ">
+                                                <label for="rdNeedApproval"><input type="radio" id="rdNeedApproval" name="Approval" value="Need Approval"> I Need Approval</label>
+                                                <label for="rdSkipApproval"><input type="radio" id="rdSkipApproval" name="Approval" value="Skip Approval"> Skip Approval</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h6 class="offer-modal-heading">Reviewers</h6>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="TxtReviewerName">Reviewer's Name</label>
+                                                <input type="text" class="form-control" id="TxtReviewerName" placeholder="Enter Reviewer's Name" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="ddlPriority">Priority</label>
+                                                <select class="form-control" id="ddlPriority">
+                                                    <option value="">Select Priority</option>
+                                                    <option value="1">1</option>
+                                                    <option value="2">2</option>
+                                                    <option value="3">3</option>
+                                                    <option value="4">4</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="button" class="btn btn-success-plus btn-add-row" id="SaveButtonR">
+                                                <i class="fa fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card">
+                                        <div class="table-responsive">
+                                            <table id="tblReviewer" class="table-width">
+                                                <thead class="table-head">
+                                                    <tr>
+                                                        <th style="display:none;">Code</th>
+                                                        <th>Reviewer's Name</th>
+                                                        <th>Priority</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <h6 class="offer-modal-heading">Additional File to Review</h6>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label>File Upload</label>
+                                                <input type="file" class="form-control" id="fileInputReview">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Step 5 -->
+                                <div class="offer-step-content" id="offer-step-5">
+                                    <h6 class="offer-modal-heading">Set Expiry</h6>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="DtSelectExpiry">Select an expiry date for the offer generated</label>
+                                                <input type="date" class="form-control" id="DtSelectExpiry" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Step 6 -->
+                                <div class="offer-step-content" id="offer-step-6">
+                                    <h6 class="offer-modal-heading">Upload Signed Document</h6>
+                                    <input type="file" class="form-control" id="offerSignedFile">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer without cancel button -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-primary" id="offerPrevBtn" disabled>
+                            <i class="fa fa-arrow-left me-2"></i> Previous
+                        </button>
+                        <button type="button" class="btn btn-primary" id="offerNextBtn">
+                            <i class="fa fa-arrow-right me-2"></i> Next
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</fieldset>
+<script>
+    const offerSteps = document.querySelectorAll('#offerWizardSteps li');
+    const offerContents = document.querySelectorAll('.offer-step-content');
+    const offerNextBtn = document.getElementById('offerNextBtn');
+    const offerPrevBtn = document.getElementById('offerPrevBtn');
+    let offerCurrentStep = 1;
+
+    // Sidebar click event
+    offerSteps.forEach(step => {
+      step.addEventListener('click', () => {
+        offerCurrentStep = parseInt(step.dataset.step);
+        updateOfferWizard();
+      });
+    });
+
+    // Next button event
+    offerNextBtn.addEventListener('click', () => {
+      if (offerCurrentStep < offerSteps.length) {
+        offerCurrentStep++;
+        updateOfferWizard();
+      } else {
+        alert("Wizard Finished! 🎉");
+      }
+    });
+
+    // Previous button event
+    offerPrevBtn.addEventListener('click', () => {
+      if (offerCurrentStep > 1) {
+        offerCurrentStep--;
+        updateOfferWizard();
+      }
+    });
+
+    function updateOfferWizard() {
+      offerSteps.forEach(step => {
+        step.classList.remove('active');
+        if (parseInt(step.dataset.step) === offerCurrentStep) {
+          step.classList.add('active');
+        }
+      });
+
+      offerContents.forEach(content => {
+        content.classList.remove('active');
+      });
+      document.getElementById(`offer-step-${offerCurrentStep}`).classList.add('active');
+
+      // Toggle Previous button
+      offerPrevBtn.disabled = offerCurrentStep === 1;
+
+      // Change Next button text/icon
+      if (offerCurrentStep === offerSteps.length) {
+        offerNextBtn.innerHTML = '<i class="fa fa-check me-2"></i> Finish';
+      } else {
+        offerNextBtn.innerHTML = '<i class="fa fa-arrow-right me-2"></i> Next';
+      }
+    }
+</script>

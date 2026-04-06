@@ -1,0 +1,243 @@
+﻿@{
+    ViewBag.Title = "Timesheet Task List";
+    Layout = "~/Views/Shared/EmployeeLayout.cshtml";
+}
+
+<div class="timesheetlist-wrapper">
+    <div class="timesheetlist-card">
+
+        <div class="timesheetlist-header">
+            <h2 class="timesheetlist-title">Timesheet Task List</h2>
+            <div class="timesheetlist-search">
+                <i class="fa fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search tasks..." />
+            </div>
+            <button onclick="window.location.href='@Url.Action("Index", "TimesheetDashboard")'" class="back-btn"><i class="fa fa-arrow-left"></i>Back to Page</button>
+        </div>
+        <div class="table-responsive">
+            <table class="timesheettasklist-table">
+                <thead>
+                    <tr>
+                        <th>Task Title</th>
+                        <th>Assigned By</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Due Date</th>
+                        <th style="text-align:center;">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="tableTimesheetTaskListBody">
+
+                    <tr>
+                     
+                    </tr>
+
+                </tbody>
+            </table>
+
+            <div class="timesheetlist-pagination" id="pagination"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const Status = urlParams.get('Status');
+    let currentPage = 1;
+    const rowsPerPage = 10;
+    let totalCount = 0;
+    let currentSearch = "";
+
+
+
+    function loadData() {
+
+        fetch(`/TimesheetTaskList/GetList?searchTerm=${encodeURIComponent(currentSearch)}&pageNumber=${currentPage}&pageSize=${rowsPerPage}`)
+            .then(response => response.json())
+            .then(result => {
+
+                if (result.success) {
+
+                    totalCount = result.totalCount;
+                    displayTable(result.lists);
+                    setupPagination();
+
+                } else {
+                    console.error(result.message);
+                }
+
+            })
+            .catch(error => console.error("Error:", error));
+    }
+
+     function loadDatabystatus(Status) {
+
+        fetch(`/TimesheetTaskList/GetListbystatus?searchTerm=${encodeURIComponent(currentSearch)}&pageNumber=${currentPage}&pageSize=${rowsPerPage}&Status=${Status}`)
+            .then(response => response.json())
+            .then(result => {
+
+                if (result.success) {
+
+                    totalCount = result.totalCount;
+                    displayTable(result.lists);
+                    setupPagination();
+
+                } else {
+                    console.error(result.message);
+                }
+
+            })
+            .catch(error => console.error("Error:", error));
+    }
+
+    function displayTable(data) {
+
+        const tbody = document.getElementById("tableTimesheetTaskListBody");
+        tbody.innerHTML = "";
+
+        if (!data || data.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align:center;">
+                        No records found
+                    </td>
+                </tr>`;
+            return;
+        }
+
+        data.forEach(item => {
+
+            const formattedDate = item.endDate
+                ? new Date(item.endDate).toLocaleDateString()
+                : "";
+
+            tbody.innerHTML += `
+                <tr>
+                    <td>${item.taskTitle || ""}</td>
+                    <td>${item.assignedBy || ""}</td>
+                    <td>
+                        <span class="timesheetlist-badge timesheetlist-${(item.priority || '').toLowerCase()}">
+                            ${item.priority || ""}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="timesheetlist-status">
+                            ${item.status || ""}
+                        </span>
+                    </td>
+                    <td>${formattedDate}</td>
+                    <td style="text-align:center;">
+                        <button class="btn btn_task_View" onclick="viewTask(${item.v_NO})">
+                            <i class="fa fa-eye"></i>
+                        </button>
+
+                        <button class="btn btn_task_Delete" onclick="deleteTask(${item.v_NO})">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    function setupPagination() {
+
+        const pageCount = Math.ceil(totalCount / rowsPerPage);
+        const pagination = document.getElementById("pagination");
+        pagination.innerHTML = "";
+
+        if (pageCount <= 1) return;
+
+        for (let i = 1; i <= pageCount; i++) {
+
+            pagination.innerHTML += `
+                <button onclick="changePage(${i})"
+                        class="${i === currentPage ? 'active' : ''}">
+                    ${i}
+                </button>
+            `;
+        }
+    }
+
+    function changePage(page) {
+        currentPage = page;
+
+
+        if(!Status)
+        {
+         loadData();
+        }
+        else{
+          loadDatabystatus(Status);
+        }
+
+
+    }
+
+    document.getElementById("searchInput")
+        .addEventListener("keyup", function () {
+
+            currentSearch = this.value;
+            currentPage = 1;
+
+            if(!Status)
+            {
+              loadData();
+            }
+            else{
+              loadDatabystatus(Status);
+            }
+        });
+
+    // ===============================
+    // View Task
+    // ===============================
+    function viewTask(id) {
+     window.location.href = `/TimesheetDashboard/Index?id=${encodeURIComponent(id)}`;
+    }
+
+    // ===============================
+    // Delete Task
+    // ===============================
+    function deleteTask(id) {
+
+        if (!confirm("Are you sure you want to close this task?"))
+            return;
+
+        fetch(`/TimesheetTaskList/CloseTask/${id}`, {
+            method: "POST"
+        })
+        .then(response => response.json())
+        .then(result => {
+
+            if (result.success) {
+                if(!Status)
+                {
+                 loadData();
+                }
+                else{
+                 loadDatabystatus(Status);
+                }
+            } else {
+                alert(result.message || "Delete failed");
+            }
+
+        })
+        .catch(error => console.error("Error:", error));
+    }
+
+    // ===============================
+    // Initial Load
+    // ===============================
+    document.addEventListener("DOMContentLoaded", function () {
+
+        if(!Status)
+        {
+         loadData();
+        }
+        else{
+         loadDatabystatus(Status);
+        }
+    });
+
+</script>

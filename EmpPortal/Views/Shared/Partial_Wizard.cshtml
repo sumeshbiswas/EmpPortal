@@ -1,0 +1,79 @@
+﻿@{
+    var currentController = (ViewContext.RouteData.Values["controller"] ?? "").ToString().ToLower();
+}
+<h2 class="diamond-heading"><span>Employee Recruitment</span></h2>
+<div class="wizard-container">
+    <div class="stepper" id="stepper">
+        <div class="progress-line" id="progressLine" style="width: 0%;"></div>
+        <a asp-controller="hrmshome" asp-action="Index" class="step @(currentController == "hrmshome" ? "" : "")" data-step="home" data-step-index="1">
+            <div class="step-icon">🏠</div>
+            <p class="step-label">Home</p>
+        </a>
+
+        <a asp-controller="hrmspersonal" asp-action="Index" class="step @(currentController == "hrmspersonal" ? "" : "")" data-step="personal" data-step-index="2">
+            <div class="step-icon">👤</div>
+            <p class="step-label">Personal</p>
+        </a>
+
+        <a asp-controller="hrmsfamily" asp-action="Index" class="step @(currentController == "hrmsfamily" ? "" : "")" data-step="family" data-step-index="3">
+            <div class="step-icon">👪</div>
+            <p class="step-label">Family</p>
+        </a>
+
+        <a asp-controller="hrmseducation" asp-action="Index" class="step @(currentController == "hrmseducation" ? "" : "")" data-step="education" data-step-index="4">
+            <div class="step-icon">🎓</div>
+            <p class="step-label">Education</p>
+        </a>
+
+        <a asp-controller="hrmswork" asp-action="Index" class="step @(currentController == "hrmswork" ? "" : "")" data-step="experience" data-step-index="5">
+            <div class="step-icon">💼</div>
+            <p class="step-label">Experience</p>
+        </a>
+
+        <a asp-controller="hrmsreference" asp-action="Index" class="step @(currentController == "hrmsreference" ? "" : "")" data-step="reference" data-step-index="6">
+            <div class="step-icon">📑</div>
+            <p class="step-label">Reference</p>
+        </a>
+
+        <a asp-controller="hrmsinterview" asp-action="Index" class="step @(currentController == "hrmsinterview" ? "" : "")" data-step="interview" data-step-index="7">
+            <div class="step-icon">📝</div>
+            <p class="step-label">Interview</p>
+        </a>
+
+        <a asp-controller="hrmsletterintent" asp-action="Index" class="step @(currentController == "hrmsletterintent" ? "" : "")" data-step="letterintent" data-step-index="8">
+            <div class="step-icon">📅</div>
+            <p class="step-label">Letter Intent</p>
+        </a>
+
+        <a asp-controller="OfferLetter" asp-action="Index" class="step @(currentController == "OfferLetter" ? "" : "")" data-step="OfferLetter" data-step-index="9">
+            <div class="step-icon">📅</div>
+            <p class="step-label">Offer Letter</p>
+        </a>
+ 
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const steps = document.querySelectorAll(".step");
+        const progressLine = document.getElementById("progressLine");
+        const activeStep = document.querySelector(".step.active");
+
+        if (activeStep) {
+            const totalSteps = steps.length;
+            const currentIndex = parseInt(activeStep.getAttribute("data-step-index"));
+
+            // Update progress % dynamically
+            const percentage = ((currentIndex - 1) / (totalSteps - 1)) * 100;
+            progressLine.style.width = percentage + "%";
+
+            // Highlight completed steps
+            steps.forEach((step, index) => {
+                if (index < currentIndex - 1) {
+                    step.classList.add("completed");
+                }
+            });
+        }
+    });
+</script>
+

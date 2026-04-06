@@ -1,0 +1,585 @@
+﻿@{
+    ViewBag.Title = "Timesheet Reply Task List";
+    Layout = "~/Views/Shared/EmployeeLayout.cshtml";
+}
+
+<div class="timesheetlist-wrapper">
+    <div class="timesheetlist-card">
+
+        <div class="timesheetlist-header">
+            <h2 class="timesheetlist-title">Reply Task List</h2>
+
+            <div class="timesheetlist-search">
+                <i class="fa fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search tasks...">
+            </div>
+
+            <button onclick="window.location.href='@Url.Action("Index", "TimesheetDashboard")'" class="back-btn"><i class="fa fa-arrow-left"></i>Back to Page</button>
+        </div>
+        <div class="date-filter">
+            <label for="from-date">From Date:</label>
+            <input type="date" id="from-date" class="date-input">
+
+            <label for="to-date">To Date:</label>
+            <input type="date" id="to-date" class="date-input">
+
+            <button class="filter-btn" id="btn_ApplyDate">Apply</button>
+        </div>
+        <div class="table-responsive">
+            <table class="timesheettasklist-table" id="taskReplyTimesheetTable">
+            <thead>
+                <tr>
+
+                    <th>Task No</th>
+                    <th onclick="sortTable(0)">Task Title <i class="fa fa-sort"></i></th>
+                    <th onclick="sortTable(1)">Assigned By <i class="fa fa-sort"></i></th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th onclick="sortTable(4)">Due Date <i class="fa fa-sort"></i></th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+
+        <div class="timesheetlist-pagination" id="pagination"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Popup -->
+<div class="reply-overlay" id="replyModal">
+    <div class="reply-card">
+
+        <div class="reply-header">
+            <i class="fa fa-arrow-left reply-back" onclick="closeReplyModal()"></i>
+            <div class="reply-title">Reply to Task</div>
+        </div>
+
+        <div class="reply-content">
+            <div class="reply-group">
+
+                <div class="reply-label">
+                    Assigned By :
+                    <span class="reply-input" id="AssignedBy"></span>
+                </div>
+            </div>
+            <div class="reply-group">
+                <span id="txt_Vno" hidden></span>
+                <div class="reply-label">
+                    Task Title :
+                    <span class="reply-input" id="replyTaskTitle"></span>
+                </div>
+            </div>
+
+            <div class="reply-group">
+                <div class="reply-label">Task Description</div>
+                <textarea class="reply-textarea" id="taskdescription" readonly></textarea>
+            </div>
+
+            <div class="reply-group">
+                <div class="reply-label">Your Response :</div>
+                <textarea class="reply-textarea" id="YourResponse"></textarea>
+            </div>
+
+
+            <div class="reply-group">
+                <div class="reply-label">Status :</div>
+                <select class="reply-select" id="REPLYStatus">
+                    <option value="Pending">Pending</option>
+                    <option value="Complete">Complete</option>
+                    <option value="Close">Close</option>
+                </select>
+            </div>
+
+            <div class="reply-group">
+                <label class="reply-label">Add Attachments :</label>
+
+                <div class="reply-upload-box">
+                    <div class="reply-upload-controls">
+                        <button type="button" class="reply-plus">+</button>
+                        <button type="button" class="reply-upload-btn" style="display:none;">upload task</button>
+                    </div>
+
+                    <input type="file" id="replyFileInput" class="reply-file-input" multiple hidden>
+
+                    <div class="reply-file-list" id="replyFileList"></div>
+                </div>
+            </div>
+
+            <div class="reply-footer">
+                <button class="reply-submit" id="btn_submit">Submit Reply</button>
+                <button class="reply-cancel" onclick="closeReplyModal()">Cancel</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+@* <! --- Reply History Model --> *@
+
+<div class="reply-overlay" id="replyHistoryModal">
+    <div class="reply-card reply-history-card">
+
+        <!-- Header -->
+        <div class="reply-header">
+            <i class="fa fa-arrow-left reply-back" onclick="closeReplyHistoryModal()"></i>
+            <div class="reply-title">Reply Task History</div>
+        </div>
+
+        <!-- Content -->
+        <div class="reply-content">
+
+            <div class="reply-group">
+                <div class="reply-label">Task Title:</div>
+                <input type="text"
+                       class="reply-input"
+                       id="txt_RHTaskTitle"
+                       readonly />
+            </div>
+
+            <!-- History Table -->
+            <div class="reply-history-table-wrapper">
+                <table class="reply-history-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Reply</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="replyHistoryTableBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Footer -->
+            <div class="reply-footer">
+                <button class="reply-cancel" onclick="closeReplyHistoryModal()">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+    let currentPage = 1;
+    const rowsPerPage = 10;
+    let data = [];
+    let totalCount = 0;
+    let deletedAttachmentIDs = [];
+    let selectedFiles = [];
+    let existingAttachments = [];
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const replyFileInput = document.getElementById("replyFileInput");
+
+        loadData();
+
+        document.addEventListener("click", function (e) {
+            if (!e.target.closest('.timesheetlist-action')) {
+                document.querySelectorAll('.timesheetlist-dropdown')
+                    .forEach(d => d.style.display = 'none');
+            }
+        });
+
+        document.querySelector(".reply-plus")
+            .addEventListener("click", () => replyFileInput.click());
+
+        document.querySelector(".reply-upload-btn")
+            .addEventListener("click", () => replyFileInput.click());
+
+        replyFileInput.addEventListener("change", function (e) {
+
+            const files = Array.from(e.target.files);
+
+            files.forEach(file => {
+
+                const exists = selectedFiles.some(f =>
+                    f.name === file.name && f.size === file.size
+                );
+
+                if (!exists) {
+                    selectedFiles.push(file);
+                }
+            });
+
+            renderFileList();
+            replyFileInput.value = "";
+        });
+
+        document.getElementById("searchInput")
+            .addEventListener("keyup", function () {
+                currentPage = 1;
+                loadData(this.value);
+            });
+
+
+
+    $("#btn_submit").click(function (e) {
+        e.preventDefault();
+
+        const DOCID = $("#txt_Vno").text().trim();
+        const AssignedToReply = $("#YourResponse").val().trim();
+        const Status = $("#REPLYStatus").val();
+
+        if (!AssignedToReply) {
+            toastr.warning("Please enter Task Reply");
+            return;
+        }
+
+        // ✅ FIX: Do NOT use parseInt for alphanumeric DOCID
+        const Header = {
+            AssignedToReply: AssignedToReply,
+            Status: Status,
+            DOCID: DOCID
+
+        };
+
+        // ✅ Get file names directly from reply-file-list
+        const Attachment = [];
+
+        document.querySelectorAll("#replyFileList .reply-file-item")
+            .forEach(item => {
+
+                const nameElement = item.querySelector("span, a");
+
+                if (nameElement) {
+                    const fileName = nameElement.innerText.trim();
+
+                    Attachment.push({
+                        FileName: fileName
+                    });
+                }
+            });
+
+                const payload = {
+                Header: Header,
+                Detail: [],
+                Attachment: Attachment
+                };
+        console.log("Payload to submit:", payload);
+
+        $.ajax({
+            url: '/TimesheetReplyTaskList/SavedData',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(payload),
+
+            success: function (response) {
+                if (response.success) {
+                    toastr.success("Task saved successfully!");
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    toastr.error(response.message || "Save failed");
+                }
+            },
+            error: function (xhr) {
+                console.log(xhr.responseText);
+                toastr.error("Server error occurred.");
+            }
+        });
+    });
+
+    $('#btn_ApplyDate').on('click', function(){
+          loadDataBYDATE()
+      });
+
+    });
+
+    function loadData(searchTerm = "") {
+        fetch(`/TimesheetReplyTaskList/GetList?searchTerm=${encodeURIComponent(searchTerm)}&pageNumber=${currentPage}&pageSize=${rowsPerPage}`)
+            .then(response => response.json())
+            .then(result => {
+
+                if (result.success) {
+
+                    data = result.lists.map(item => ({
+                        v_NO: item.v_NO,
+                        title: item.taskTitle,
+                        assigned: item.assignedBy,
+                        priority: item.priority,
+                        status: item.status,
+                        date:  formatDate(item.endDate)
+                    }));
+
+                    totalCount = result.totalCount;
+                    displayTable();
+                }
+            })
+            .catch(err => console.error(err));
+    }
+
+    function loadDataBYDATE(searchTerm = "") {
+
+            const startDateRaw = $('#from-date').val();
+            const endDateRaw = $('#to-date').val();
+
+            const startDate = startDateRaw ? new Date(startDateRaw).toISOString().split('T')[0] : "";
+            const endDate = endDateRaw ? new Date(endDateRaw).toISOString().split('T')[0] : "";
+
+           fetch(`/TimesheetReplyTaskList/Gedatabydatewise?searchTerm=${encodeURIComponent(searchTerm)}&pageNumber=${currentPage}&pageSize=${rowsPerPage}&startDate=${startDate}&endTime=${endDate}`)
+            .then(response => response.json())
+            .then(result => {
+
+                if (result.success) {
+
+                    data = result.lists.map(item => ({
+                        v_NO: item.v_NO,
+                        title: item.taskTitle,
+                        assigned: item.assignedBy,
+                        priority: item.priority,
+                        status: item.status,
+                        date: formatDate(item.endDate)
+                    }));
+
+                    totalCount = result.totalCount;
+                    displayTable();
+                }
+            })
+            .catch(err => console.error(err));
+    }
+
+    function displayTable() {
+        const tbody = document.getElementById("tableBody");
+        tbody.innerHTML = "";
+
+        const start = (currentPage - 1) * rowsPerPage;
+        const paginated = data.slice(start, start + rowsPerPage);
+
+        paginated.forEach((item, index) => {
+
+            tbody.innerHTML += `
+                <tr>
+        <td data-label="Task No">${item.v_NO}</td>
+        <td data-label="Task Title">${item.title}</td>
+        <td data-label="Assigned By">${item.assigned}</td>
+        <td data-label="Priority">
+            <span class="timesheetlist-badge timesheetlist-${item.priority.toLowerCase()}">
+                ${item.priority}
+            </span>
+        </td>
+        <td data-label="Status" class="timesheetlist-badge timesheetlist-${item.status.toLowerCase()}">
+            ${item.status}
+        </td>
+        <td data-label="Due Date">${formatDate(item.date)}</td>
+        <td data-label="Action">
+            <button class="btn-reply" onclick="openReplyModal(${start + index})">Reply</button>
+            <button class="btn-reply" onclick="openReplyHistoryModal(${start + index})">History</button>
+        </td>
+    </tr>`;
+        });
+
+        setupPagination();
+    }
+
+    function setupPagination() {
+        const pageCount = Math.ceil(totalCount / rowsPerPage);
+        const pagination = document.getElementById("pagination");
+        pagination.innerHTML = "";
+
+        for (let i = 1; i <= pageCount; i++) {
+            pagination.innerHTML += `
+                <button onclick="changePage(${i})"
+                    class="${i === currentPage ? 'active' : ''}">
+                    ${i}
+                </button>`;
+        }
+    }
+
+    function changePage(page) {
+        currentPage = page;
+        displayTable();
+    }
+
+    function openReplyModal(index) {
+        const docId = data[index].v_NO;
+        FETCHDATABYID(docId);
+        document.getElementById("replyModal").style.display = "flex";
+    }
+
+    function closeReplyModal() {
+        document.getElementById("replyModal").style.display = "none";
+        selectedFiles = [];
+        existingAttachments = [];
+        renderFileList();
+    }
+
+    // ✅ SINGLE sort function only
+    function sortTable(columnIndex) {
+        const keys = ["title", "assigned", "priority", "status", "date"];
+        const key = keys[columnIndex];
+
+        data.sort((a, b) => {
+            if (key === "date")
+                return new Date(a.date) - new Date(b.date);
+            return a[key].localeCompare(b[key]);
+        });
+
+        displayTable();
+    }
+
+    function renderFileList() {
+
+        const replyFileList = document.getElementById("replyFileList");
+        replyFileList.innerHTML = "";
+
+        // 🔹 Existing attachments from DB
+        existingAttachments.forEach((file, index) => {
+
+            const div = document.createElement("div");
+            div.className = "reply-file-item";
+
+            div.innerHTML = `
+                <a href="${file.filePath}" target="_blank">
+                    ${file.fileName}
+                </a>
+                <button onclick="removeExistingFile(${index})">
+                    ❌
+                </button>
+            `;
+
+            replyFileList.appendChild(div);
+        });
+
+        // 🔹 Newly selected files
+        selectedFiles.forEach((file, index) => {
+
+            const div = document.createElement("div");
+            div.className = "reply-file-item";
+
+            div.innerHTML = `
+                <span>${file.name}</span>
+                <button onclick="removeFile(${index})">
+                    ❌
+                </button>
+            `;
+
+            replyFileList.appendChild(div);
+        });
+    }
+
+    function removeFile(index) {
+        selectedFiles.splice(index, 1);
+        renderFileList();
+    }
+
+    function removeExistingFile(index) {
+        deletedAttachmentIDs.push(existingAttachments[index].attachmentID);
+        existingAttachments.splice(index, 1);
+        renderFileList();
+    }
+
+    async function FETCHDATABYID(DocID) {
+        try {
+            const res = await $.ajax({
+                url: '/TimesheetReplyTaskList/RECENTACTIVITY',
+                type: 'GET',
+                data: { DocID: DocID }
+            });
+            console.log("res", res);
+                debugger;
+            if (res.success) {
+                document.getElementById("txt_Vno").innerText = res.replyDetail.docid || "";
+                document.getElementById("replyTaskTitle").innerText = res.replyDetail.taskTitle || "";
+                document.getElementById("taskdescription").innerText = res.replyDetail.taskDescription || "";
+                document.getElementById("AssignedBy").innerText = res.replyDetail.useR_NAME || "";
+                document.getElementById("YourResponse").value =  res.replyDetail.assignedToReply || "";
+                document.getElementById("REPLYStatus").value =  res.replyDetail.status || "Pending";
+                existingAttachments = res.attachments || [];
+                renderFileList();
+            }
+        }
+        catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    }
+
+    function openReplyHistoryModal(index) {
+        const selectedRow = data[index];
+        const docId = selectedRow.v_NO;
+        document.getElementById("txt_RHTaskTitle").value = selectedRow.title;
+        document.getElementById("replyHistoryModal").style.display = "flex";
+        fetchRepyhistoryDayta(docId);
+    }
+
+    function closeReplyHistoryModal() {
+        document.getElementById("replyHistoryModal").style.display = "none";
+
+    }
+
+    async function fetchRepyhistoryDayta(DocID) {
+        try {
+            const res = await $.ajax({
+                url: '/TimesheetReplyTaskList/Replyhistory',
+                type: 'GET',
+                data: { DocID: DocID }
+            });
+
+            console.log("Reply History", res);
+
+            if (res.success) {
+                displayReplyHistoryTable(res.replyhistory);
+            }
+        }
+        catch (error) {
+            console.log("Error", error);
+        }
+    }
+
+    function displayReplyHistoryTable(historyData) {
+
+        const tbody = document.getElementById("replyHistoryTableBody");
+        tbody.innerHTML = "";
+
+        if (!historyData || historyData.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" style="text-align:center;">
+                        No reply history found
+                    </td>
+                </tr>`;
+            return;
+        }
+
+        historyData.forEach((item) => {
+
+            const parts = item.v_DATE.split(" ");
+            const datePart = parts[0];
+            const timePart = parts.slice(1).join(" ");
+
+            tbody.innerHTML += `
+                <tr>
+                    <td>${datePart}</td>
+                    <td>${timePart}</td>
+                    <td>${item.assignedToReply}</td>
+                    <td>
+                        <span class="timesheetlist-badge timesheetlist-${item.status.toLowerCase()}">
+                            ${item.status}
+                        </span>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '';
+        const d = new Date(dateStr);
+        if (isNaN(d)) return '';
+
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0'); // months are 0-indexed
+        const year = d.getFullYear();
+
+        return `${day}/${month}/${year}`;
+    }
+
+</script>

@@ -1,0 +1,440 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./css/EmployeePortalMasterstyle.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+    
+</head>
+<body>
+
+    <div class="emp-login-page">
+        <div class="emp-wrapper">
+            <div class="emp-left"></div>
+            <div class="emp-right">
+                <div class="emp-login-box">
+
+                    <div class="emp-logo">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User Icon">
+                        Employee Portal
+                    </div>
+
+                    <div class="emp-subtitle">Access your dashboard securely</div>
+
+                    <div class="emp-tabs">
+                        <button id="signin-tab" class="active">Sign In</button>
+                        <button id="signup-tab">Register New User</button>
+                    </div>
+
+                    <!-- Sign In -->
+                    <div id="frmLogin" class="form-section active">
+                        <div class="emp-input-group">
+                            <input type="text" id="loginMob" placeholder="User ID">
+                        </div>
+                        <div class="emp-input-group">
+                            <select id="loginCompany">
+                                <option disabled selected>Select Company</option>
+
+                            </select>
+                        </div>
+                        <div class="emp-input-group">
+                            <input type="password" id="loginPin" placeholder="Password">
+                        </div>
+
+
+
+                        <div class="emp-options">
+                            <label><input type="checkbox"> Remember me</label>
+                            <a href="#" id="btnShowForgot">Forgot PIN?</a>
+                        </div>
+                        <button class="emp-login-btn" id="btnLogin">Login</button>
+                    </div>
+                    @* Modal popup for login *@
+                    <div class="emploginmodal-overlay" id="emploginmodal_overlay">
+
+                        <div class="emploginmodal-box">
+
+                            <h3 class="emploginmodal-title">Enter 4 Digit PIN</h3>
+
+                            <p class="emploginmodal-subtitle">
+                                Please enter OTP PIN to continue
+                            </p>
+
+                            <div class="emploginmodal-pin-wrapper">
+                                <input type="password" maxlength="1" class="emploginmodal-pin" id="OTP1" />
+                                <input type="password" maxlength="1" class="emploginmodal-pin" id="OTP2" />
+                                <input type="password" maxlength="1" class="emploginmodal-pin" id="OTP3" />
+                                <input type="password" maxlength="1" class="emploginmodal-pin" id="OTP4" />
+                                <input type="password" maxlength="1" class="emploginmodal-pin" id="OTP5" />
+                                <input type="password" maxlength="1" class="emploginmodal-pin" id="OTP6"/>
+                            </div>
+
+                            <button class="emploginmodal-verify-btn" id="btnVerifyPin">
+                                Verify OTP
+                            </button>
+
+                            <div class="emploginmodal-success" id="emploginmodal_success">
+                                ✔ Successfully Verified
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Forgot PIN Modal -->
+                    <div id="forgotPinModal" class="emp-modal d-none">
+                        <div class="emp-modal-reset">
+                            <div class="emp-modal-header">
+                                <h4 class="emp-modal-title">Reset PIN</h4>
+                                <button class="emp-close-btn">&times;</button>
+                            </div>
+                            <div class="emp-modal-body">
+                                <div class="emp-form-group">
+                                    <label for="Num_OTP">OTP</label>
+                                    <input type="number" id="Num_OTP" class="emp-form-control" placeholder="Enter OTP">
+                                </div>
+                                <div class="emp-form-group">
+                                    <label for="modalNewPin">New PIN</label>
+                                    <input type="password" id="modalNewPin" class="emp-form-control" placeholder="Enter New PIN">
+                                </div>
+                                <div class="emp-form-group">
+                                    <label for="modalConfirmPin">Confirm PIN</label>
+                                    <input type="password" id="modalConfirmPin" class="emp-form-control" placeholder="Confirm New PIN">
+                                </div>
+                                <button id="btnModalResetPin" class="emp-submit-btn">Reset PIN</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sign Up -->
+                    <div id="frmRegister" class="form-section">
+                        <div class="emp-input-group">
+                            <select id="regCompany">
+                                <option disabled selected>Select Company</option>
+
+                            </select>
+                        </div>
+                        <div class="emp-input-group">
+                            <input type="text" id="regMob" placeholder="Mobile No">
+                        </div>
+                        <div class="emp-input-group">
+                            <button type="button" class="emp-otp-btn" id="btnSendOTP">Send OTP</button>
+                        </div>
+                        <div class="emp-input-group">
+                            <input type="text" id="regOTP" placeholder="Enter OTP">
+                        </div>
+                        <div class="emp-input-group">
+                            <input type="password" id="regPin" placeholder="Password">
+                        </div>
+
+                        <div class="emp-input-group">
+                            <input type="password" id="regRetypePin" placeholder="confirm Password">
+                        </div>
+                        <button class="emp-register-btn" id="btnVerifyOTP">Register</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+</body>
+</html>
+
+
+<script>
+    $(document).ready(function () {
+
+        loadCompany("#loginCompany");
+        loadCompany("#regCompany");
+        $("#btnShowRegister").click(() => toggleForms(false));
+        $("#btnBackToLogin").click(() => toggleForms(true));
+        $("#btnSendOTP").click(sendOTP);
+        $("#btnVerifyOTP").click(verifyOTP);
+       // $("#btnLogin").click(loginUser);
+        $("#btnShowForgot").click(function(e){
+                e.preventDefault();
+                    let mobile = $("#loginMob").val().trim();
+                    let comp = $("#loginCompany").val();
+
+                if (mobile.length !== 10 || isNaN(mobile))
+                return toastr.error("Enter valid mobile");
+                if (!comp)
+                return toastr.error("Select company");
+                ForgotsendOTP();
+                $("#forgotPinModal").removeClass("d-none");
+        });
+        $(".emp-close-btn").click(function(){
+            $("#forgotPinModal").addClass("d-none");
+            $("#modalNewPin, #modalConfirmPin").val('');
+        });
+        $('#btnModalResetPin').on('click', function(){
+           debugger
+            let mob = $("#loginMob").val().trim();
+            let comp = $("#loginCompany").val();
+            let pin = $("#modalNewPin").val().trim();
+            let Newpin = $("#modalConfirmPin").val().trim();
+            let otp = $("#Num_OTP").val().trim();
+
+            if (!pin)
+            return toastr.error("Enter  Password");
+
+            if (!Newpin)
+            return toastr.error("Enter Confirm Password");
+
+            if (pin !== Newpin)
+            return toastr.error("Password not matching");
+
+            $.post("/EmpLogin/updatePin", {
+                mobile: mob,
+                compCode: comp,
+                pin: pin,
+                otp: otp
+               }, res => {
+                      if (res.success) {
+
+                toastr.success("Password changed successfully");
+
+                setTimeout(function () {
+
+                    // Close modal after 3 seconds
+                    $("#forgotPinModal").addClass("d-none");
+                    toggleForms(true);
+                }, 3000);
+
+                 $('#loginPin').focus();
+
+            } else {
+                toastr.error(res.message);
+            }
+        });
+
+        });
+
+        $('#btnVerifyPin').on('click', function() {
+         var OTP1  = $('#OTP1').val();
+         var OTP2  = $('#OTP2').val();
+         var OTP3  = $('#OTP3').val();
+         var OTP4  = $('#OTP4').val();
+         var OTP5  = $('#OTP5').val();
+         var OTP6  = $('#OTP6').val();
+        
+         if(!OTP1 || !OTP2 || !OTP3 || !OTP4 || !OTP5 || !OTP6)
+         {
+             toastr.error("Please Enter Correct OTP");
+             return;
+         }    
+         
+          loginUser();
+
+        });
+
+
+
+        $('#btnLogin').on('click' , function() {
+
+           sendOTPLogin();
+
+
+          $('#emploginmodal_overlay').show();
+        
+        });
+
+
+    });
+
+    function toggleForms(login) {
+        $("#frmLogin").toggleClass("d-none", !login);
+        $("#frmRegister").toggleClass("d-none", login);
+    }
+
+    function loadCompany(selector) {
+        $.get("/EmpLogin/GetddlCompany", function (res) {
+            let ddl = $(selector).empty().append('<option value="">Select Company</option>');
+            $.each(res, (_, x) => ddl.append(`<option value="${x.value}">${x.text}</option>`));
+        });
+    }
+
+    function sendOTP() {
+        let mobile = $("#regMob").val().trim();
+        let comp = $("#regCompany").val();
+
+        if (mobile.length !== 10 || isNaN(mobile))
+            return toastr.error("Enter valid mobile");
+
+        if (!comp)
+            return toastr.error("Select company");
+
+        $.post("/EmpLogin/SendOTP", { mobile, compCode: comp }, res => {
+            res.success ? toastr.success("OTP sent") : toastr.error(res.message);
+        });
+    }
+
+    function ForgotsendOTP() {
+        let mobile = $("#loginMob").val().trim();
+        let comp = $("#loginCompany").val();
+
+        $.post("/EmpLogin/SendOTP", { mobile, compCode: comp }, res => {
+            res.success ? toastr.success("OTP sent") : toastr.error(res.message);
+        });
+    }
+
+    function verifyOTP() {
+
+        let pin = $("#regPin").val();
+        let rePin = $("#regRetypePin").val();
+
+        if (pin !== rePin)
+            return toastr.error("Password not matching");
+
+        $.post("/EmpLogin/VerifyOTP", {
+            mobile: $("#regMob").val(),
+            compCode: $("#regCompany").val(),
+            otp: $("#regOTP").val(),
+            pin: pin
+        }, res => {
+            if (res.success) {
+                toastr.success("Registration successful");
+                toggleForms(true);
+            } else {
+                toastr.error(res.message);
+            }
+        });
+    }
+
+    function loginUser() {
+        debugger;
+        let mob = $("#loginMob").val().trim();
+        let pin = $("#loginPin").val().trim();
+        let comp = $("#loginCompany").val();
+        
+        if (mob.length !== 10)
+        return toastr.error("Enter valid mobile");
+
+        if (!pin)
+        return toastr.error("Enter atleast 6 Digit Password");
+
+        if (!comp)
+        return toastr.error("Select company");
+
+
+
+        var OTP1  = $('#OTP1').val();
+        var OTP2  = $('#OTP2').val();
+        var OTP3  = $('#OTP3').val();
+        var OTP4  = $('#OTP4').val();
+        var OTP5  = $('#OTP5').val();
+        var OTP6  = $('#OTP6').val();
+
+     var COMBINEOTP = `${OTP1}${OTP2}${OTP3}${OTP4}${OTP5}${OTP6}`;
+
+        $.post("/EmpLogin/EmployeeLogin", {
+            mobile: mob,
+            pin: pin,
+            compCode: comp,
+            COMBINEOTP : COMBINEOTP
+        }, res => {
+            res.success ? location.href = "/EmployeeDashboard" : toastr.error(res.message);
+        });
+    }
+
+    function sendOTPLogin() {
+        let mobile = $("#loginMob").val().trim();
+        let comp = $("#loginCompany").val();
+
+        if (mobile.length !== 10 || isNaN(mobile))
+            return toastr.error("Enter valid mobile");
+
+        if (!comp)
+            return toastr.error("Select company");
+
+        $.post("/EmpLogin/SendOTP", { mobile, compCode: comp }, res => {
+            res.success ? toastr.success("OTP sent") : toastr.error(res.message);
+        });
+    }
+
+</script>
+
+<script>
+    const signinTab = document.getElementById("signin-tab");
+    const signupTab = document.getElementById("signup-tab");
+    const signinForm = document.getElementById("frmLogin");
+    const signupForm = document.getElementById("frmRegister");
+
+    signinTab.addEventListener("click", () => {
+      signinTab.classList.add("active");
+      signupTab.classList.remove("active");
+      signinForm.classList.add("active");
+      signupForm.classList.remove("active");
+    });
+
+    signupTab.addEventListener("click", () => {
+      signupTab.classList.add("active");
+      signinTab.classList.remove("active");
+      signupForm.classList.add("active");
+      signinForm.classList.remove("active");
+    });
+</script>
+
+
+<script>
+        $(document).ready(function () {
+
+        const inputs = $(".emploginmodal-pin");
+
+        inputs.on("input", function () {
+
+            this.value = this.value.replace(/[^0-9]/g, '');
+
+            if (this.value.length === 1) {
+                $(this).next(".emploginmodal-pin").focus();
+            }
+
+        });
+
+        inputs.on("keydown", function (e) {
+
+            if (e.key === "Backspace" && this.value === "") {
+                $(this).prev(".emploginmodal-pin").focus();
+            }
+
+        });
+
+        inputs.on("paste", function (e) {
+
+            let pasteData = e.originalEvent.clipboardData.getData('text');
+            pasteData = pasteData.replace(/[^0-9]/g, '').split('');
+
+            inputs.each(function (index) {
+                if (pasteData[index]) {
+                    $(this).val(pasteData[index]);
+                }
+            });
+
+            inputs.last().focus();
+
+            e.preventDefault();
+
+        });
+
+    });
+
+
+
+
+</script>
+
+
+
+
+

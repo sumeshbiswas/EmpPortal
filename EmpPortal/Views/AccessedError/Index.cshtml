@@ -1,0 +1,55 @@
+﻿@{
+    ViewBag.Title = "Error";
+    Layout = null;
+}
+<style>
+    /* Full page center but content not full screen */
+    .error-wrapper {
+        /* min-height: 100vh; */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Card-like container */
+    .error-card {
+        max-width: 900px; /* controls screen width */
+        width: 100%;
+        /*  padding: 30px; */
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Image size control */
+    .error-image {
+        max-width: 400px; /* image small */
+        width: 100%;
+        height: auto;
+        margin: 0 auto; /* center image */
+        display: block;
+    }
+
+</style>
+<h2 class="text-danger" style="text-align: center; font-size: 50px;">
+    Error @ViewBag.StatusCode
+</h2>
+<p class="fw-bold" style="text-align: center; font-size: 20px;">@ViewBag.ErrorMessage</p>
+
+<div class="error-wrapper">
+    <div class="row error-card align-items-center text-center">
+
+        <div class="col-md-6 mb-3 mb-md-0">
+            <img src="~/images/error.jpg" class="error-image" alt="Error Image" />
+        </div>
+
+        <div class="col-md-6">
+            <a href="/HomeLogin/Index" class="btn btn-primary mt-3" style="justify-content: center;display: flex;font-size: 20px;">
+                Login Again
+            </a>
+        </div>
+
+    </div>
+</div>
+
+

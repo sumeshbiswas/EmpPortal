@@ -1,0 +1,76 @@
+﻿/*Site Maintenance Start*/
+
+/* All CSS class names start with employee */
+
+.employee-body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.employee-container {
+    text-align: center;
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    max-width: 500px;
+    width: 90%;
+}
+
+.employee-icon {
+    font-size: 60px;
+    color: #ff9800;
+    margin-bottom: 20px;
+}
+
+.employee-title {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.employee-message {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.employee-time {
+    font-size: 14px;
+    color: #999;
+}
+
+.employee-loader {
+    margin: 25px auto;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #ff9800;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: employee-spin 1s linear infinite;
+}
+
+@keyframes employee-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.employee-footer {
+    margin-top: 20px;
+    font-size: 13px;
+    color: #aaa;
+}
+
+/*Site Maintenance Ends Here*/

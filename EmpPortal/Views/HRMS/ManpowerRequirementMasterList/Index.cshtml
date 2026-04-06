@@ -1,0 +1,216 @@
+﻿@{
+    ViewBag.Title = "Manpower Requirement Master List";
+    Layout = "~/Views/Shared/EmployeeLayout.cshtml";
+}
+<fieldset>
+    <legend class="legend-field">Manpower Requirement Master List</legend>
+
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="input-group shadow-sm rounded-pill overflow-hidden">
+                <input type="text" id="searchBox" class="form-control" placeholder="Search Module..." aria-label="Search term">
+
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="button-right">
+
+                <button onclick="window.location.href='@Url.Action("Index", "ManpowerRequirementMaster")'" type="button" class="btn btn-add">
+                    <i class="fa fa-plus"></i>Add
+                </button>
+                <button class="btn btn-print">
+                    <i class="fa fa-print"></i> Print
+                </button>
+                <button class="btn btn-export">
+                    <i class="fas fa-file-export"></i> Export
+                </button>
+                <button class="btn btn-mail">
+                    <i class="fa fa-envelope"></i> Mail
+                </button>
+                <button class="btn btn-send">
+                    <i class="fa fa-paper-plane"></i> Approval Send
+                </button>
+                <button class="btn btn-approved">
+                    <i class="fa fa-check"></i> Approved
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table id="ManpowerRequirementMasterList" class="table-width">
+                <thead class="table-head">
+                    <tr>
+                        <th>Code</th>
+                        <th>Department</th>
+                        <th>Designation</th>
+                        <th>Place</th>
+                        <th>Nos</th>
+                        <th>Remarks</th>
+                        <th>Active</th>
+                        <th>Faprov_Status</th>
+                        <th>Faprov_Remarks</th>
+                        <th>Uuser</th>
+                        <th>Udate</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <!-- Pagination container -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="pagination-end">
+                    <div class="custom-pagination" id="tablePagination"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</fieldset>
+
+<script>
+   let currentPage = 1;
+    const pageSize = 10;
+    $(document).ready(function () {
+        loadManPowerReuirement(currentPage);
+
+        $('#searchBox').on('keyup', function () {
+            currentPage = 1;
+            loadManPowerReuirement(currentPage);
+        });
+    });
+    function loadManPowerReuirement(page) {
+        currentPage = page || 1;
+        const searchTerm = $('#searchBox').val().trim();
+        $.ajax({
+            url: '/ManpowerRequirementMasterList/GetManpowerRequirementMasterList',
+            type: 'GET',
+            dataType: 'json',
+            data: {
+                pageNumber: currentPage,
+                pageSize: pageSize,
+                searchTerm: searchTerm
+            },
+            success: function (res) {
+                const groups = res.groups;
+                const totalCount = res.totalCount;
+                let tbody = $('#ManpowerRequirementMasterList tbody');
+                tbody.empty();
+
+                if (!groups || groups.length === 0) {
+                    tbody.append('<tr><td colspan="12" class="text-center text-muted">No records found.</td></tr>');
+                    renderPagination(0, pageSize, currentPage);
+                    return;
+                }
+                groups.forEach(group => {
+                    tbody.append(`
+                        <tr>
+                            <td>${group.code}</td>
+                            <td>${group.deptName}</td>
+                            <td>${group.desgName}</td>
+                            <td>${group.placeCode}</td>
+                            <td>${group.nos}</td>
+                            <td>${group.remarks}</td>
+                            <td>${group.active == 1 ? 'Active' : 'Inactive'}</td>
+                            <td>${group.faprovStatus}</td>
+                            <td>${group.faprovRemarks}</td>
+                            <td>${group.uuser}</td>
+                            <td>${group.udate}</td>
+                            <td>
+                                <i class="fa fa-edit text-primary" style="cursor:pointer"
+                                   onclick="AddOrEditItemGroup(${group.code})"></i>
+
+                                <i class="fa fa-eye text-info ms-2" style="cursor:pointer"
+                                   onclick="viewItemGroupDetails(${group.code})"></i>
+
+                                <i class="fa fa-trash text-danger ms-2" style="cursor:pointer"
+                                   onclick="Delete(${group.code})"></i>
+                            </td>
+                        </tr>
+                    `);
+                });
+                renderPagination(totalCount, pageSize, currentPage);
+            }
+        });
+    }
+
+    function renderPagination(total, pageSize, currentPage) {
+
+        const totalPages = Math.ceil(total / pageSize);
+        const container = $('#tablePagination');
+        container.empty();
+
+        if (totalPages <= 1) return;
+
+        let html = '';
+
+        if (currentPage > 1) {
+            html += `<button class="btn btn-sm btn-light mx-1" onclick="goToPage(1)">First</button>`;
+            html += `<button class="btn btn-sm btn-light mx-1" onclick="goToPage(${currentPage - 1})">Prev</button>`;
+        }
+
+        let startPage = Math.max(1, currentPage - 2);
+        let endPage = Math.min(totalPages, currentPage + 2);
+
+        for (let i = startPage; i <= endPage; i++) {
+            html += `<button class="btn btn-sm ${i === currentPage ? 'btn-primary' : 'btn-light'} mx-1"
+                        onclick="goToPage(${i})">${i}</button>`;
+        }
+
+        if (currentPage < totalPages) {
+            html += `<button class="btn btn-sm btn-light mx-1" onclick="goToPage(${currentPage + 1})">Next</button>`;
+            html += `<button class="btn btn-sm btn-light mx-1" onclick="goToPage(${totalPages})">Last</button>`;
+        }
+        container.html(html);
+    }
+
+    function goToPage(page) {
+        currentPage = page;
+        loadManPowerReuirement(currentPage);
+    }
+    function AddOrEditItemGroup(id) {
+        window.location.href = '/ManpowerRequirementMaster/Index?id=' + id;
+    }
+
+    function viewItemGroupDetails(id) {
+        window.location.href = '/ManpowerRequirementMaster/Index?id=' + id + '&mode=view';
+    }
+
+    function Delete(id) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This record will be permanently deleted.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+
+            if (result.isConfirmed) {
+
+                $.ajax({
+                    url: '/ManpowerRequirementMasterList/DeleteID',
+                    type: 'POST',
+                    data: { ID: id },
+                    success: function (response) {
+
+                        if (response.success) {
+                            Swal.fire('Deleted!', response.message, 'success')
+                                .then(() => loadManPowerReuirement(currentPage));
+                        }
+                        else {
+                            Swal.fire('Failed!', response.message, 'warning');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Error!', 'Something went wrong.', 'error');
+                    }
+                });
+            }
+        });
+    }
+</script>

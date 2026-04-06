@@ -1,0 +1,53 @@
+﻿@{
+    ViewBag.Title = "HRMS Home";
+    Layout = "~/Views/Shared/EmployeeLayout.cshtml";
+}
+@await Html.PartialAsync("Partial_Wizard")
+<div class="form-section active" id="formjoining">
+    <p class="EmpLabel"><span>Joining Detail</span></p>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="ddlofferedletter">Offered Letter Given</label>
+                <select class="form-control" id="ddlofferedletter">
+                    <option value="1">Yes</option>
+                    <option value="2">No</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="DtJoining">Date of Joining</label>
+                <input type="date" class="form-control" id="DtJoining" />
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="TxtofferedCTC">Offered CTC</label>
+                <input type="text" class="form-control" id="TxtofferedCTC" />
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="TxtComment">Comment</label>
+                <textarea typeof="text" class="form-control" id="TxtComment" placeholder="Enter Comment"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="btn-mt">
+                <button id="" type="button" class="btn btn-draft"><i class="fa fa-step-backward"></i>Previous</button>
+                <button id="" type="button" class="btn btn-success"><i class="fa fa-step-forward"></i>Next</button>
+            </div>
+        </div>
+        <div class="offset-md-2 col-md-4">
+            <div class="button-right btn-mt">
+                @*  <a asp-controller="hrmswork" asp-action="Index" class="prev-btn">⬅️ Previous</a>
+                <a asp-controller="hrmsinterview" asp-action="Index" class="next-btn">Next ➡️</a> *@
+                @* <button id="btn-Previous" type="submit" class="btn btn-primary"><i class="fa fa-save"></i>⬅️ Previous</button> *@
+                <button id="btn-Next" type="submit" class="btn btn-primary"><i class="fa fa-save"></i>Save</button>
+            </div>
+        </div>
+    </div>
+</div>

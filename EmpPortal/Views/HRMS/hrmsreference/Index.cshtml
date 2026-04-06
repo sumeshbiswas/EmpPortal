@@ -1,0 +1,370 @@
+﻿@{
+    ViewBag.Title = "HRMS Home";
+    Layout = "~/Views/Shared/EmployeeLayout.cshtml";
+}
+@await Html.PartialAsync("Partial_Wizard")
+<div class="form-section" id="formreference">
+    <p class="EmpLabel"><span>Reference Detail</span></p>
+    <div class="card">
+        <div class="table-responsive">
+            <table id="tblreference" class="table-width">
+                <thead class="table-head">
+                    <tr>
+                        <th style="display:none;">Code</th>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th>Nature Of Work</th>
+                        <th>Organization</th>
+                        <th>Designation</th>
+                        <th>Contact No.</th>
+                        <th>Email Id</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Add Row Button -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="btn-add-row-last">
+                    <i class="fa fa-plus btn-add-row" title="Add Row"><span>Add New Row</span></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="btn-mt">
+                <button id="" type="button" class="btn btn-draft"><i class="fa fa-step-backward"></i>Previous</button>
+                <button id="" type="button" class="btn btn-success"><i class="fa fa-step-forward"></i>Next</button>
+            </div>
+        </div>
+        <div class="offset-md-2 col-md-4">
+            <div class="button-right btn-mt">
+                @*  <a asp-controller="hrmswork" asp-action="Index" class="prev-btn">⬅️ Previous</a>
+                <a asp-controller="hrmsinterview" asp-action="Index" class="next-btn">Next ➡️</a> *@
+                @* <button id="btn-Previous" type="submit" class="btn btn-primary"><i class="fa fa-save"></i>⬅️ Previous</button> *@
+                <button id="btn-Next" type="submit" class="btn btn-primary"><i class="fa fa-save"></i>Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+      $("#btn-Next").hide();
+      const storedParams = JSON.parse(sessionStorage.getItem('globalParams') || '{}');
+      console.log(storedParams)
+
+        if (storedParams.readOnly) {
+          $('input, textarea, select, button').prop('disabled', true);
+          $('#editButton, #deleteButton').hide();
+      }
+
+      if (storedParams.docCode) {
+           ReferenceDetail(storedParams.docCode)
+          // checkTab(storedParams.docCode);
+          Checkhrmstab(storedParams.docCode);
+      }
+        const $tbody = $('#tblreference tbody'); // ✅ Reference table
+
+        function addRow(data = {}) {
+            // Remove plus icon from previous rows
+            $tbody.find('.btn-add-action').remove();
+
+            const row = `
+                <tr class="no-border-input">
+                    <td style="display:none;">${data.code || ''}</td>
+                    <td><input type="text" class="form-control" value="${data.name || ''}" /></td>
+                    <td><input type="text" class="form-control" value="${data.address || ''}" /></td>
+                    <td><input type="text" class="form-control" value="${data.natureOfWork || ''}" /></td>
+                    <td><input type="text" class="form-control" value="${data.organization || ''}" /></td>
+                    <td><input type="text" class="form-control" value="${data.designation || ''}" /></td>
+                    <td><input type="text" class="form-control" value="${data.contactNo || ''}" /></td>
+                    <td><input type="email" class="form-control" value="${data.email || ''}" /></td>
+                    <td>
+                        <i class="fa fa-plus btn-add-action text-success" title="Add Row" style="cursor:pointer;"></i>
+                        <i class="fa fa-trash btn-delete-action text-danger" title="Delete Row" style="cursor:pointer;"></i>
+                    </td>
+                </tr>
+            `;
+            $tbody.append(row);
+        }
+
+        // Initial row
+        addRow();
+
+        // Add row when clicking plus icon or "Add New Row"
+        $(document).on('click', '.btn-add-row, .btn-add-action', function () {
+            addRow();
+        });
+
+        // Delete row
+        $(document).on('click', '.btn-delete-action', function () {
+            const $row = $(this).closest('tr');
+            const isLastRow = $row.is(':last-child');
+            $row.remove();
+
+            // If last row deleted, re-add plus on new last row
+            if (isLastRow) {
+                const $lastRow = $tbody.find('tr:last');
+                if ($lastRow.length > 0 && $lastRow.find('.btn-add-action').length === 0) {
+                    $lastRow.find('td:last').prepend(
+                        `<i class="fa fa-plus btn-add-action text-success" title="Add Row" style="cursor:pointer;"></i>`
+                    );
+                }
+            }
+        });
+
+    //        $('#btn-Next').on('click', function (e) {
+    //     e.preventDefault();
+
+    //     const storedParams = JSON.parse(sessionStorage.getItem('globalParams') || '{}');
+    //     const code = storedParams.docCode || 0;
+    //     const action = code && parseInt(code) > 0 ? "Update" : "Insert";
+
+    //     const referenceList = [];
+    //     $('#tblReference tbody tr').each(function () {
+    //         const $cells = $(this).find('td');
+    //         referenceList.push({
+    //             Code: $cells.eq(0).text().trim(),  // Use text or input value if editable
+    //             Name: $cells.eq(1).find('input').val(),
+    //             Address: $cells.eq(2).find('input').val(),
+    //             NatureOfWork: $cells.eq(3).find('input').val(),
+    //             Organization: $cells.eq(4).find('input').val(),
+    //             Designation: $cells.eq(5).find('input').val(),
+    //             ContactNo: $cells.eq(6).find('input').val(),
+    //             Email: $cells.eq(7).find('input').val(),
+    //         });
+    //     });
+
+    //     const payload = {
+    //         Code: parseInt(code) || 0,
+    //         Action: action,
+    //         ReferenceList: referenceList
+    //     };
+
+    //     $.ajax({
+    //         url: '/hrmsreference/SaveData',
+    //         type: 'POST',
+    //         contentType: 'application/json',
+    //         data: JSON.stringify(payload),
+    //         success: function (response) {
+    //             if (response.success) {
+    //                 alert('References saved successfully!');
+    //             } else {
+    //                 alert('Error: ' + response.message);
+    //             }
+    //         },
+    //         error: function (xhr, status, error) {
+    //             alert('Error saving references: ' + error);
+    //         }
+    //     });
+    // });
+
+        $('#btn-Next').on('click', function (e) {
+        e.preventDefault();
+
+        const storedParams = JSON.parse(sessionStorage.getItem('globalParams') || '{}');
+        const code = storedParams.docCode || 0;
+        const action = code && parseInt(code) > 0 ? "Update" : "Insert";
+
+        // Check if at least one row exists
+        if ($('#tblReference tbody tr').length === 0) {
+            toastr.warning('Please add at least one reference record.');
+            return;
+        }
+
+        // Validate required fields in each row
+        let isValid = true;
+        $('#tblReference tbody tr').each(function (index) {
+            const $cells = $(this).find('td');
+
+            if (!validateRequiredField($cells.eq(1).find('input'), `Name in row ${index + 1}`)) {
+                isValid = false;
+                return false; // break loop on failure
+            }
+            if (!validateRequiredField($cells.eq(4).find('input'), `Organization in row ${index + 1}`)) {
+                isValid = false;
+                return false;
+            }
+            if (!validateRequiredField($cells.eq(5).find('input'), `Designation in row ${index + 1}`)) {
+                isValid = false;
+                return false;
+            }
+            if (!validateRequiredField($cells.eq(6).find('input'), `Contact No in row ${index + 1}`)) {
+                isValid = false;
+                return false;
+            }
+            if (!validateRequiredField($cells.eq(7).find('input'), `Email in row ${index + 1}`)) {
+                isValid = false;
+                return false;
+            }
+
+            // Email format validation
+            const emailVal = $cells.eq(7).find('input').val()?.trim();
+            if (emailVal && !validateEmail(emailVal)) {
+                toastr.warning(`Invalid email format in row ${index + 1}`);
+                $cells.eq(7).find('input').focus();
+                isValid = false;
+                return false;
+            }
+        });
+        if (!isValid) return;
+
+        const referenceList = [];
+        $('#tblReference tbody tr').each(function () {
+            const $cells = $(this).find('td');
+            referenceList.push({
+                Code: $cells.eq(0).text().trim() || null,  // Use text or input value if editable
+                Name: $cells.eq(1).find('input').val()?.trim() || null,
+                Address: $cells.eq(2).find('input').val()?.trim() || null,
+                NatureOfWork: $cells.eq(3).find('input').val()?.trim() || null,
+                Organization: $cells.eq(4).find('input').val()?.trim() || null,
+                Designation: $cells.eq(5).find('input').val()?.trim() || null,
+                ContactNo: $cells.eq(6).find('input').val()?.trim() || null,
+                Email: $cells.eq(7).find('input').val()?.trim() || null,
+            });
+        });
+
+        const payload = {
+            Code: parseInt(code) || 0,
+            Action: action,
+            ReferenceList: referenceList
+        };
+
+        $.ajax({
+            url: '/hrmsreference/SaveData',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(payload),
+            success: function (response) {
+                if (response.success) {
+                    toastr.success('References saved successfully!');
+                } else {
+                    toastr.error('Error: ' + response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                toastr.error('Error saving references: ' + error);
+            }
+        });
+    });
+
+
+        function validateRequiredField($field, fieldName) {
+        if ($field.length === 0) return true; // element not found, skip validation
+
+        const val = $field.val()?.trim();
+        if (!val || val === '-- Select --') {
+            toastr.warning(`${fieldName} is required.`);
+            $field.focus();
+            return false;
+        }
+        return true;
+    }
+
+
+
+            function Checkhrmstab(code) {
+
+        $.ajax({
+            url: '/hrmshome/Checkhrmstable',
+            type: 'GET',
+            data: { code: code },
+            success: function (data) {
+
+                console.log("Tab Status:", data);
+
+                // Home
+                if (data.basic == 1) {
+                    $('[data-step-index="1"]').addClass("completed");
+                    $("#btn-Next").show();
+                }
+
+                // Personal
+                if (data.personal == 1) {
+                    $('[data-step-index="2"]').addClass("completed");
+                }
+
+                // Family
+                if (data.family == 1) {
+                    $('[data-step-index="3"]').addClass("completed");
+                }
+
+                // Education
+                if (data.education == 1) {
+                    $('[data-step-index="4"]').addClass("completed");
+                }
+
+                // Work
+                if (data.work == 1) {
+                    $('[data-step-index="5"]').addClass("completed");
+                }
+
+                // Reference
+                if (data.reference == 1) {
+                    $('[data-step-index="6"]').addClass("completed");
+                }
+
+                // Interview
+                if (data.interview == 1) {
+                    $('[data-step-index="7"]').addClass("completed");
+                }
+
+                 if (data.letterintent == 1)
+                   {
+                   $('[data-step-index="8"]').addClass("completed");
+                   }
+            },
+            error: function (xhr) {
+                console.error("Error:", xhr.responseText);
+            }
+        });
+    }
+
+
+       function ReferenceDetail(code) {
+        $.ajax({
+            url: '/hrmsreference/GetReferenceDetailList',
+            type: 'GET',
+            data: { code: parseInt(code) },
+            success: function (item) {
+                console.log('Full response:', item);
+
+                if (item && item.referenceDetail && item.referenceDetail.length > 0) {
+                    const referenceList = item.referenceDetail;
+
+                    // Clear existing rows
+                    $('#tblreference tbody').empty();
+
+                    // Loop and add rows
+                    referenceList.forEach(function (ref) {
+                        addRow({
+                            name: ref.reF_NAME,
+                            address: ref.reF_ADDRESS,
+                            natureOfWork: ref.reF_WORK,
+                            organization: ref.reF_ORGANIZATION,
+                            designation: ref.reF_DESIGNATION,
+                            contactNo: ref.reF_CONTACTNO,
+                            email: ref.reF_EMAIL
+                        });
+                    });
+                } else {
+                    console.warn("No reference detail data found.");
+                }
+            },
+            error: function (err) {
+                console.error("Failed to load reference details:", err);
+            }
+        });
+    }
+
+
+    });
+</script>
+
+
+

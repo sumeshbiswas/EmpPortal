@@ -1,0 +1,382 @@
+﻿@{
+    ViewBag.Title = "HRMS Home";
+    Layout = "~/Views/Shared/EmployeeLayout.cshtml";
+}
+@await Html.PartialAsync("Partial_Wizard")
+<div class="form-section" id="formwork">
+    <p class="EmpLabel"><span>Work Experience Detail</span></p>
+    <div class="card">
+        <div class="table-responsive">
+            <table id="tblwork" class="table-width">
+                <thead class="table-head">
+                    <tr>
+                        <th style="display:none;">Code</th>
+                        <th>Organization</th>
+                        <th>Location</th>
+                        <th>Designation</th>
+                        <th>Department</th>
+                        <th>Annual CTC</th>
+                        <th>Duration From</th>
+                        <th>Duration To</th>
+                        <th>Reason For Living</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <!-- Pagination container -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="btn-add-row-last">
+                    <i class="fa fa-plus btn-add-row" title="Add Row"><span>Add New Row</span></i>
+                </div>
+                @* <div class="pagination-end">
+					<div class="custom-pagination" id="tablePagination"></div>
+				</div> *@
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="btn-mt">
+                <button id="" type="button" class="btn btn-draft"><i class="fa fa-step-backward"></i>Previous</button>
+                <button id="" type="button" class="btn btn-success"><i class="fa fa-step-forward"></i>Next</button>
+            </div>
+        </div>
+        <div class="offset-md-2 col-md-4">
+            <div class="button-right btn-mt">
+                @*  <a asp-controller="hrmswork" asp-action="Index" class="prev-btn">⬅️ Previous</a>
+                <a asp-controller="hrmsinterview" asp-action="Index" class="next-btn">Next ➡️</a> *@
+                @* <button id="btn-Previous" type="submit" class="btn btn-primary"><i class="fa fa-save"></i>⬅️ Previous</button> *@
+                <button id="btn-Next" type="submit" class="btn btn-primary"><i class="fa fa-save"></i>Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $("#btn-Next").hide();
+        const storedParams = JSON.parse(sessionStorage.getItem('globalParams') || '{}');
+        console.log('Stored Params:', storedParams);
+        
+        // If docCode exists, fetch data
+        if (storedParams.docCode) {
+            WorkDetail(storedParams.docCode);
+            // checkTab(storedParams.docCode);
+            Checkhrmstab(storedParams.docCode);
+        }
+
+        const $tbody = $('#tblwork tbody');
+        // <td><input type="date" class="form-control" value="${data.duratioN_FROM ? data.duratioN_FROM.split('T')[0] : data.durationFrom || ''}" /></td>
+                    // <td><input type="date" class="form-control" value="${data.duratioN_TO ? data.duratioN_TO.split('T')[0] : data.durationTo || ''}" /></td>
+        function addRow(data = {}) {
+            $tbody.find('.btn-add-action').remove(); // Remove existing plus buttons
+
+            const row = `
+                <tr>
+                    <td style="display:none;">${data.code || ''}</td>
+                    <td><input type="text" class="form-control" value="${data.organization || ''}" /></td>
+                    <td><input type="text" class="form-control" value="${data.location || ''}" /></td>
+                    <td><input type="text" class="form-control" value="${data.designation || ''}" /></td>
+                    <td><input type="text" class="form-control" value="${data.department || ''}" /></td>
+                    <td><input type="number" class="form-control" value="${data.annuaL_CTC || data.ctc || ''}" /></td>                
+                    <td><input type="text" class="form-control datepicker" value="${data.durationFrom || getCurrentDateDMY()}" /> </td>
+                    
+                    <td> <input type="text" class="form-control datepicker" value="${data.durationTo || getCurrentDateDMY()}" /> </td>
+
+                    <td><input type="text" class="form-control" value="${data.reasoN_FORLEAVING || data.reason || ''}" /></td>
+                    <td>
+                        <i class="fa fa-plus btn-add-action text-success" title="Add Row" style="cursor:pointer;"></i>
+                        <i class="fa fa-trash btn-delete-action text-danger" title="Delete Row" style="cursor:pointer;"></i>
+                    </td>
+                </tr>
+            `;
+            $tbody.append(row);
+            applyReadOnlyMode(); // Re-apply readOnly after DOM update
+        }
+
+        function applyReadOnlyMode() {
+            if (storedParams.readOnly) {
+                $('input, textarea, select, button').prop('disabled', true);
+                $('#editButton, #deleteButton').hide();
+                $('.btn-add-action, .btn-delete-action').hide();
+            }
+        }
+            function getCurrentDateDMY() {
+        const today = new Date();
+        const dd = String(today.getDate()).padStart(2, '0');
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const yyyy = today.getFullYear();
+        return `${dd}/${mm}/${yyyy}`;
+    }
+
+
+        // Add initial row
+        addRow();
+
+        // Add row on + icon or external button
+        $(document).on('click', '.btn-add-row, .btn-add-action', function () {
+            addRow();
+        });
+
+        // Delete row
+        $(document).on('click', '.btn-delete-action', function () {
+            const $row = $(this).closest('tr');
+            const isLast = $row.is(':last-child');
+            $row.remove();
+
+            if (isLast) {
+                const $last = $tbody.find('tr:last');
+                if ($last.length && !$last.find('.btn-add-action').length) {
+                    $last.find('td:last').prepend(
+                        `<i class="fa fa-plus btn-add-action text-success" title="Add Row" style="cursor:pointer;"></i>`
+                    );
+                }
+            }
+        });
+
+    //     $('#btn-Next').on('click', function (e) {
+    //     e.preventDefault();
+
+    //     const storedParams = JSON.parse(sessionStorage.getItem('globalParams') || '{}');
+    //     const code = storedParams.docCode || 0;
+    //     const action = code && parseInt(code) > 0 ? "Update" : "Insert";
+
+    //     // Check if at least one row exists
+    //     if ($('#tblwork tbody tr').length === 0) {
+    //         alert('Please add at least one work experience record.');
+    //         return;
+    //     }
+
+    //     // Validate required fields in each row
+    //     let isValid = true;
+    //     $('#tblwork tbody tr').each(function (index) {
+    //         const $cells = $(this).find('td');
+
+    //         if (!validateRequiredField($cells.eq(1).find('input'), `Organization in row ${index + 1}`)) {
+    //             isValid = false;
+    //             return false; // break loop on failure
+    //         }
+    //         if (!validateRequiredField($cells.eq(3).find('input'), `Designation in row ${index + 1}`)) {
+    //             isValid = false;
+    //             return false;
+    //         }
+    //         if (!validateRequiredField($cells.eq(5).find('input'), `CTC in row ${index + 1}`)) {
+    //             isValid = false;
+    //             return false;
+    //         }
+    //         if (!validateRequiredField($cells.eq(6).find('input'), `Duration From in row ${index + 1}`)) {
+    //             isValid = false;
+    //             return false;
+    //         }
+    //         if (!validateRequiredField($cells.eq(7).find('input'), `Duration To in row ${index + 1}`)) {
+    //             isValid = false;
+    //             return false;
+    //         }
+    //     });
+    //     if (!isValid) return;
+
+    //     // Prepare data list for sending
+    //     const dataList = [];
+    //     $('#tblwork tbody tr').each(function () {
+    //         const $cells = $(this).find('td');
+    //         dataList.push({
+    //             code: $cells.eq(0).text().trim() || null,
+    //             organization: $cells.eq(1).find('input').val()?.trim() || null,
+    //             location: $cells.eq(2).find('input').val()?.trim() || null,
+    //             designation: $cells.eq(3).find('input').val()?.trim() || null,
+    //             department: $cells.eq(4).find('input').val()?.trim() || null,
+    //             ctc: parseFloat($cells.eq(5).find('input').val()) || 0,
+    //             durationFrom: $cells.eq(6).find('input').val()?.trim() || null,
+    //             durationTo: $cells.eq(7).find('input').val()?.trim() || null,
+    //             reason: $cells.eq(8).find('input').val()?.trim() || null
+    //         });
+    //     });
+
+    //     const payload = {
+    //         Code: parseInt(code) || 0,
+    //         Action: action,
+    //         WorkList: dataList
+    //     };
+    //     console.log('payload',payload)
+
+    //     $.ajax({
+    //         url: '/hrmswork/SaveWorkExperience',
+    //         type: 'POST',
+    //         contentType: 'application/json',
+    //         data: JSON.stringify(payload),
+    //         success: function (response) {
+    //             if (response.success) {
+    //                 toastr.success(response.message || 'Data saved successfully!');
+    //             } else {
+    //                 toastr.error('Error: ' + response.message);
+    //             }
+    //         },
+    //         error: function (xhr, status, error) {
+    //             toastr.error('Error saving data: ' + error);
+    //         }
+    //     });
+    // });
+
+
+        $('#btn-Next').on('click', function (e) {
+        e.preventDefault();
+
+        const storedParams = JSON.parse(sessionStorage.getItem('globalParams') || '{}');
+        const code = storedParams.docCode || 0;
+        const action = code && parseInt(code) > 0 ? "Update" : "Insert";
+
+        if ($('#tblwork tbody tr').length === 0) {
+            toastr.warning('Please add at least one work experience record.');
+            return;
+        }
+
+        function convertToISO(dateStr) {
+            if (!dateStr) return null;
+            const parts = dateStr.split('/');
+            return `${parts[2]}-${parts[1]}-${parts[0]}`; // yyyy-MM-dd
+        }
+
+        const dataList = [];
+
+        $('#tblwork tbody tr').each(function () {
+            const $cells = $(this).find('td');
+
+            dataList.push({
+                Code: $cells.eq(0).text().trim() || null,
+                Organization: $cells.eq(1).find('input').val()?.trim() || null,
+                Location: $cells.eq(2).find('input').val()?.trim() || null,
+                Designation: $cells.eq(3).find('input').val()?.trim() || null,
+                Department: $cells.eq(4).find('input').val()?.trim() || null,
+                CTC: parseFloat($cells.eq(5).find('input').val()) || 0,
+                DurationFrom: convertToISO($cells.eq(6).find('input').val()),
+                DurationTo: convertToISO($cells.eq(7).find('input').val()),
+                Reason: $cells.eq(8).find('input').val()?.trim() || null
+            });
+        });
+
+        const payload = {
+            Code: parseInt(code) || 0,
+            Action: action,
+            WorkList: dataList
+        };
+
+        console.log("Sending Payload:", payload);
+
+        $.ajax({
+            url: '/hrmswork/SaveWorkExperience',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(payload),
+            success: function (response) {
+                if (response.success) {
+                    toastr.success(response.message || 'Data saved successfully!');
+                } else {
+                    toastr.error(response.message);
+                }
+            },
+            error: function (xhr) {
+                toastr.error("Error: " + xhr.responseText);
+            }
+        });
+    });
+
+
+
+    function validateRequiredField($field, fieldName) {
+        if ($field.length === 0) return true; // element not found, skip validation
+
+        const val = $field.val()?.trim();
+        if (!val || val === '-- Select --') {
+            toastr.warning(`${fieldName} is required.`);
+            $field.focus();
+            return false;
+        }
+        return true;
+    }
+        function WorkDetail(code) {
+            $.ajax({
+                url: '/hrmswork/GetworkDetailList',
+                type: 'GET',
+                data: { code: parseInt(code) },
+                success: function (item) {
+                    console.log('Work Details:', item);
+                    $tbody.empty();
+
+                    if (item && item.workDetails && item.workDetails.length > 0) {
+                        item.workDetails.forEach(detail => {
+                            addRow(detail);
+                        });
+                    } else {
+                        addRow(); // No data → add blank row
+                    }
+                },
+                error: function (err) {
+                    console.error("Failed to load work details:", err);
+                }
+            });
+        }
+
+        function Checkhrmstab(code) {
+        $.ajax({
+            url: '/hrmshome/Checkhrmstable',
+            type: 'GET',
+            data: { code: code },
+            success: function (data) {
+
+                console.log("Tab Status:", data);
+
+                // Home
+                if (data.basic == 1) {
+                    $('[data-step-index="1"]').addClass("completed");
+                    $("#btn-Next").show();
+                }
+
+                // Personal
+                if (data.personal == 1) {
+                    $('[data-step-index="2"]').addClass("completed");
+                }
+
+                // Family
+                if (data.family == 1) {
+                    $('[data-step-index="3"]').addClass("completed");
+                }
+
+                // Education
+                if (data.education == 1) {
+                    $('[data-step-index="4"]').addClass("completed");
+                }
+
+                // Work
+                if (data.work == 1) {
+                    $('[data-step-index="5"]').addClass("completed");
+                }
+
+                // Reference
+                if (data.reference == 1) {
+                    $('[data-step-index="6"]').addClass("completed");
+                }
+
+                // Interview
+                if (data.interview == 1) {
+                    $('[data-step-index="7"]').addClass("completed");
+                }
+
+                 if (data.letterintent == 1)
+                   {
+                   $('[data-step-index="8"]').addClass("completed");
+                   }
+            },
+            error: function (xhr) {
+                console.error("Error:", xhr.responseText);
+            }
+        });
+    }
+
+        // Initial readOnly setup
+        applyReadOnlyMode();
+    });
+</script>

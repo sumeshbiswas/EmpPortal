@@ -1,0 +1,359 @@
+﻿@{
+    ViewBag.Title = "HRMS Home";
+    Layout = "~/Views/Shared/EmployeeLayout.cshtml";
+}
+@await Html.PartialAsync("Partial_Wizard")
+<style>
+    .hrms_heading {
+        font-size: 18px;
+        color: #2e2c2c;
+        border-bottom: 2px solid #34723a;
+        width: max-content;
+        font-weight: 600;
+        margin-top: 10px;
+    }
+</style>
+
+<div class="form-section" id="OfferLetter">
+    <p class="EmpLabel"><span>Offer Letter Detail</span></p>
+    <fieldset>
+       <h4 class="hrms_heading">
+                Template Info
+            </h4>
+       <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="TemplateName">Template Name</label>
+
+                        <select id="ddlTemplate" class="form-control">
+                            <option value="">-- Select Offer Letter Template --</option>
+                            @foreach (var item in ViewBag.TemplateList)
+                            {
+                                <option value="@item.TemplateId">@item.TemplateName</option>
+                            }
+                        </select>
+
+                    </div>
+                </div>
+            </div>
+       <!-- EMPLOYEE DETAILS -->
+       <h4 class="hrms_heading">
+                Employee Details
+            </h4>
+       <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                     <label for="EmployeeName">Employee Name</label>
+                   @*  <select class="form-control" id="ddlEmployeeName">
+                        <option value="">Select Employee Name</option>
+                    </select> *@
+                    <input type="text" class="form-control" id="ddlEmployeeName" />
+
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="Designation">Designation</label>
+                    <select class="form-control" id="ddlDesignation">
+                        <option value="">Select Designation</option>
+                    </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="CompanyName">Company Name</label>
+                    <select class="form-control" id="ddlCompanyName">
+                        <option value="">Select Department</option>
+                    </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="JoiningDate">Joining Date</label>
+                        <input type="date" class="form-control" id="JoiningDate" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="Salary">Salary</label>
+                        <input class="form-control" placeholder="Salary" id="Salary" />
+                    </div>
+                </div>
+            </div>
+       <!-- CKEDITOR -->
+       <h4 class="hrms_heading">
+           Offer Letter Content
+       </h4>
+       <div class="form-group">
+           <textarea id="txtTemplateBody"></textarea>
+       </div>
+       <!-- BUTTONS -->
+       <div class="row">
+                <div class="offset-md-6 col-md-6">
+                    <div class="button-right">
+                        <button type="button" class="btn btn-print">Print</button>
+                        <button type="button" class="btn btn-primary">Send Mail</button>
+                        <button type="button" class="btn btn-secondary" onclick="previewOfferLetter()">Preview</button>
+                    <button type="button" id="btnSaveOffer" class="btn btn-primary" onclick="saveOfferLetter()">Save Offer Letter</button>
+
+                    </div>
+                </div>
+            </div>
+    </fieldset>
+</div>
+<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+
+<script>
+
+    let originalTemplate = "";
+    $(document).ready(function () {
+
+        CKEDITOR.replace('txtTemplateBody');
+        // loadEmployees();
+        loadCompanies();
+        loadDesignation();
+
+        const storedParams = JSON.parse(sessionStorage.getItem('globalParams') || '{}');
+        if (storedParams.readOnly) {
+            $('input, textarea, select, button').prop('disabled', true);
+        }
+
+         if (storedParams.docCode) {                 
+          Checkhrmstab(storedParams.docCode);
+         }
+
+        // ================= TEMPLATE CHANGE =================
+        $('#ddlTemplate').change(function () {
+
+            let templateId = $(this).val();
+
+            if (!templateId) {
+                originalTemplate = "";
+                CKEDITOR.instances.txtTemplateBody.setData('');
+                return;
+            }
+            $.get('/OfferLetter/GetTemplateById',
+                { templateId: templateId },
+                function (data) {
+
+                    originalTemplate = data; // master save
+                    CKEDITOR.instances.txtTemplateBody.setData(originalTemplate);
+                    updateTemplate();
+                });
+        });
+
+        // ============== FIELD CHANGE EVENTS =================
+        // $('#ddlEmployeeName').change(updateTemplate);
+        $('#ddlDesignation').change(updateTemplate);
+        $('#ddlCompanyName').change(updateTemplate);
+        $('#JoiningDate').change(updateTemplate);
+        $('#ddlEmployeeName').keyup(updateTemplate);
+        $('#Salary').keyup(updateTemplate);
+
+    });
+
+    // ================= UPDATE TEMPLATE =================
+    function updateTemplate() {
+
+        if (!originalTemplate) return;
+        // let name = $('#ddlEmployeeName option:selected').text() || "";
+        let designation = $('#ddlDesignation option:selected').text() || "";
+        let company = $('#ddlCompanyName option:selected').text() || "";
+        let salary = $('#Salary').val() || "";
+        let joiningDate = $('#JoiningDate').val();
+        let name = $('#ddlEmployeeName').val();
+
+        if (joiningDate) {
+            let d = new Date(joiningDate);
+            joiningDate = d.toLocaleDateString('en-GB');
+        } else {
+            joiningDate = "";
+        }
+        let updatedBody = originalTemplate; 
+        updatedBody = updatedBody.replace(/@@Name/g, name);
+        updatedBody = updatedBody.replace(/@@Developer/g, designation);
+        updatedBody = updatedBody.replace(/@@CompanyName/g, company);
+        updatedBody = updatedBody.replace(/@@Salary/g, salary);
+        updatedBody = updatedBody.replace(/@@Location/g, company);
+        updatedBody = updatedBody.replace(/Date: _____/g, "Date: " + joiningDate);
+
+        CKEDITOR.instances.txtTemplateBody.setData(updatedBody);
+    }
+
+    // ================= SAVE =================
+    function saveOfferLetter() {
+
+        let model = {
+            TemplateId: $('#ddlTemplate').val(),
+            EmployeeId: $('#ddlEmployeeName').val(),
+            DesignationId: $('#ddlDesignation').val(),
+            CompanyId: $('#ddlCompanyName').val(),
+            JoiningDate: $('#JoiningDate').val(),
+            Salary: $('#Salary').val(),
+            OfferLetterBody: CKEDITOR.instances.txtTemplateBody.getData()
+        };
+
+        $.ajax({
+            url: '/OfferLetter/SaveOfferLetter',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(model),
+            success: function (res) {
+                alert(res.message);
+            }
+        });
+    }
+
+    // ================= DROPDOWN LOAD =================
+    // function loadEmployees() {
+    //     $.getJSON('/OfferLetter/GetEmployeeName', function (data) {
+    //         let ddl = $('#ddlEmployeeName');
+    //         ddl.empty().append('<option value="">Select Employee</option>');
+    //         $.each(data, function (i, x) {
+    //             ddl.append(`<option value="${x.value}">${x.text}</option>`);
+    //         });
+    //     });
+    // }
+
+    function loadCompanies() {
+        $.getJSON('/OfferLetter/GetddlCompanyName', function (data) {
+            let ddl = $('#ddlCompanyName');
+            ddl.empty().append('<option value="">Select Company</option>');
+            $.each(data, function (i, x) {
+                ddl.append(`<option value="${x.value}">${x.text}</option>`);
+            });
+        });
+    }
+
+    function loadDesignation() {
+        $.getJSON('/OfferLetter/GetddlFinalDesignation', function (data) {
+            let ddl = $('#ddlDesignation');
+            ddl.empty().append('<option value="">Select Designation</option>');
+            $.each(data, function (i, x) {
+                ddl.append(`<option value="${x.value}">${x.text}</option>`);
+            });
+        });
+    }
+
+
+    function Checkhrmstab(code) {
+        $.ajax({
+            url: '/OfferLetter/Checkhrmstable',
+            type: 'GET',
+            data: { code: code },
+            success: function (data) {
+
+                console.log("khushahal singh", data);
+
+                let isBasicComplete = data.firstname && data.firstname.trim() !== "";
+                let isInterviewComplete = parseInt(data.checkInterviewData) === 1;
+
+                if (isBasicComplete) {
+                    $('#ddlEmployeeName').val(data.firstname);
+                }
+
+                // ✅ Final Button Logic with Toastr
+                if (isBasicComplete && isInterviewComplete) {
+
+                    $("#btnSaveOffer").show();
+
+                } else {
+
+                    $("#btnSaveOffer").hide();
+
+                    if (!isBasicComplete) {
+                        toastr.warning("Please complete Basic Details first.");
+                    }
+                    else if (!isInterviewComplete) {
+                        toastr.warning("Please complete Interview process first.");
+                    }
+                }
+
+                // Step Completed UI
+                if (data.basic == 1)
+                    $('[data-step-index="1"]').addClass("completed");
+
+                if (data.personal == 1)
+                    $('[data-step-index="2"]').addClass("completed");
+
+                if (data.family == 1)
+                    $('[data-step-index="3"]').addClass("completed");
+
+                if (data.education == 1)
+                    $('[data-step-index="4"]').addClass("completed");
+
+                if (data.work == 1)
+                    $('[data-step-index="5"]').addClass("completed");
+
+                if (data.reference == 1)
+                    $('[data-step-index="6"]').addClass("completed");
+
+                if (data.interview == 1)
+                    $('[data-step-index="7"]').addClass("completed");
+
+                if (data.letterintent == 1)
+                    $('[data-step-index="8"]').addClass("completed");
+
+            },
+            error: function (xhr) {
+                toastr.error("Something went wrong!");
+                console.error("Error:", xhr.responseText);
+            }
+        });
+    }
+    //  function Checkhrmstab(code) {
+
+    //     $.ajax({
+    //         url: '/OfferLetter/Checkhrmstable',
+    //         type: 'GET',
+    //         data: { code: code },
+    //         success: function (data) {
+    //             console.log("Ramu", data);
+
+
+    //             if (data.firstname && data.firstname.trim() !== "") {
+    //             $('#ddlEmployeeName').val(data.firstname);
+
+    //         }
+
+    //             // Home
+    //             if (data.basic == 1) {
+    //                 $('[data-step-index="1"]').addClass("completed");
+    //                 $("#btn-Next").show();
+    //             }
+    //             // Personal
+    //             if (data.personal == 1) {
+    //                 $('[data-step-index="2"]').addClass("completed");
+    //             }
+    //             // Family
+    //             if (data.family == 1) {
+    //                 $('[data-step-index="3"]').addClass("completed");
+    //             }
+    //             // Education
+    //             if (data.education == 1) {
+    //                 $('[data-step-index="4"]').addClass("completed");
+    //             }
+    //             // Work
+    //             if (data.work == 1) {
+    //                 $('[data-step-index="5"]').addClass("completed");
+    //             }
+    //             // Reference
+    //             if (data.reference == 1) {
+    //                 $('[data-step-index="6"]').addClass("completed");
+    //             }
+    //             // Interview
+    //             if (data.interview == 1) {
+    //                 $('[data-step-index="7"]').addClass("completed");
+    //             }
+    //              if (data.letterintent == 1)
+    //                {
+    //                $('[data-step-index="8"]').addClass("completed");
+    //                }
+
+    //         },
+    //         error: function (xhr) {
+    //             console.error("Error:", xhr.responseText);
+    //         }
+    //     });
+    // }
+</script>

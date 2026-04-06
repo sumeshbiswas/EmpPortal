@@ -1,0 +1,335 @@
+﻿@{
+    ViewBag.Title = "HRMS Home";
+    Layout = "~/Views/Shared/EmployeeLayout.cshtml";
+}
+@await Html.PartialAsync("Partial_Wizard")
+<div class="form-section" id="formfamily">
+    <p class="EmpLabel"><span>Family Detail</span></p>
+	<div class="card">
+		<div class="table-responsive">
+			<table id="tblFamily" class="table-width">
+				<thead class="table-head">
+					<tr>
+						<th style="display:none;">Code</th>
+						<th>Name Of Family Member</th>
+						<th>Relationship</th>
+						<th>Gender</th>
+						<th>Age</th>
+						<th>Occupation &amp; Organization</th>
+						<th>Designation</th>
+						<th>Address</th>
+						<th>Contact No.</th>
+						<th>Minor Yes/No</th>
+						<th>Nominee Yes/No</th>
+						<th>Share %</th>
+						<th>Remarks</th>
+						<th>Action</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+		<!-- Pagination container -->
+		<div class="row">
+			<div class="col-md-12">
+				<div class="btn-add-row-last">
+					<i class="fa fa-plus btn-add-row" title="Add Row"><span>Add New Row</span></i>
+				</div>
+			</div>
+		</div>
+	</div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="btn-mt">
+                <button id="" type="button" class="btn btn-draft"><i class="fa fa-step-backward"></i>Previous</button>
+                <button id="" type="button" class="btn btn-success"><i class="fa fa-step-forward"></i>Next</button>
+            </div>
+        </div>
+        <div class="offset-md-2 col-md-4">
+            <div class="button-right btn-mt">
+                <button id="btn-Next" type="submit" class="btn btn-primary"><i class="fa fa-save"></i>Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+        $(document).ready(function () {
+        let designationList = [];
+        $("#btn-Next").hide();
+        // 1. Load Designation First
+        ddlDesignation(function () {
+            const storedParams = JSON.parse(sessionStorage.getItem('globalParams') || '{}');
+            console.log('Stored Params:', storedParams);
+
+            // 2. If read-only, disable everything
+            if (storedParams.readOnly) {
+                $('input, textarea, select, button').prop('disabled', true);
+                $('#editButton, #deleteButton').hide();
+            }
+
+            // 3. Load family data if docCode is present
+            if (storedParams.docCode) {
+                HrmsfamilyDetail(storedParams.docCode);
+                // checkTab(storedParams.docCode);
+                Checkhrmstab(storedParams.docCode);
+            } else {
+                addRow(); // Show empty row by default
+            }
+        });
+
+        // 4. Function to populate dropdown
+        function ddlDesignation(callback) {
+            $.ajax({
+                url: '/hrmsfamily/GetddlDesignation',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    designationList = data;
+                    if (typeof callback === "function") callback();
+                },
+                error: function (xhr) {
+                    console.error("Error loading designation list:", xhr.responseText);
+                }
+            });
+        }
+
+        // 5. Function to load family detail list
+        function HrmsfamilyDetail(code) {
+            $.ajax({
+                url: '/hrmsfamily/GetFamilyDetailList',
+                type: 'GET',
+                data: { code: parseInt(code) },
+                success: function (res) {
+                    console.log('Family Detail Response:', res);
+                    const $tbody = $('#tblFamily tbody');
+                    $tbody.empty();
+
+                    if (res && Array.isArray(res.familyDetail) && res.familyDetail.length > 0) {
+                        res.familyDetail.forEach(f => {
+                            addRow({
+                                familyMember: f.membeR_NAME || '',
+                                relationship: f.relation || '',
+                                age: f.age || '',
+                                gender: f.gender || '',
+                                occupation: f.occupation || '',
+                                designation: f.designation || '',
+                                address: f.address || '',
+                                contactNo: f.contacT_NO || '',
+                                minor: f.minor || '',
+                                nominee: f.nominee || '',
+                                share: f.share || '',
+                                remarks: f.remarks || ''
+                            });
+                        });
+
+                        // Add "+" button to last row only
+                        $('.btn-add-action').remove();
+                        $('#tblFamily tbody tr:last td:last').prepend(`
+                            <i class="fa fa-plus btn-add-action text-success" title="Add Row" style="cursor:pointer;"></i>
+                        `);
+                    } else {
+                        console.warn("No family data found.");
+                        addRow(); // Fallback to one blank row
+                    }
+                },
+                error: function (err) {
+                    console.error("Error loading family details:", err);
+                }
+            });
+        }
+
+        // 6. Add Row function
+        const $tbody = $('#tblFamily tbody');
+        function addRow(data = {}) {
+            $tbody.find('.btn-add-action').remove();
+
+            const row = `
+                <tr class="no-border-input">
+                    <td style="display:none;">${data.code || ''}</td>
+                    <td><input type="text" class="form-control" value="${data.familyMember || ''}" /></td>
+                    <td><input type="text" class="form-control" value="${data.relationship || ''}" /></td>
+                    <td>
+                        <select class="form-control">
+                            <option value="">Select</option>
+                            <option value="1" ${data.gender === '1' ? 'selected' : ''}>Male</option>
+                            <option value="2" ${data.gender === '2' ? 'selected' : ''}>Female</option>
+                            <option value="3" ${data.gender === '3' ? 'selected' : ''}>Other</option>
+                        </select>
+                    </td>
+                    <td><input type="number" class="form-control" style="width: 58px;" value="${data.age || ''}" /></td>
+                    <td><input type="text" class="form-control" value="${data.occupation || ''}" /></td>
+                    <td>
+                        <select class="form-control ddl-designation">
+                            <option value="">Select</option>
+                            ${designationList.map(item =>
+                                `<option value="${item.value}" ${item.value == data.designation ? 'selected' : ''}>${item.text}</option>`
+                            ).join('')}
+                        </select>
+                    </td>
+                    <td><input type="text" class="form-control" value="${data.address || ''}" /></td>
+                    <td><input type="text" class="form-control" value="${data.contactNo || ''}" /></td>
+                    <td>
+                        <select class="form-control">
+                            <option value="1" ${data.minor === '1' ? 'selected' : ''}>Yes</option>
+                            <option value="2" ${data.minor === '2' ? 'selected' : ''}>No</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-control">
+                            <option value="1" ${data.nominee === '1' ? 'selected' : ''}>Yes</option>
+                            <option value="2" ${data.nominee === '2' ? 'selected' : ''}>No</option>
+                        </select>
+                    </td>
+                    <td><input type="number" class="form-control" value="${data.share || ''}" /></td>
+                    <td><input type="text" class="form-control" value="${data.remarks || ''}" /></td>
+                    <td>
+                        <i class="fa fa-plus btn-add-action text-success" title="Add Row" style="cursor:pointer;"></i>
+                        <i class="fa fa-trash btn-delete-action text-danger" title="Delete Row" style="cursor:pointer;"></i>
+                    </td>
+                </tr>
+            `;
+            $tbody.append(row);
+        }
+
+        // 7. Add / Delete button actions
+        $(document).on('click', '.btn-add-row, .btn-add-action', function () {
+            addRow();
+        });
+
+        $(document).on('click', '.btn-delete-action', function () {
+            const $row = $(this).closest('tr');
+            const isLastRow = $row.is(':last-child');
+            $row.remove();
+
+            // Restore "+" icon if deleted row was last
+            if (isLastRow) {
+                const $lastRow = $tbody.find('tr:last');
+                if ($lastRow.length && $lastRow.find('.btn-add-action').length === 0) {
+                    $lastRow.find('td:last').prepend(
+                        `<i class="fa fa-plus btn-add-action text-success" title="Add Row" style="cursor:pointer;"></i>`
+                    );
+                }
+            }
+        });
+            $('#btn-Next').on('click', function (e) {
+        e.preventDefault();
+
+        let dataList = [];
+
+        $('#tblFamily tbody tr').each(function () {
+            const $row = $(this);
+
+            const rowData = {
+                code: $row.find('td:eq(0)').text().trim(),
+                familyMember: $row.find('td:eq(1) input').val(),
+                relationship: $row.find('td:eq(2) input').val(),
+                gender: $row.find('td:eq(3) select').val(),
+                age: $row.find('td:eq(4) input').val(),
+                occupation: $row.find('td:eq(5) input').val(),
+                designation: $row.find('td:eq(6) select').val(),
+                address: $row.find('td:eq(7) input').val(),
+                contactNo: $row.find('td:eq(8) input').val(),
+                minor: $row.find('td:eq(9) select').val(),
+                nominee: $row.find('td:eq(10) select').val(),
+                share: $row.find('td:eq(11) input').val(),
+                remarks: $row.find('td:eq(12) input').val()
+            };
+
+            dataList.push(rowData);
+        });
+
+        const storedParams = JSON.parse(sessionStorage.getItem('globalParams') || '{}');
+        const code = storedParams.docCode || 0;
+
+        const payload = {
+            code: code,
+            familyList: dataList
+        };
+
+        console.log("Sending Payload:", payload);
+
+        $.ajax({
+            url: '/hrmsfamily/SaveData',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(payload),
+            success: function (response) {
+                toastr.success(response.message);
+            },
+            error: function (xhr) {
+                toastr.error("Failed to save data!");
+                console.log(xhr.responseText);
+            }
+        });
+    });
+
+    function validateRequiredField($field, fieldName) {
+        if (!$field || $field.length === 0) return true; 
+        const value = $field.val()?.trim();
+        if (!value || value === '-- Select --') {
+            toastr.warning(fieldName + ' is required.');
+            $field.focus();
+            return false;
+        }
+        return true;
+    }
+    function Checkhrmstab(code) {
+        $.ajax({
+            url: '/hrmshome/Checkhrmstable',
+            type: 'GET',
+            data: { code: code },
+            success: function (data) {
+
+                console.log("Tab Status:", data);
+
+                // Home
+                if (data.basic == 1) {
+                    $('[data-step-index="1"]').addClass("completed");
+                    $("#btn-Next").show();
+                }
+
+                // Personal
+                if (data.personal == 1) {
+                    $('[data-step-index="2"]').addClass("completed");
+                }
+
+                // Family
+                if (data.family == 1) {
+                    $('[data-step-index="3"]').addClass("completed");
+                }
+
+                // Education
+                if (data.education == 1) {
+                    $('[data-step-index="4"]').addClass("completed");
+                }
+
+                // Work
+                if (data.work == 1) {
+                    $('[data-step-index="5"]').addClass("completed");
+                }
+
+                // Reference
+                if (data.reference == 1) {
+                    $('[data-step-index="6"]').addClass("completed");
+                }
+
+                // Interview
+                if (data.interview == 1) {
+                    $('[data-step-index="7"]').addClass("completed");
+                }
+                if (data.letterintent == 1)
+                   {
+                   $('[data-step-index="8"]').addClass("completed");
+                   }
+
+
+            },
+            error: function (xhr) {
+                console.error("Error:", xhr.responseText);
+            }
+        });
+    }
+    });
+
+</script>

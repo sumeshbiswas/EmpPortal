@@ -1,0 +1,77 @@
+﻿@{
+    ViewBag.Title = "Offer Letter Master";
+    Layout = "~/Views/Shared/EmployeeLayout.cshtml";
+}
+
+<!-- Dropdown to select template -->
+<select id="ddlTemplate" class="form-control">
+    <option value="">-- Select Offer Letter Template --</option>
+    @foreach (var item in ViewBag.TemplateList)
+    {
+        <option value="@item.TemplateId">@item.TemplateName</option>
+    }
+</select>
+
+<br />
+
+<!-- Input for entering template name -->
+<input type="text" id="txtTemplateName" class="form-control" placeholder="Enter Template Name" />
+
+<br />
+
+<!-- Textarea for template body -->
+<textarea id="txtTemplateBody"></textarea>
+
+<br />
+
+<!-- Button to save the template -->
+<button class="btn btn-primary" id="btnSave">Save Template</button>
+
+<!-- CKEditor library -->
+<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+<script>
+    // Initialize CKEditor
+    CKEDITOR.replace('txtTemplateBody');
+
+    // Fetch the template body when dropdown value changes
+    $('#ddlTemplate').change(function () {
+        var templateId = $(this).val();
+
+        if (templateId) {
+            // AJAX call to fetch the template body by id
+            $.get('/OfferLetterMaster/GetTemplateById', { templateId: templateId }, function (data) {
+                CKEDITOR.instances.txtTemplateBody.setData(data);
+                // Set the TemplateName based on selected dropdown
+                var templateName = $('#ddlTemplate option:selected').text();
+                $('#txtTemplateName').val(templateName);
+            });
+        } else {
+            CKEDITOR.instances.txtTemplateBody.setData('');
+            $('#txtTemplateName').val('');
+        }
+    });
+
+    // Save template on button click
+    $('#btnSave').click(function () {
+        var model = {
+            TemplateName: $('#txtTemplateName').val(),
+            TemplateBody: CKEDITOR.instances.txtTemplateBody.getData()
+        };
+
+        // Ensure Template Name is not empty before submitting
+        if (model.TemplateName === "") {
+            alert("Template Name cannot be empty!");
+            return;
+        }
+
+        // AJAX POST to save template
+        $.post('/OfferLetterMaster/SaveTemplate', model, function (res) {
+            if (res.success) {
+                alert(res.message);
+                location.reload();  // Reload the page to refresh the template list
+            } else {
+                alert("Error saving template");
+            }
+        });
+    });
+</script>

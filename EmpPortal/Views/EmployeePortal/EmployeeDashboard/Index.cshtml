@@ -1,0 +1,1350 @@
+﻿@{
+    ViewBag.Title = "Employee Portal Dashboard";
+    Layout = "~/Views/Shared/EmployeeLayout.cshtml";
+}
+<style>
+
+    .emp-wedding-anniversary-header {
+        background-color: #e91e63; 
+    }
+
+    .emp-leave-flex {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        height: 260px;
+    }
+
+    /* donut left */
+    .emp-leave-donut {
+        width: 45%;
+        height: 100%;
+    }
+
+    /* right details */
+    .emp-leave-details {
+        width: 55%;
+    }
+
+    .emp-leave-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+        font-size: 14px;
+        color: #1d1d1d;
+    }
+
+    /* color dot */
+    .emp-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    /* colors matching chart */
+    .clApplied {
+        background: #EF5350;
+    }
+
+    .clBalance {
+        background: #66BB6A;
+    }
+
+    .elApplied {
+        background: #FFCA28;
+    }
+
+    .elBalance {
+        background: #42A5F5;
+    }
+
+    /* bold number */
+    .emp-leave-row b {
+        font-size: 18px;
+        color: #0f263e;
+    }
+
+    .emp-leave-total {
+        margin-bottom: 12px;
+        font-size: 15px;
+        color: #0e243b;
+    }
+
+        .emp-leave-total div {
+            margin-bottom: 6px;
+        }
+
+    .emp-divider {
+        border: 0;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        margin: 10px 0 15px;
+    }
+
+    .leave_total{
+        color: #198754;
+    }
+</style>
+
+<section class="empdashboardheading">
+
+    <div class="emp-heading-top">
+        <div>
+            <h5>
+                <span class="emp-icon-wrapper">
+                    <i class="fa-solid fa-user"></i>
+                </span><span class="emp_mainheading">Employee Dashboard</span>
+            </h5>
+        </div>
+
+        <div class="emp-welcome">
+            Welcome back, <strong id="lbl_EmpNameTop"></strong> 👋
+        </div>
+    </div>
+</section>
+
+<!-- LEAVE MANAGEMENT BAR -->
+<section class="emp-leave-bar">
+    <div class="emp-leave-wrapper">
+        <div class="emp-leave-title">
+            <i class="fa-solid fa-calendar-check"></i>
+            <span>Leave Management</span>
+        </div>
+        <div class="emp-leave-dropdown">
+            <div class="emp-leave-buttons">
+                <button id="btn_leaveapply" style="display:none;" class="emp-approval-btn" onclick="window.location.href='@Url.Action("Index", "EmpLeaveApprovalList")'">
+                    <i class="fa-solid fa-clipboard-check"></i> Leave Approval
+                </button>
+                <button class="emp-leave-btn" onclick="toggleLeaveDropdown()">
+                    <i class="fa-solid fa-calendar-days"></i> Manage Leave<i class="fa-solid fa-chevron-down"></i>
+                </button>
+            </div>
+            <div class="emp-leave-menu" id="empLeaveMenu">
+                <a href="#" id="btnRequestModal" data-toggle="modal" data-target="#requestLeaveModal">
+                    <i class="fa-solid fa-paper-plane"></i>Apply Leave
+                </a>
+                <a href="#" data-toggle="modal" data-target="#leaveHistoryModal" id="btn_LeaveHistory">
+                    <i class="fa-solid fa-clock-rotate-left"></i>Leave History
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- EMP Leave Request Modal -->
+<div class="modal fade emp-leave-modal" id="requestLeaveModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered emp-modal-dialog">
+        <div class="modal-content emp-modal-content">
+            <!-- Header -->
+            <div class="emp-modal-header">
+                <div>
+                    <h5 class="emp-modal-title">
+                        <i class="fa-solid fa-calendar-check me-2"></i> Leave Request
+                    </h5>
+                    <div class="emp-balance-wrapper mt-2">
+                        <span class="emp-badge emp-cl-badge">
+                            CL Balance: <span id="LblCL">0</span>
+                        </span>
+                        <span class="emp-badge emp-el-badge">
+                            EL Balance: <span id="LblEL">0</span>
+                        </span>
+                    </div>
+                </div>
+                <button type="button" class="close emp-close-btn" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <!-- Body -->
+            <div class="emp-modal-body">
+                <div class="row">
+                    <div class="col-12 col-sm-6 col-md-6 col-lg-6">
+                        <div class="emp-form-group">
+                            <label>From Date</label>
+                            <input type="date" class="emp-form-control" id="fromDate">
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-6 col-lg-6">
+                        <div class="emp-form-group">
+                            <label>To Date</label>
+                            <input type="date" class="emp-form-control" id="toDate">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                        <div class="emp-form-group">
+                            <label>Leave Type</label>
+                            <select class="emp-form-control" id="ddlLeaveType">
+                                <option value="">Select Leave Type</option>
+                                <option value="1">Earned Leave</option>
+                                <option value="2">Casual Leave</option>
+                                <option value="3">Leave Without Pay</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="emp-form-group">
+                            <label>Reason For Leave</label>
+                            <textarea class="emp-form-control" id="requestRemarks" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="offset-0 offset-sm-3 offset-md-4 offset-lg-3 offset-xl-3 col-12 col-sm-6 col-md-4 col-lg-4 col-xl-6">
+                        <button type="button" id="SubmitRequest" class="emp-submit-btn">
+                            <i class="fa-solid fa-paper-plane"></i> Submit Request
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- EMP leave history Modal -->
+
+<div class="modal fade emp-leave-modal" id="leaveHistoryModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content emp-modal-content">
+            <!-- Header -->
+            <div class="emp-modal-header d-flex align-items-center justify-content-between">
+                <!-- Left: Title and Small Text -->
+                <div class="d-flex flex-column">
+                    <h5 class="emp-modal-title">
+                        <i class="fa-solid fa-clock-rotate-left"></i> Leave History
+                    </h5>
+                    <small class="text-light">Your previous leave records</small>
+                </div>
+
+                <!-- Center: Filter Date -->
+                <div class="flex-grow-1 text-center">
+                    <input type="month" id="Fltr_date" class="form-control">
+                </div>
+
+                <!-- Right: Close Button -->
+                <button type="button" class="close emp-close-btn" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <!-- Body -->
+            <div class="emp-modal-body emp-history-body">
+                <div class="emp-history-table-wrapper">
+                    <table class="emp-history-table">
+                        <thead>
+                            <tr>
+                                <th style="display:none;">DocID</th>
+                                <th>From</th>
+                                <th>To</th>
+                                <th>Type</th>
+                                <th>Days</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<section class="emp-dashboard-section">
+    <div class="row g-4">
+        <!-- LEFT : Employee Profile -->
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+            <div class="emp-profile-card">
+                <div class="emp-profile-top">
+                    <div class="emp-profile-image-wrapper">
+                        <img src="./images/user.png" alt="User" class="emp-profile-image" id="UserImg">
+                        <!-- Hidden file input -->
+                        <input type="file" id="fileInput" accept="image/*" style="display:none;">
+                        <span class="emp-status-badge active" id="Emp_status"></span>
+                    </div>
+                    <div>
+                        <h4 class="emp-profile-name" id="lblEmpName"></h4>
+                        <p class="emp-profile-designation" id="lblempDesignation">Software Engineer</p>
+                    </div>
+                </div>
+                <div class="emp-profile-details">
+                    <div class="emp-detail-item">
+                        <span>Department</span>
+                        <strong id="lblEmpdept"></strong>
+                    </div>
+                    <div class="emp-detail-item">
+                        <span>Employee ID</span>
+                        <strong id="lbl_EmpID"></strong>
+                    </div>
+                    <div class="emp-detail-item">
+                        <span>Email</span>
+                        <strong id="lblEmail"></strong>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- RIGHT : Leave Chart -->
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+           @*  <div class="emp-graph-card">
+                <div class="emp-graph-header">
+                    <h5>Leave Overview</h5>
+                    <span class="emp-graph-subtitle" id="YearSumary"></span>
+                </div>
+                <div class="emp-graph-body">
+                    <canvas id="leaveChart"></canvas>
+                </div>
+            </div> *@
+           @*  <div class="emp-graph-card">
+
+                <div class="emp-graph-header">
+                    <h5>Leave Overview</h5>
+                    <span class="emp-graph-subtitle" id="YearSumary"></span>
+                </div>
+
+                <div class="emp-graph-body emp-leave-flex">
+
+                    <!-- LEFT : DONUT -->
+                    <div class="emp-leave-donut">
+                        <canvas id="leaveChart"></canvas>
+                    </div>
+
+                    <!-- RIGHT : VALUES -->
+                    <div class="emp-leave-details">
+
+                        <div class="emp-leave-row">
+                            <span class="emp-dot clApplied"></span>
+                            CL Applied : <b id="clAppliedCount"></b>
+                        </div>
+
+                        <div class="emp-leave-row">
+                            <span class="emp-dot clBalance"></span>
+                            CL Balance : <b id="clBalanceCount"></b>
+                        </div>
+
+                        <div class="emp-leave-row">
+                            <span class="emp-dot elApplied"></span>
+                            EL Applied : <b id="elAppliedCount"></b>
+                        </div>
+
+                        <div class="emp-leave-row">
+                            <span class="emp-dot elBalance"></span>
+                            EL Balance : <b id="elBalanceCount"></b>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div> *@
+            <div class="emp-graph-card">
+
+                <div class="emp-graph-header">
+                    <h5>Leave Overview</h5>
+                    <span class="emp-graph-subtitle" id="YearSumary"></span>
+                </div>
+
+                <div class="emp-graph-body emp-leave-flex">
+
+                    <!-- LEFT : DONUT -->
+                    <div class="emp-leave-donut">
+                        <canvas id="leaveChart"></canvas>
+                    </div>
+
+                    <!-- RIGHT : VALUES -->
+                    <div class="emp-leave-details">
+
+                        <!-- TOTALS -->
+                        <div class="emp-leave-total">
+                            <div>
+                                Total CL : <b id="totalCL" class="leave_total"></b>
+                            </div>
+
+                            <div>
+                                Total EL : <b id="totalEL" class="leave_total"></b>
+                            </div>
+                        </div>
+
+                        <hr class="emp-divider">
+
+                        <div class="emp-leave-row">
+                            <span class="emp-dot clApplied"></span>
+                            CL Applied : <b id="clAppliedCount"></b>
+                        </div>
+
+                        <div class="emp-leave-row">
+                            <span class="emp-dot clBalance"></span>
+                            CL Balance : <b id="clBalanceCount"></b>
+                        </div>
+
+                        <div class="emp-leave-row">
+                            <span class="emp-dot elApplied"></span>
+                            EL Applied : <b id="elAppliedCount"></b>
+                        </div>
+
+                        <div class="emp-leave-row">
+                            <span class="emp-dot elBalance"></span>
+                            EL Balance : <b id="elBalanceCount"></b>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Request Leave Modal -->
+<section class="emp-upcoming-section">
+    <div class="emp-upcoming-container">
+        <div class="row g-4">
+            <!-- Upcoming Holiday -->
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 col-xl-3">
+                <div class="emp-upcoming-card">
+                    <div class="emp-card-header emp-holiday-header">
+                        <div class="emp-card-icon">
+                            <i class="fa-solid fa-calendar-days"></i>
+                        </div>
+                        <h5 class="emp-card-title">Upcoming Holiday</h5>
+                    </div>
+                    <div class="emp-card-body">
+                        <div class="emp-scroll-area" id="dHoliday">
+                        </div>
+                        <div class="emp-card-footer">
+                         @*    <button class="emp-view-btn">
+                                View All
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button> *@
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Upcoming Work Anniversary -->
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 col-xl-3" id="domCard" style="display:none;">
+                <div class="emp-upcoming-card">
+                    <div class="emp-card-header emp-anniversary-header">
+                        <div class="emp-card-icon">
+                            <i class="fa-solid fa-award"></i>
+                        </div>
+                        <h5 class="emp-card-title">Upcoming Work Anniversary</h5>
+
+                    </div>
+
+                    <div class="emp-card-body">
+                        <div class="emp-scroll-area" id="domContent"></div>
+
+                        <div class="emp-card-footer">
+                       @*      <button class="emp-view-btn">
+                                View All
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button> *@
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Upcoming Birthday -->
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 col-xl-3" id="dobCard" style="display:none;">
+                <div class="emp-upcoming-card">
+                    <div class="emp-card-header emp-birthday-header">
+                        <div class="emp-card-icon">
+                            <i class="fa-solid fa-cake-candles"></i>
+                        </div>
+                        <h5 class="emp-card-title">Upcoming Birthday</h5>
+                    </div>
+
+                    <div class="emp-card-body">
+                        <div class="emp-scroll-area" id="dobContent"></div>
+
+                        <div class="emp-card-footer">
+                    @*         <button class="emp-view-btn">
+                                View All
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button> *@
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wedding Date-->
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 col-xl-3" id="doaCard" >
+                <div class="emp-upcoming-card">
+                    <div class="emp-card-header emp-wedding-anniversary-header">
+                        <div class="emp-card-icon">
+                            <i class="fa-solid fa-heart"></i>
+                        </div>
+                        <h5 class="emp-card-title">Upcoming Wedding Anniversary</h5>
+                    </div>
+
+                    <div class="emp-card-body">
+                        <div class="emp-scroll-area" id="weddingAnnivContent"></div>
+
+                        <div class="emp-card-footer">
+                       @*      <button class="emp-view-btn">
+                                View All
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button> *@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+        let leaveChartInstance = null;
+        let selectedRowData = null;
+
+            /* ===================== DOCUMENT READY ===================== */
+        $(document).ready(async function () {
+            try {
+                Cheack();
+                await loadEmployeeDetails();
+                await loadLeaveChart();
+
+
+
+            } catch (err) {
+               toastr.error("Failed to load dashboard data. Please try again later.");
+            }
+
+            $('#btn_LeaveHistory').on('click', function () {
+
+                    const input = document.getElementById("Fltr_date");
+
+                    let now = new Date();
+
+                    // Current month
+                    let currentYear = now.getFullYear();
+                    let currentMonth = String(now.getMonth() + 1).padStart(2, '0');
+
+                    input.value = `${currentYear}-${currentMonth}`;
+                    input.max = `${currentYear}-${currentMonth}`;
+
+                    // 3 months back
+                    let minDate = new Date();
+                    minDate.setMonth(minDate.getMonth() - 3);
+
+                    let minYear = minDate.getFullYear();
+                    let minMonth = String(minDate.getMonth() + 1).padStart(2, '0');
+
+                    input.min = `${minYear}-${minMonth}`;
+
+                    document.getElementById('Fltr_date').value = new Date(new Date().getFullYear(), new Date().getMonth()-1,1).toISOString().slice(0,7);
+
+                    fetchLeaveHistory();
+
+
+
+
+                });
+
+            $('#btnRequestModal').on('click', async function () {
+            try {
+                const res = await $.ajax({
+                    url: '/EmployeeDashboard/GetLeaveBalances',
+                    type: 'GET'
+                });
+
+                if (!res.success || !res.data) return;
+                 await fetchLeaveHistory();
+                $('#LblCL').text(res.data.clBal);
+                $('#LblEL').text(res.data.elBal);
+
+            }
+            catch (error) {
+
+                toastr.error("Error", error);
+            }
+        });
+
+            $(document).on("change", ".from-date, .to-date", function () {
+
+            const row = $(this).closest("tr");
+
+            const fromVal = row.find(".from-date").val();
+            const toVal = row.find(".to-date").val();
+
+            if (fromVal && toVal) {
+
+                const from = new Date(fromVal);
+                const to = new Date(toVal);
+
+                let days = Math.floor((to - from) / (1000 * 60 * 60 * 24)) + 1;
+
+                if (days < 0) days = 0;
+
+                row.find(".days").val(days);
+            }
+
+        });
+
+            $('#Fltr_date').on('change', function(){
+                const selecteddate  = $('#Fltr_date').val();
+              fetchLeaveHistory(selecteddate);
+            });
+
+           document.addEventListener("click", function (e) {
+                  const dropdown = document.querySelector(".emp-leave-dropdown");
+                if (!dropdown.contains(e.target)) {
+                 document.getElementById("empLeaveMenu").classList.remove("emp-show");
+                }
+            });
+
+        /* ===================== LEAVE TYPE CHANGE ===================== */
+            $("#ddlLeaveType").change(async function () {
+            let leaveCode = $(this).val();
+            if (!leaveCode) return;
+
+            try {
+                const res = await $.ajax({
+                    url: '/EmployeeDashboard/GetLeaveBalance',
+                    type: 'GET',
+                    data: { leaveCode: leaveCode }
+                });
+
+                if (res.success) {
+                    $("#lblCL").text(res.balCL);
+                    $("#lblEL").text(res.balEL);
+
+                    let balCL = parseInt(res.balCL) || 0;
+                    let balEL = parseInt(res.balEL) || 0;
+
+                    if (balCL === 0 && balEL === 0)
+                        $("#btnSubmitRequest").hide();
+                    else
+                        $("#btnSubmitRequest").show();
+                } else {
+                    toastr.info(res.message);
+                    $("#btnSubmitRequest").hide();
+                }
+
+            } catch (error) {
+
+                toastr.error("Error fetching leave balance:", error)
+            }
+        });
+
+            $(document).on("change", ".from-date, .to-date", function () {
+                const row = $(this).closest("tr");
+                const fromVal = row.find(".from-date").val();
+                const toVal = row.find(".to-date").val();
+                if (fromVal && toVal) {
+
+                    const from = new Date(fromVal);
+                    const to = new Date(toVal);
+
+                    if (to < from) {
+                        toastr.warning("To Date cannot be earlier than From Date");
+                        return;
+                    }
+                    let days = Math.floor((to - from) / (1000 * 60 * 60 * 24)) + 1;
+                    row.find(".days").val(days);
+                }
+            });
+
+            $("#fromDate").on("change", function () {
+                let fromVal = $(this).val();
+
+                if (fromVal) {
+                    // Restrict To Date selection
+                     $("#toDate").attr("min", fromVal);
+                    }
+                });
+
+            $("#toDate").on("change", function () {
+                let fromVal = $("#fromDate").val();
+                let toVal = $(this).val();
+
+
+                if(!fromVal)
+                {
+                  toastr.warning("First Select From Date.");
+                  $('#toDate').val('');
+                  return;
+                }
+
+
+
+
+                if (fromVal && toVal) {
+                    if (new Date(toVal) < new Date(fromVal)) {
+                        toastr.warning("To Date cannot be earlier than From Date");
+                        $(this).val(""); // reset invalid value
+                    }
+                }
+            });
+
+        /* ===================== SUBMIT REQUEST ===================== */
+
+          $("#SubmitRequest").click(async function (e) {
+                e.preventDefault();
+                // Gather form values
+                let model = {
+                    FromDate: $("#fromDate").val(),
+                    ToDate: $("#toDate").val(),
+                    LeaveType: $("#ddlLeaveType").val(),
+                    LeaveTypeName: $("#ddlLeaveType option:selected").text(),
+                    Remarks: $("#requestRemarks").val()
+                };
+
+                // Check all fields are filled
+                if (!model.FromDate || !model.ToDate || !model.LeaveType || !model.Remarks) {
+                    toastr.warning("Please fill all fields");
+                    return;
+                }
+
+                // Parse dates
+                const fromDate = new Date(model.FromDate);
+                const toDate = new Date(model.ToDate);
+
+                if (toDate < fromDate) {
+                    toastr.warning("To Date cannot be before From Date");
+                    return;
+                }
+
+                // Calculate total leave days
+                let totalDays = Math.floor((toDate - fromDate) / (1000 * 60 * 60 * 24)) + 1;
+
+                // Get leave balances (trimmed and parsed to float)
+                const elBalance = parseFloat($('#LblEL').text().trim());
+                const clBalance = parseFloat($('#LblCL').text().trim());
+
+                // Check against leave type
+                const leaveType = parseInt(model.LeaveType);
+
+                if (leaveType === 1 && totalDays > elBalance) {
+                    toastr.info("You have only " + elBalance + " Earned Leave");
+                    return;
+                }
+
+                if (leaveType === 2 && totalDays > clBalance) {
+                    toastr.info("You have only " + clBalance + " Casual Leave");
+                    return;
+                }
+
+                // Submit the leave request
+                try {
+                    const res = await $.ajax({
+                        url: '/EmployeeDashboard/SubmitLeaveRequest',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(model)
+                    });
+
+                    if (res.success === true) {
+                        toastr.success("Leave Request submitted successfully!");
+
+                        // Close modal after short delay
+                        await new Promise(resolve => setTimeout(resolve, 1500));
+                        const modalElement = document.getElementById('requestLeaveModal');
+                        const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
+                        modalInstance.hide();
+
+                        // Clear form
+                        $('#requestLeaveModal').find('input, textarea, select').val('');
+
+                        await loadLeaveChart();
+                    } else {
+                        toastr.error(res.message);
+                    }
+
+                } catch (error) {
+                    toastr.error("Server error");
+
+                }
+            });
+
+        });
+
+        /* ===================== DROPDOWN ===================== */
+
+        async function Cheack()
+            {
+                try{
+                    const res = await $.ajax({
+                        url: '/EmpAttendance/CheackParentId',
+                        type: 'GET'
+                    });
+
+                    if (res.success == true)
+                    {
+                      $('#btn_leaveapply').show();
+                    }
+                    else
+                    {
+                      $('#btn_leaveapply').hide();
+                    }
+
+                }
+                catch(ex){
+                    toastr.error(ex.message);
+                }
+            }
+
+        function toggleLeaveDropdown() {
+            document.getElementById("empLeaveMenu").classList.toggle("emp-show");
+        }
+
+        document.addEventListener("click", function (e) {
+            const dropdown = document.querySelector(".emp-leave-dropdown");
+            if (dropdown && !dropdown.contains(e.target)) {
+                document.getElementById("empLeaveMenu")?.classList.remove("emp-show");
+            }
+        });
+
+        function toggleLeaveDropdown() {
+            document.getElementById("empLeaveMenu").classList.toggle("emp-show");
+        }
+
+        /* ===================== LOAD EMPLOYEE DETAILS ===================== */
+        async function loadEmployeeDetails() {
+            try {
+                const response = await $.ajax({
+                    url: '/EmployeeDashboard/EmployeeDetails',
+                    type: 'GET',
+                    dataType: 'json'
+                });
+
+                if (response?.employee) {
+                const emp = response.employee;
+
+                console.log("emp", emp);
+
+                $("#lbl_EmpID").text(emp.code);
+                $("#lbl_EmpNameTop").text(emp.fullName);
+                $("#lblEmpName").text(emp.fullName);
+                $("#lblempDesignation").html("<strong>Designation:</strong> " + emp.designationName);
+                $("#lblEmpdept").text(emp.departmentName);
+
+                if (emp.active == 1) {
+                    $('#Emp_status').text("Active");
+                } else {
+                    $('#Emp_status').text("DeActive");
+                }
+
+                // IMAGE
+                if (emp.imagebyte) {
+                    $("#UserImg").attr("src", "data:image/png;base64," + emp.imagebyte);
+                } else {
+                    $("#UserImg").attr("src", "/images/user.png");
+                }
+
+                var currentYear = new Date().getFullYear();
+                $('#YearSumary').text(currentYear + " Summary");
+
+                if (emp.email?.trim()) {
+                    $("#lblEmail").html(`<a href="mailto:${emp.email}">${emp.email}</a>`);
+                } else {
+                    $("#lblEmail").text("Not Available");
+                }
+
+                // DOB
+                if (emp.dob) {
+                    const dobDate = new Date(emp.dob);
+                    $("#dobContent").html(`
+                        <p class="upcoming_heading">${HolidayformatDate(dobDate,true)}</p>
+                        <p class="upcoming_subheading">Happy Birthday! 🎉</p>
+                    `);
+                    $("#dobCard").show();
+                }
+
+                // Work Anniversary
+                if (emp.joiN_DATE) {
+                    const joiN_DATE = new Date(emp.joiN_DATE);
+                    $("#domContent").html(`
+                        <p class="upcoming_heading">${HolidayformatDate(joiN_DATE, true)}</p>
+                        <p class="upcoming_subheading">Happy Work Anniversary! 🎊</p>
+                    `);
+                    $("#domCard").show();
+                }
+
+                // ✅ FIXED: Wedding Anniversary (inside block)
+                if (emp.dom) {
+                    const dom = new Date(emp.dom);
+                    $("#weddingAnnivContent").html(`
+                        <p class="upcoming_heading">${HolidayformatDate(dom, true)}</p>
+                        <p class="upcoming_subheading">Happy Wedding Anniversary! 🎊</p>
+                    `);
+                    $("#doaCard").show();
+                }
+                else
+                {
+                   $("#doaCard").hide();
+                }
+            }
+
+
+                if (response?.holidays?.length > 0) {
+                    loadUpcomingHoliday(response.holidays);
+                } else {
+                    $("#dHoliday").html("<p>No holidays found</p>");
+                }
+
+            } catch (error) {
+                toa.error("Unable to load employee details:", error);
+            }
+        }
+
+
+        /* ===================== LOAD HOLIDAYS ===================== */
+     function loadUpcomingHoliday(holidays) {
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const upcoming = holidays
+                .map(h => ({
+                    name: h.name,
+                    date: new Date(h.holidayDate)
+                }))
+                .filter(h => h.date >= today)
+                .sort((a, b) => a.date - b.date);
+
+            if (upcoming.length === 0) {
+                $("#dHoliday").html("<p>No upcoming holidays</p>");
+                return;
+            }
+
+            let html = "<ul class='list-unstyled'>";
+            upcoming.forEach(h => {
+                html += `
+                    <li>
+                        <strong class="upcoming_heading">${h.name}</strong><br/>
+                        <small class="upcoming_subheading">${formatDate(h.date, true)}</small>
+                    </li>
+                    <hr/>
+                `;
+            });
+            html += "</ul>";
+
+            $("#dHoliday").html(html);
+        }
+
+        /* ===================== LOAD LEAVE CHART ===================== */
+     async function loadLeaveChart() {
+            try {
+                const res = await $.ajax({
+                    url: '/EmployeeDashboard/GetLeaveBalances',
+                    type: 'GET'
+                });
+
+                if (!res.success || !res.data) return;
+
+                drawLeaveChart(
+                    res.data.elBal,
+                    res.data.clBal,
+                    res.data.elApplied,
+                    res.data.clApplied
+                );
+
+            } catch (error) {
+
+                toastr.error("Error loading leave chart:", error);
+            }
+        }
+
+        /* ===================== DRAW CHART ===================== */
+    // function drawLeaveChart(elBal, clBal, elApplied, clApplied) {
+
+    //         elBal = Math.max(0, elBal);
+    //         clBal = Math.max(0, clBal);
+    //         elApplied = Math.max(0, elApplied);
+    //         clApplied = Math.max(0, clApplied);
+
+    //         const totalel = elBal + elApplied;
+    //         const totalcl = clBal + clApplied;
+
+    //         const ctx = document.getElementById('leaveChart');
+
+    //         if (leaveChartInstance)
+    //             leaveChartInstance.destroy();
+
+    //         leaveChartInstance = new Chart(ctx, {
+    //             type: 'bar',
+    //             data: {
+    //                 labels: [
+    //                     'Casual Leave (' + totalcl + ')',
+    //                     'Earned Leave (' + totalel + ')'
+    //                 ],
+    //                 datasets: [
+    //                     {
+    //                         label: 'Applied Leave',
+    //                         data: [clApplied, elApplied],
+    //                         backgroundColor: '#EF5350',
+    //                         stack: 'leave'
+    //                     },
+    //                     {
+    //                         label: 'Remaining Balance',
+    //                         data: [clBal, elBal],
+    //                         backgroundColor: '#66BB6A',
+    //                         stack: 'leave'
+    //                     }
+    //                 ]
+    //             },
+    //             options: {
+    //                 responsive: true,
+    //                 maintainAspectRatio: false,
+    //                 scales: {
+    //                     x: { stacked: true },
+    //                     y: {
+    //                         stacked: true,
+    //                         beginAtZero: true,
+    //                         ticks: { stepSize: 1 }
+    //                     }
+    //                 }
+    //             }
+    //         });
+    //     }
+
+      function drawLeaveChart(elBal, clBal, elApplied, clApplied) {
+
+        elBal = Math.max(0, elBal);
+        clBal = Math.max(0, clBal);
+        elApplied = Math.max(0, elApplied);
+        clApplied = Math.max(0, clApplied);
+
+        const totalel = elBal + elApplied;
+        const totalcl = clBal + clApplied;
+
+        const ctx = document.getElementById('leaveChart');
+
+        if (leaveChartInstance)
+            leaveChartInstance.destroy();
+
+        leaveChartInstance = new Chart(ctx, {
+
+            type: 'doughnut',   // changed from bar
+
+            data: {
+
+                labels: [
+                    'CL Applied',
+                    'CL Balance',
+                    'EL Applied',
+                    'EL Balance'
+                ],
+
+                datasets: [
+
+                    {
+                        label: 'Applied Leave',
+                        data: [clApplied, clBal, elApplied, elBal],
+
+                        backgroundColor: [
+
+                            '#EF5350',
+                            '#66BB6A',
+                            '#FFCA28',
+                            '#42A5F5'
+                        ]
+                    }
+                ]
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                cutout: '70%',   // donut thickness
+
+                plugins: {
+
+                    legend: {
+
+                        display: false   // hide default legend
+                    }
+                }
+            }
+        });
+
+        /* show numbers on right side */
+
+        document.getElementById("clAppliedCount").innerText = clApplied;
+        document.getElementById("clBalanceCount").innerText = clBal;
+        document.getElementById("elAppliedCount").innerText = elApplied;
+        document.getElementById("elBalanceCount").innerText = elBal;
+
+        document.getElementById("totalCL").innerText = totalcl;
+        document.getElementById("totalEL").innerText = totalel;
+    }
+
+    async function fetchLeaveHistory(selecteddate) {
+            try {
+               
+                const res = await $.ajax({
+                    url: '/EmployeeDashboard/GetLeaveHistoryData',
+                    data : {selecteddate : selecteddate},
+                    type: 'GET'
+                });
+
+                const data = res.data || [];
+                $(".emp-history-table tbody").empty();
+
+                data.forEach((item, index) => {
+                    addRow({ ...item, index });
+                });
+            } catch (error) {
+                toastr.error("Error fetching leave history:", error);
+            }
+        }
+
+    function addRow(data = {}) {
+        const leaveTypeClass = getLeaveTypeClass(data.leaveType);
+        const statusClass = getStatusClass(data.status);
+        data.index = data.index !== undefined ? data.index : rowIndex++;
+        let days = "";
+        if (data.fromDate && data.toDate) {
+            const from = new Date(data.fromDate);
+            const to = new Date(data.toDate);
+            days = Math.floor((to - from) / (1000 * 60 * 60 * 24)) + 1;
+        }
+
+        const row = `
+            <tr data-row="${data.index}">
+
+                <td style="display:none;">
+                    <input type="text"
+                           class="form-control"
+                           style="width:120px"
+                           id="DocID_${data.index}"
+                           value="${data.doC_ID}"
+                           readonly>
+                </td>
+
+                <td>
+                    <input type="date"
+                           class="form-control from-date"
+                           id="from_${data.index}"
+                           value="${data.fromDate || ''}"
+                           readonly>
+                </td>
+
+                <td>
+                    <input type="date"
+                           class="form-control to-date"
+                           id="to_${data.index}"
+                           value="${data.toDate || ''}"
+                           readonly>
+                </td>
+
+                <td>
+                    <select class="form-control leave-type-badge ${leaveTypeClass}"
+                            id="type_${data.index}"
+                            style="width:120px"
+                            readonly>
+                        <option value="">Select Leave</option>
+                        <option value="Earned Leave" ${data.leaveType === 'Earned Leave' ? 'selected' : ''}>Earned Leave</option>
+                        <option value="Casual Leave" ${data.leaveType === 'Casual Leave' ? 'selected' : ''}>Casual Leave</option>
+                        <option value="Earn Leave" ${data.leaveType === 'Earn Leave' ? 'selected' : ''}>Earn Leave</option>
+                        <option value="Leave Without Pay" ${data.leaveType === 'Leave Without Pay' ? 'selected' : ''}>Leave Without Pay</option>
+                    </select>
+                </td>
+
+                <td>
+                    <input type="number"
+                           class="form-control days leave-days"
+                           style="width:40px"
+                           id="days_${data.index}"
+                           value="${days}"
+                           readonly>
+                </td>
+
+                <td>
+                    <input type="text"
+                           class="leave-status-badge ${statusClass}"
+                           style="width:120px"
+                           id="status_${data.index}"
+                           value="${data.status || 'Pending'}"
+                           readonly>
+                </td>
+
+                <td>
+                    <i class="fa fa-edit btn-empedit"
+                       title="Edit Leave"
+                       onclick="editRow(${data.index}, this)">
+                    </i>
+
+                    <i class="fa fa-save btn-empsave"
+                       title="Save Leave Request"
+                       onclick="updateLeave(${data.index}, this)">
+                    </i>
+                </td>
+
+            </tr>
+        `;
+
+        $(".emp-history-table tbody").append(row);
+    }
+
+    function editRow(index, el) {
+        const row = $(el).closest("tr");
+        row.find(`#from_${index}`).prop("readonly", false);
+        row.find(`#to_${index}`).prop("readonly", false);
+        row.find(`#status_${index}`).prop("readonly", false);
+        row.addClass("editing-row");
+    }
+
+    async function updateLeave(index, el) {
+            try {
+
+                const res = await $.ajax({
+                    url: '/EmployeeDashboard/GetLeaveBalances',
+                    type: 'GET'
+                });
+
+                if (!res.success || !res.data) return;
+                clBal1 = res.data.clBal;
+                elBal1 =  res.data.elBal ;
+
+                const row = $(el).closest("tr");
+
+                const rowData = {
+                    index: index,
+                    DocID: row.find("#DocID_" + index).val(),
+                    fromDate: row.find("#from_" + index).val(),
+                    toDate: row.find("#to_" + index).val(),
+                    leaveType: row.find("#type_" + index).val(),
+                    days: row.find("#days_" + index).val(),
+                    status: row.find("#status_" + index).val()
+                };
+
+                if (rowData.status === 'Approved') {
+                    toastr.warning("Your leave has already been approved. No further changes are allowed.");
+                    return;
+                }
+
+                if (rowData.leaveType === 'Earned Leave') {
+                    if (rowData.days > elBal1) {
+                        toastr.warning("Leave days cannot be greater than the available Earned Leave balance (" + elBal1 + ").");
+                        return;
+                    }
+                }
+
+                else if (rowData.leaveType === 'Casual Leave') {
+                    if (rowData.days > clBal1) {
+                        toastr.warning("Leave days cannot be greater than the available Casual Leave balance (" + clBal1 + ").");
+                        return;
+                    }
+                }
+
+                $.ajax({
+                    url: "/EmployeeDashboard/UpdateLeave",
+                    type: "POST",
+                    data: rowData,
+                    success: function (res) {
+                        toastr.success("Leave update Succesfull")
+                    },
+                    error: function (err) {
+
+                        toastr.error("Error", err);
+                    }
+                });
+
+            }
+            catch (error) {
+                toastr.error("Error", err);
+            }
+        }
+
+    function getLeaveTypeClass(leaveType) {
+        switch(leaveType) {
+            case 'Earned Leave':
+                return 'leavehistory-earned';
+            case 'Casual Leave':
+                return 'leavehistory-casual';
+            case 'Earn Leave':
+                return 'leavehistory-earn';
+            case 'Leave Without Pay':
+                return 'leavehistory-lwp';
+            default:
+                return '';
+        }
+    }
+
+    function getStatusClass(status) {
+        switch(status) {
+            case 'Pending':
+                return 'leavehistory-pending';
+            case 'Approved':
+                return 'leavehistory-approved';
+            case 'Rejected':
+                return 'leavehistory-rejected';
+            default:
+                return 'leavehistory-default';
+        }
+    }
+
+    function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const d = new Date(dateStr);
+            if (isNaN(d)) return '';
+            return d.toISOString().slice(0, 10);
+        }
+
+
+            function HolidayformatDate(date, showYear) {
+        // Create a new Date object to avoid mutating the original
+        const currentYear = new Date().getFullYear();
+        const newDate = new Date(date);
+
+        if (showYear) {
+            newDate.setFullYear(currentYear); // Replace year with current year
+        }
+
+        return newDate.toLocaleDateString('en-IN', {
+            day: 'numeric',
+            month: 'long',
+            year: showYear ? 'numeric' : undefined
+        });
+    }
+
+        function HolidayformatDate(date, showYear) {
+        if (!date) return '';
+
+        const today = new Date();
+        const inputDate = new Date(date);
+        if (isNaN(inputDate)) return '';
+
+        // Create date with current year
+        let newDate = new Date(
+            today.getFullYear(),
+            inputDate.getMonth(),
+            inputDate.getDate()
+        );
+
+        // If date already passed → move to next year
+        if (newDate < today) {
+            newDate.setFullYear(today.getFullYear() + 1);
+        }
+
+        return newDate.toLocaleDateString('en-IN', {
+            day: 'numeric',
+            month: 'long',
+            year: showYear ? 'numeric' : undefined
+        });
+    }
+
+
+
+
+
+</script>
+
+
+
+
+
+
+

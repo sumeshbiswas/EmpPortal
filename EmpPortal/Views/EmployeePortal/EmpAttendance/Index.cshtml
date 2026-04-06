@@ -1,0 +1,1306 @@
+﻿@{
+    ViewBag.Title = "Employee Attendance";
+    Layout = "~/Views/Shared/EmployeeLayout.cshtml";
+}
+
+<div class="emp-bar">
+    <div class="emp-main-title">
+        <i class="fa-solid fa-calendar-check"></i>
+        <span>Employee Attendance</span>
+    </div>
+</div>
+
+<fieldset class="emp_attendancenew-fieldset">
+
+    <legend class="emp_attendancenew-legend">
+        Attendance Filter
+    </legend>
+
+    <div class="emp_attendancenew-row">
+
+        <div class="emp_attendancenew-inline-group">
+
+            <label for="ddlMonth" class="emp_attendancenew-label-inline">
+                Select Month
+            </label>
+
+            <select id="monthSelect" class="form-select emp_attendancenew-select">
+            </select>
+
+        </div>
+
+    </div>
+
+</fieldset>
+<div class="emp_attendancenew-summary-wrapper" id="emp_attendancenew-summary">
+
+    <div class="emp_attendancenew-card">
+        <div class="emp_attendancenew-card-icon present">
+            <i class="fa-solid fa-check"></i>
+        </div>
+
+        <div>
+            <div class="emp_attendancenew-card-title">Present</div>
+            <div class="emp_attendancenew-card-value" id="presentCount">0</div>
+        </div>
+    </div>
+
+
+    <div class="emp_attendancenew-card">
+        <div class="emp_attendancenew-card-icon leave">
+            <i class="fa-solid fa-calendar-xmark"></i>
+        </div>
+
+        <div>
+            <div class="emp_attendancenew-card-title">Leave</div>
+            <div class="emp_attendancenew-card-value" id="leaveCount">0</div>
+        </div>
+    </div>
+
+
+    <div class="emp_attendancenew-card">
+        <div class="emp_attendancenew-card-icon absent">
+            <i class="fa-solid fa-user-xmark"></i>
+        </div>
+
+        <div>
+            <div class="emp_attendancenew-card-title">Absent</div>
+            <div class="emp_attendancenew-card-value" id="absentCount">0</div>
+        </div>
+    </div>
+
+
+    <div class="emp_attendancenew-card">
+        <div class="emp_attendancenew-card-icon holiday">
+            <i class="fa-solid fa-umbrella-beach"></i>
+        </div>
+
+        <div>
+            <div class="emp_attendancenew-card-title">Holiday</div>
+            <div class="emp_attendancenew-card-value" id="holidayCount">0</div>
+        </div>
+    </div>
+
+</div>
+
+@* <div class="empattendancecheck-container">
+
+    <!-- View Type -->
+    <div class="empattendancecheck-viewtype">
+        <label class="empattendancecheck-label" id="lbl_ViewType">View Type</label>
+
+        <label class="empattendancecheck-option" id="">
+            <input type="checkbox" id="chkSelf" checked>
+            <span id="lbl_self">Self</span>
+        </label>
+
+        <label class="empattendancecheck-option">
+            <input type="checkbox" id="chkMultiple">
+            <span id="lbl_multiuser">Multiple Users</span>
+        </label>
+    </div>
+
+    <!-- User Selection -->
+    <div class="emp-filter-row">
+        <div class="empattendancecheck-users" id="multiUserSection">
+
+            <label class="empattendancecheck-label" id="lbl_selecteduser">Select Users</label>
+
+            <div class="empattendancecheck-dropdown">
+                <input type="text"
+                       id="empattendancecheckUserSearch"
+                       class="empattendancecheck-dropdown-toggle"
+                       placeholder="Search Users">
+
+                <div class="empattendancecheck-dropdown-menu" id="userCheckboxList">
+                    <!-- Dynamic users -->
+                </div>
+
+            </div>
+            <button id="BTN_LoadData" class="load-btn">Load Data</button>
+        </div>
+    </div>
+</div>
+<div class="table-responsive">
+    <table class="timesheettasklist-table" id="tbl_multiuser">
+        <thead id="attendanceHead">
+            <tr>
+                <th>Employee Code</th>
+                <th>Employee</th>
+                <!-- Days will be added dynamically -->
+            </tr>
+        </thead>
+
+        <tbody id="multiUserBody">
+        </tbody>
+    </table>
+</div> *@
+<div class="empattendancecheck-container emp_attendanceparent-container">
+
+    <fieldset class="emp_attendanceparent-fieldset">
+
+        <legend class="emp_attendanceparent-legend">
+            Attendance View
+        </legend>
+
+        <!-- View Type -->
+        <div class="empattendancecheck-viewtype emp_attendanceparent-viewtype">
+
+            <label class="empattendancecheck-label emp_attendanceparent-label" id="lbl_ViewType">
+                View Type
+            </label>
+
+            <label class="empattendancecheck-option emp_attendanceparent-option">
+                <input type="checkbox" id="chkSelf" checked>
+                <span id="lbl_self">Self</span>
+            </label>
+
+            <label class="empattendancecheck-option emp_attendanceparent-option">
+                <input type="checkbox" id="chkMultiple">
+                <span id="lbl_multiuser">Multiple Users</span>
+            </label>
+
+        </div>
+
+
+        <!-- User Selection -->
+        <div class="emp-filter-row emp_attendanceparent-filter-row">
+
+            <div class="empattendancecheck-users emp_attendanceparent-users" id="multiUserSection">
+
+                <label class="empattendancecheck-label emp_attendanceparent-label" id="lbl_selecteduser">
+                    Select Users
+                </label>
+
+                <div class="empattendancecheck-dropdown emp_attendanceparent-dropdown">
+
+                    <input type="text"
+                           id="empattendancecheckUserSearch"
+                           class="empattendancecheck-dropdown-toggle emp_attendanceparent-dropdown-toggle"
+                           placeholder="Search Users">
+
+                    <div class="empattendancecheck-dropdown-menu emp_attendanceparent-dropdown-menu"
+                         id="userCheckboxList">
+
+                        <!-- Dynamic users -->
+
+                    </div>
+
+                </div>
+
+                <button id="BTN_LoadData"
+                        class="load-btn emp_attendanceparent-load-btn">
+                    Load Data
+                </button>
+
+            </div>
+
+        </div>
+
+    </fieldset>
+
+</div>
+
+
+
+<div class="table-responsive emp_attendanceparent-table-wrapper">
+
+    <table class="timesheettasklist-table emp_attendanceparent-table"
+           id="tbl_multiuser">
+
+        <thead id="attendanceHead">
+
+            <tr>
+
+                <th>Employee Code</th>
+
+                <th>Employee</th>
+
+                <!-- Days will be added dynamically -->
+
+            </tr>
+
+        </thead>
+
+        <tbody id="multiUserBody">
+        </tbody>
+
+    </table>
+
+</div>
+
+
+<!-- Calendar -->
+<fieldset class="emp_attendancecalendarUI-fieldset" id="emp_attendancecalendarUI">
+
+    <legend class="emp_attendancecalendarUI-legend">
+        Attendance Calendar
+    </legend>
+
+    <!-- loader -->
+    <div class="emp_attendancecalendarUI-loader" id="attendanceLoader">
+
+        <div class="emp_attendancecalendarUI-spinner"></div>
+
+        <div class="emp_attendancecalendarUI-loadingText">
+            Loading attendance...
+        </div>
+
+    </div>
+
+    <!-- calendar -->
+    <div class="table-responsive emp_attendancecalendarUI-wrapper">
+
+        <table id="calendarTable"
+               class="table emp_attendancecalendarUI-table">
+
+            <thead>
+
+                <tr class="emp_attendancecalendarUI-head">
+
+                    <th>Sun</th>
+                    <th>Mon</th>
+                    <th>Tue</th>
+                    <th>Wed</th>
+                    <th>Thu</th>
+                    <th>Fri</th>
+                    <th>Sat</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="calendarBody"></tbody>
+
+        </table>
+
+    </div>
+
+</fieldset>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
+<script>
+
+
+
+    $(document).ready(function () {
+        Cheack();
+        populateMonthDropdown();
+        loadUserList();
+
+       $("#monthSelect").change(function () {
+               LoadNationalHoliday($(this).val());
+           loadAttendanceDetails($(this).val());
+        
+        });
+
+       $("#empattendancecheckUserSearch").on("keyup focus", function () {
+
+         let value = $(this).val().toLowerCase();
+
+         $("#userCheckboxList").addClass("active");
+
+         $("#userCheckboxList label").filter(function () {
+            $(this).toggle(
+                $(this).text().toLowerCase().indexOf(value) > -1
+            );
+         });
+
+     });
+
+       $(document).click(function(e){
+
+         if(!$(e.target).closest(".empattendancecheck-dropdown").length){
+             $("#userCheckboxList").removeClass("active");
+         }
+
+     });
+
+       $("#chkSelf").change(function () {
+
+         if ($(this).is(":checked")) {
+             // document.querySelector('.empattendancecheck-container').style.display = 'none';
+
+            $("#chkMultiple").prop("checked", false);
+            $(".calendar-wrapper").show();
+            $("#emp_attendancenew-summary").show();
+             $("#emp_attendancecalendarUI").show();
+            $("#tbl_multiuser").hide();
+            $("#multiUserSection").hide();
+            $('#BTN_LoadData').hide();
+            $('#empattendancecheckUserSearch').hide();
+            $('#lbl_selecteduser').hide();
+            $('#calendarTable').show();
+
+            loadAttendanceDetails($("#monthSelect").val());
+
+         }
+
+     });
+
+       $("#chkMultiple").change(function () {
+         if ($(this).is(":checked")) {
+           // document.querySelector('.empattendancecheck-container').style.display = 'block'; // or 'flex'
+             $("#chkSelf").prop("checked", false);
+             $(".calendar-wrapper").hide();
+             $("#emp_attendancenew-summary").hide();
+             $("#emp_attendancecalendarUI").hide();
+             $("#tbl_multiuser").show();
+             $("#multiUserSection").show();
+             $("#empattendancecheckUserSearch").show();
+             $("#lbl_selecteduser").show();
+             $('#BTN_LoadData').show();
+         }
+
+     });
+
+       $(document).on("change", ".userCheckbox", function () {
+         // Clear search box
+         $("#empattendancecheckUserSearch").val("");
+         // Show all users again
+         $("#userCheckboxList label").show();
+
+     });
+
+       $('#BTN_LoadData').on('click', function () {
+
+        let selectedEmpIds = [];
+
+            $(".userCheckbox:checked").each(function () {
+                selectedEmpIds.push($(this).val());
+            });
+            let month = $("#monthSelect").val();
+
+            LoadMultipleEmpdata(month,selectedEmpIds);
+        });
+
+    });
+
+    function populateMonthDropdown() {
+
+        const monthSelect = $("#monthSelect");
+
+        const monthNames = [
+            "January","February","March","April","May","June",
+            "July","August","September","October","November","December"
+        ];
+
+        let today = new Date();
+        let currentMonth = today.getMonth();
+        let currentYear = today.getFullYear();
+
+        monthSelect.empty();
+
+        for (let i = 0; i < 12; i++) {
+
+            let monthIndex = currentMonth - i;
+            let year = currentYear;
+
+            if (monthIndex < 0) {
+                monthIndex += 12;
+                year -= 1;
+            }
+            let monthValue = `${year}-${(monthIndex + 1).toString().padStart(2,'0')}`;
+            let monthText = `${monthNames[monthIndex]} ${year}`;
+            monthSelect.append(`<option value="${monthValue}">${monthText}</option>`);
+        }
+    }
+
+    function loadUserList() {
+        $.ajax({
+            url: '/EmpAttendance/DDLUserMast',
+            type: 'GET',
+            success: function (data) {
+
+                let container = $("#userCheckboxList");
+                container.empty();
+
+                $.each(data, function (index, user) {
+
+                    let html = `
+                        <label class="empattendancecheck-useritem">
+                            <input type="checkbox" class="userCheckbox" value="${user.value}">
+                            <span>${user.text}</span>
+                        </label>
+                    `;
+
+                    container.append(html);
+
+                });
+
+            },
+            error: function () {
+                alert("Unable to load users.");
+            }
+        });
+
+    }
+
+    function getSelectedUserIds(){
+        let users = [];
+        $(".userCheckbox:checked").each(function(){
+            users.push($(this).val());
+        });
+        return users;
+    }
+
+    /* convert date format */
+     function convertToISO(dateStr){
+
+        if(!dateStr) return "";
+
+        /* ISO format */
+        if(dateStr.includes("T"))
+            return dateStr.split("T")[0];
+
+        /* format 04-Mar-2026 */
+        if(dateStr.includes("-")){
+
+            let parts = dateStr.split("-");
+
+            if(parts.length === 3){
+
+                let day = parts[0].padStart(2,'0');
+                let monthName = parts[1];
+                let year = parts[2];
+
+                let monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+                let monthIndex = monthNames.indexOf(monthName);
+
+                if(monthIndex !== -1){
+
+                    let month = (monthIndex+1).toString().padStart(2,'0');
+
+                    return `${year}-${month}-${day}`;
+                }
+            }
+        }
+
+        return "";
+    }
+
+
+
+    /* load calendar */
+
+    async function loadAttendanceDetails(month){
+
+        try{
+
+            $("#attendanceLoader").show();
+
+            $("#calendarBody").hide();
+
+
+            const [attendanceRes, holidayRes] = await Promise.all([
+
+                $.ajax({
+
+                    url:'/EmpAttendance/GetAttendanceDetails',
+
+                    type:'GET',
+
+                    data:{ month:month }
+
+                }),
+
+                $.ajax({
+
+                    url:'/EmpAttendance/CheckNationalHoliday',
+
+                    type:'GET',
+
+                    data:{ month:month }
+
+                })
+
+            ]);
+
+
+             let attendance =
+                attendanceRes.data ||
+                attendanceRes.result ||
+                attendanceRes || [];
+
+             let holidays = Array.isArray(holidayRes) ? holidayRes : holidayRes.data || [];
+
+
+            const calendarBody = $("#calendarBody");
+
+            calendarBody.empty();
+
+
+            let [year, monthIndex] = month.split("-");
+
+            year = parseInt(year);
+
+            monthIndex = parseInt(monthIndex)-1;
+
+
+            let firstDay = new Date(year, monthIndex, 1);
+
+            let lastDate = new Date(year, monthIndex+1,0).getDate();
+
+            let startDay = firstDay.getDay();
+
+
+            let today = new Date();
+
+
+            /* maps */
+
+            let attendanceMap = {};
+
+            attendance.forEach(x=>{
+
+            let rawDate =
+                x.date ||
+                x.attendanceDate ||
+                x.attDate ||
+                x.workDate;
+
+            let d = convertToISO(rawDate);
+
+            if(d)
+                attendanceMap[d.trim()] = x;
+
+            });
+
+
+            let holidayMap = {};
+
+            holidays.forEach(h=>{
+
+                let d = h.holidayDate.split('T')[0];
+
+                holidayMap[d] = h.name;
+
+            });
+
+
+            /* 🔹 summary counters added */
+            let presentCount = 0;
+            let leaveCount = 0;
+            let absentCount = 0;
+            let holidayCount = 0;
+
+
+            let row = $("<tr></tr>");
+
+            let date = 1;
+
+
+            for(let i=0;i<startDay;i++){
+
+                row.append('<td class="calendar-cell calendar-empty"></td>');
+
+            }
+
+
+            while(date<=lastDate){
+
+                if(row.children().length===7){
+
+                    calendarBody.append(row);
+
+                    row = $("<tr></tr>");
+
+                }
+
+
+                let fullDate =
+
+                `${year}-${(monthIndex+1).toString().padStart(2,'0')}-${date.toString().padStart(2,'0')}`;
+
+
+                let record = attendanceMap[fullDate];
+
+                let holidayName = holidayMap[fullDate];
+
+
+                let cellClass="calendar-cell offday";
+
+                let status="";
+
+                let inTime="";
+
+                let outTime="";
+
+                let deduction=""; // FIXED scope
+
+
+                /* priority */
+
+                if(holidayName){
+
+                    cellClass="calendar-cell holiday";
+
+                    status="Holiday";
+
+                    /* 🔹 count holiday */
+                    holidayCount++;
+
+                }
+
+
+                else if(record){
+
+                    status = record.status || "";
+
+                    inTime = record.inTime || "";
+
+                    outTime = record.outTime || "";
+
+
+                    let shiftStart="09:30";
+
+
+                    if(inTime){
+
+                        let inDate = new Date("1970-01-01 "+inTime);
+
+                        let shiftDate = new Date("1970-01-01 "+shiftStart);
+
+
+                        let lateMinutes = (inDate-shiftDate)/60000;
+
+
+                        if(lateMinutes>0 && lateMinutes<=30)
+
+                            deduction="0.50";
+
+
+                        else if(lateMinutes>30)
+
+                            deduction="0.10";
+
+                    }
+
+
+                    if(status=="P"){
+
+                        cellClass="calendar-cell present";
+
+                        /* 🔹 count present */
+                        presentCount++;
+
+                    }
+
+
+                    else if(status=="A"){
+
+                        cellClass="calendar-cell absent";
+
+                        /* 🔹 count absent */
+                        absentCount++;
+
+                    }
+
+
+                    else if(status=="L"){
+
+                        cellClass="calendar-cell leave";
+
+                        /* 🔹 count leave */
+                        leaveCount++;
+
+                    }
+
+
+                    else if(status=="E"){
+
+                        cellClass="calendar-cell earnedleave";
+
+                        /* 🔹 earned leave counted in leave */
+                        leaveCount++;
+
+                    }
+                }
+
+
+                let highlightToday=
+
+                (date===today.getDate() &&
+
+                 monthIndex===today.getMonth() &&
+
+                 year===today.getFullYear())
+
+                 ? "today-border":"";
+
+
+                let html=`
+
+                    <div class="cell-top">
+
+                        <span class="date-left">${date}</span>
+
+                        <span class="status-right">
+
+                            ${holidayName ? "Holiday" : status}
+
+                            ${deduction ? `<span class="late-red"> -${deduction}</span>`:""}
+
+                        </span>
+
+                    </div>
+
+                `;
+
+
+                if(holidayName){
+
+                    html+=`
+
+                    <div class="time-subtext">
+
+                        ${holidayName}
+
+                    </div>
+
+                    `;
+
+                }
+
+
+                else if(inTime || outTime){
+
+                    html+=`
+
+                    <div class="time-subtext">
+
+                        ${inTime}
+
+                        ${inTime && outTime ? " To ":""}
+
+                        ${outTime}
+
+                    </div>
+
+                    `;
+
+                }
+
+
+                row.append(`
+
+                    <td class="${cellClass} ${highlightToday}">
+
+                        ${html}
+
+                    </td>
+
+                `);
+
+
+                date++;
+
+            }
+
+
+            while(row.children().length<7){
+
+                row.append('<td class="calendar-cell calendar-empty"></td>');
+
+            }
+
+
+            calendarBody.append(row);
+
+
+            /* 🔹 update summary cards */
+
+            $("#presentCount").text(presentCount);
+
+            $("#leaveCount").text(leaveCount);
+
+            $("#absentCount").text(absentCount);
+
+            $("#holidayCount").text(holidayCount);
+
+
+            $("#attendanceLoader").hide();
+
+            $("#calendarBody").show();
+
+        }
+
+        catch(e){
+
+            $("#attendanceLoader").hide();
+
+            console.log(e);
+
+        }
+
+    }
+
+
+
+
+    /* month change */
+    $("#ddlMonth").change(function(){
+
+        loadAttendanceDetails($(this).val());
+
+    });
+
+
+
+    /* default load */
+    $(document).ready(function(){
+
+        let today = new Date();
+
+        let m = today.toISOString().slice(0,7);
+
+        $("#ddlMonth").val(m);
+
+        loadAttendanceDetails(m);
+
+    });
+
+
+
+
+    // function convertToISO(dateStr) {
+    //     let parts = dateStr.split("-");
+    //     let day = parts[0];
+    //     let monthName = parts[1];
+    //     let year = parts[2];
+
+    //     let monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    //     let monthNumber = monthNames.indexOf(monthName) + 1;
+
+    //     return year + "-" + monthNumber.toString().padStart(2,'0') + "-" + day.padStart(2,'0');
+
+    // }
+
+
+
+    // async function loadAttendanceDetails(month) {
+
+    //     try {
+
+    //         // 🔹 Load Attendance + Holiday together
+    //         const [attendanceRes, holidayRes] = await Promise.all([
+    //             $.ajax({
+    //                 url: '/EmpAttendance/GetAttendanceDetails',
+    //                 type: 'GET',
+    //                 data: { month: month }
+    //             }),
+    //             $.ajax({
+    //                 url: '/EmpAttendance/CheckNationalHoliday',
+    //                 type: 'GET',
+    //                 data: { month: month }
+    //             })
+    //         ]);
+
+    //         let res = attendanceRes;
+    //         let holidays = holidayRes.data || [];
+
+    //         const calendarBody = $("#calendarBody");
+    //         calendarBody.empty();
+
+    //         let [year, monthIndex] = month.split("-");
+    //         year = parseInt(year);
+    //         monthIndex = parseInt(monthIndex) - 1;
+
+    //         let firstDay = new Date(year, monthIndex, 1);
+    //         let lastDate = new Date(year, monthIndex + 1, 0).getDate();
+    //         let startDay = firstDay.getDay();
+
+    //         let date = 1;
+    //         let row = $("<tr></tr>");
+    //         let today = new Date();
+
+    //         // 🔹 Attendance Map
+    //         let attendanceMap = {};
+    //         res.forEach(x => {
+    //             let formatted = convertToISO(x.date);
+    //             attendanceMap[formatted] = x;
+    //         });
+
+    //         // 🔹 Holiday Map (✅ FIXED — no timezone issue)
+    //         let holidayMap = {};
+    //         holidays.forEach(h => {
+    //             let d = h.holidayDate.split('T')[0]; // ✅ FIX
+    //             holidayMap[d] = (h.name || "").trim();
+    //         });
+
+    //         // 🔹 Empty cells before first day
+    //         for (let i = 0; i < startDay; i++) {
+    //             row.append("<td class='empty-cell'></td>");
+    //         }
+
+    //         while (date <= lastDate) {
+
+    //             if (row.children().length === 7) {
+    //                 calendarBody.append(row);
+    //                 row = $("<tr></tr>");
+    //             }
+
+    //             let fullDate = `${year}-${(monthIndex + 1).toString().padStart(2, '0')}-${date.toString().padStart(2, '0')}`;
+
+    //             let record = attendanceMap[fullDate];
+    //             let holidayName = holidayMap[fullDate];
+
+    //             let cellClass = "calendar-cell missing";
+    //             let inTime = "";
+    //             let outTime = "";
+
+    //             // 🔥 PRIORITY: HOLIDAY FIRST
+    //             if (holidayName) {
+    //                 cellClass = "calendar-cell holiday";
+    //             }
+    //             else if (record) {
+
+    //                 inTime = record.inTime || "";
+    //                 outTime = record.outTime || "";
+
+    //                 if (record.status === "P") {
+    //                     cellClass = "calendar-cell present";
+    //                 }
+    //                 else if (record.status === "A") {
+    //                     cellClass = "calendar-cell absent";
+    //                 }
+    //                 else {
+    //                     cellClass = "calendar-cell offday";
+    //                 }
+    //             }
+
+    //             // 🔹 Highlight Today
+    //             let highlightToday =
+    //                 (date === today.getDate() &&
+    //                  monthIndex === today.getMonth() &&
+    //                  year === today.getFullYear())
+    //                 ? "border:2px solid #ef8c10;"
+    //                 : "";
+
+    //             let status = "";
+    //             let hrsText = "";
+
+    //             if (record) {
+    //                 status = record.status || "";
+
+    //                 if (record.ahrs) {
+    //                     hrsText = `(${record.ahrs})`;
+    //                 }
+    //                 else if (record.bhrs) {
+    //                     hrsText = `(-${record.bhrs})`;
+    //                 }
+    //             }
+
+    //             // 🔹 Cell Content
+    //             let cellContent = `
+    //                 <div class="cell-top">
+    //                     <span class="date-left">${date.toString().padStart(2,'0')}</span>
+    //                     <span class="status-right">
+    //                         ${holidayName ? "Holiday" : status + hrsText}
+    //                     </span>
+    //                 </div>
+    //             `;
+
+    //             // 🔹 Holiday Name Show
+    //             if (holidayName) {
+    //                 cellContent += `
+    //                     <div class="time-subtext" style="color:#000;">
+    //                         ${holidayName}
+    //                     </div>
+    //                 `;
+    //             }
+    //             // 🔹 Attendance Time Show
+    //             else if (record && (inTime || outTime)) {
+    //                 cellContent += `
+    //                     <div class="time-subtext">
+    //                         ${inTime || ''}
+    //                         ${inTime && outTime ? ' To ' : ''}
+    //                         ${outTime || ''}
+    //                     </div>
+    //                 `;
+    //             }
+
+    //             let cell = `<td class="${cellClass}" style="${highlightToday}">${cellContent}</td>`;
+    //             row.append(cell);
+
+    //             date++;
+    //         }
+
+    //         // 🔹 Fill remaining row cells
+    //         while (row.children().length < 7) {
+    //             row.append("<td class='empty-cell'></td>");
+    //         }
+
+    //         calendarBody.append(row);
+
+    //     } catch (err) {
+    //         console.error(err);
+    //         alert("Error loading attendance / holidays");
+    //     }
+    // }
+
+    async function Cheack()
+    {
+        try{
+            const res = await $.ajax({
+                url: '/EmpAttendance/CheackParentId',
+                type: 'GET'
+            });
+
+            if (res.success == true)
+            {
+          document.querySelector('.empattendancecheck-container').style.display = 'block'; // or 'flex'
+                $("#chkMultiple").prop("checked", false);
+                $(".calendar-wrapper").show();
+                $("#tbl_multiuser").hide();
+                $("#multiUserSection").hide();
+                $('#empattendancecheckUserSearch').hide();
+                $('#lbl_selecteduser').hide();
+                $('#calendarTable').show();
+                $('#BTN_LoadData').show();
+                loadAttendanceDetails($("#monthSelect").val());
+
+            }
+            else
+            {
+               document.querySelector('.empattendancecheck-container').style.display = 'none';
+                $("#tbl_multiuser").hide();
+                $('#lbl_ViewType').hide();
+                $('#chkSelf').hide();
+                $('#chkMultiple').hide();
+                $('#lbl_self').hide();
+                $('#lbl_multiuser').hide();
+                $('#empattendancecheckUserSearch').hide();
+                $('#lbl_selecteduser').hide();
+                $('#BTN_LoadData').hide();
+
+                loadAttendanceDetails($("#monthSelect").val());
+
+            }
+
+            console.log("res" ,res);
+        }
+        catch(ex){
+            alert(ex.message);
+        }
+    }
+
+
+    async function LoadMultipleEmpdata(month, selectedEmpIds) {
+
+        try {
+
+            // 🔹 Load Attendance + Holidays
+            const [res, holidayRes] = await Promise.all([
+                $.ajax({
+                    url: '/EmpAttendance/GetMULTIPLEEMPAttendanceDetails',
+                    type: 'GET',
+                    traditional: true,
+                    data: {
+                        month: month,
+                        EMPID: selectedEmpIds
+                    }
+                }),
+                $.ajax({
+                    url: '/EmpAttendance/CheckNationalHoliday',
+                    type: 'GET',
+                    data: { month: month }
+                })
+            ]);
+
+            let holidays = holidayRes.data || [];
+
+            console.log("Attendance:", res);
+            console.log("Holidays:", holidays);
+
+            // ===== GENERATE ALL DATES =====
+            function getAllDatesOfMonth(monthStr) {
+
+                const [year, monthNum] = monthStr.split('-');
+                const totalDays = new Date(year, monthNum, 0).getDate();
+
+                let dates = [];
+
+                for (let d = 1; d <= totalDays; d++) {
+                    let day = String(d).padStart(2, '0');
+                    let month = String(monthNum).padStart(2, '0');
+                    dates.push(`${year}-${month}-${day}`);
+                }
+
+                return dates;
+            }
+
+            const days = getAllDatesOfMonth(month);
+
+            // ===== HOLIDAY MAP (✅ FIXED + NO DUPLICATE) =====
+            let holidayMap = {};
+
+            holidays.forEach(h => {
+                let d = h.holidayDate.split('T')[0]; // ✅ no timezone issue
+
+                if (!holidayMap[d]) { // ✅ prevent duplicates
+                    holidayMap[d] = (h.name || "").trim();
+                }
+            });
+
+            // ===== HEADER =====
+            let header = `<tr>
+                            <th>Emp Code</th>
+                            <th>Employee</th>`;
+
+            days.forEach(d => {
+                let day = new Date(d).getDate();
+                header += `<th>${day}</th>`;
+            });
+
+            header += `</tr>`;
+            $("#attendanceHead").html(header);
+
+            // ===== NO DATA =====
+            if (!res || res.length === 0) {
+
+                $("#multiUserBody").html(`
+                    <tr>
+                        <td colspan="${days.length + 2}" style="text-align:center;">
+                            No record found
+                        </td>
+                    </tr>
+                `);
+
+                toastr.warning("Record not found for this selected month");
+                return;
+            }
+
+            // ===== GROUP BY EMP =====
+            const employees = {};
+
+            res.forEach(item => {
+
+                // ✅ FIX: convert dd-MMM-yyyy → yyyy-MM-dd
+                let formattedDate = convertToISO(item.date);
+
+                if (!employees[item.empId]) {
+                    employees[item.empId] = {
+                        name: item.employeeName || "",
+                        dates: {}
+                    };
+                }
+
+                let status = (item.status || "").toLowerCase();
+                let cellClass = "default-cell";
+
+                if (status === "present" || status === "p") {
+                    cellClass = "present-cell";
+                }
+                else if (status === "absent" || status === "a") {
+                    cellClass = "absent-cell";
+                }
+                else if (status === "leave" || status === "l") {
+                    cellClass = "leave-cell";
+                }
+                else if (status === "off" || status === "off" || status === "offday") {
+                    cellClass = "offday-cell";
+                }
+
+                let statusText = item.status || "";
+
+                let hrsText = "";
+                if (item.ahrs) {
+                    hrsText = ` (${item.ahrs})`;
+                }
+                else if (item.bhrs) {
+                    hrsText = ` (-${item.bhrs})`;
+                }
+
+                let timeText = "";
+                if (item.inTime && item.outTime) {
+                    timeText = `<br><small>${item.inTime} - ${item.outTime}</small>`;
+                }
+
+                let cellContent = "";
+
+                if (statusText) {
+                    cellContent += `<b>${statusText}</b>`;
+                }
+
+                cellContent += timeText;
+
+                employees[item.empId].dates[formattedDate] = {
+                    class: cellClass,
+                    content: cellContent
+                };
+            });
+
+            // ===== BUILD TABLE =====
+            let rows = "";
+
+            Object.keys(employees).forEach(empId => {
+
+                rows += `
+                    <tr>
+                        <td>${empId}</td>
+                        <td>${employees[empId].name}</td>
+                `;
+
+                days.forEach(d => {
+
+                    let holidayName = holidayMap[d];
+                    let empData = employees[empId].dates[d];
+
+                    if (holidayName) {
+
+                        rows += `
+                            <td class="holiday-cell">
+                                <b>Holiday</b><br>
+                                <small>${holidayName}</small>
+                            </td>
+                        `;
+                    }
+                    else if (empData) {
+
+                        rows += `
+                            <td class="${empData.class}">
+                                ${empData.content}
+                            </td>
+                        `;
+                    }
+                    else {
+
+                        rows += `<td class="default-cell"></td>`;
+                    }
+                });
+
+                rows += `</tr>`;
+            });
+
+            $("#multiUserBody").html(rows);
+
+        }
+        catch (err) {
+
+            console.error("Error:", err);
+            toastr.error("Error loading attendance data");
+        }
+    }
+
+
+    async function LoadNationalHoliday(month) {
+        try {
+            const res = await $.ajax({
+                url: '/EmpAttendance/CheckNationalHoliday',
+                type: 'GET',
+                data: { month: month }
+            });
+            console.log("National Holidays:", res);
+            // Process and display national holidays as needed
+        }
+        catch (err) {
+            console.error("Error loading national holidays:", err);
+            toastr.error("Error loading national holidays");
+        }
+    }
+
+</script>

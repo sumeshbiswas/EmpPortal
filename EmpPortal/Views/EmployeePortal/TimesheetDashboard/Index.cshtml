@@ -1,0 +1,828 @@
+﻿@{
+    ViewBag.Title = "Timesheet Dashboard";
+    Layout = "~/Views/Shared/EmployeeLayout.cshtml";
+}
+
+
+
+<style>
+    /* Highlight toggle when active */
+    #translateToggle:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+
+    /* Container for toggle */
+    .employee-language-toggle {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-family: Arial, sans-serif;
+    }
+
+    /* Toggle switch */
+    .employee-switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 21px;
+    }
+
+        /* Hide default checkbox */
+        .employee-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+    /* Slider */
+    .employee-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: 0.4s;
+        border-radius: 34px;
+    }
+
+        /* Circle */
+        .employee-slider::before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 6px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+    /* Checked state */
+    .employee-switch input:checked + .employee-slider {
+        background-color: #2196F3;
+    }
+
+        .employee-switch input:checked + .employee-slider::before {
+            transform: translateX(26px);
+        }
+
+        .toggle_text{
+        color: #3a3a3a;
+        font-size: 15px;
+        }
+</style>
+
+
+<div class="timesheet-dashboard">
+    <!-- Button Section with Custom Styled Buttons -->
+    <div class="timesheet-buttons">
+
+        <button class="timesheetbtn-icon" id="btn_createtaskmodel">
+            <i class="fa fa-plus"></i>
+            <span>Create Task</span>
+        </button>
+        <button class="timesheetbtn-icon" onclick="location.href='@Url.Action("Index", "TimesheetReplyTaskList")'">
+            <i class="fa fa-reply"></i>
+            <span>Reply to Task</span>
+        </button>
+        <button class="timesheetbtn-icon" onclick="location.href='@Url.Action("Index", "TimesheetTaskList")'">
+            <i class="fa fa-list-ul"></i>
+            <span>Task List</span>
+        </button>
+    </div>
+    @* Modal Popup *@
+    <div class="task-modal" id="taskModal">
+        <div class="task-card">
+
+            <div class="task-header">
+                <i class="fa fa-arrow-left" onclick="closeTaskModal()"></i>
+                <h3>Create Task</h3>
+            </div>
+            <div class="task-row">
+
+                <!-- Left Side - Task ID (30%) -->
+                <div class="task-id-section">
+                    <label class="task-label">Task ID:</label>
+                    <input type="text" class="task-input" id="txt_vNo" disabled>
+                </div>
+
+                <!-- Right Side - Task Title (70%) -->
+                <div class="task-title-section">
+                    <label class="task-label">Task Title:</label>
+                    <input type="text" class="task-input" id="txt_tasktitle" maxlength="300">
+                </div>
+
+            </div>
+
+            <div class="task-row">
+                <label class="task-label">Description:</label>
+                <div class="employee-language-toggle">
+                    <label class="employee-switch">
+                        <input type="checkbox" id="languageToggle">
+                        <span class="employee-slider"></span>
+                    </label>
+                    <span id="languageLabel" class="toggle_text">English</span>
+                </div>
+            </div>
+            <textarea class="task-textarea mt-2" id="txt_disc" maxlength="300" placeholder="Enter text here"></textarea>
+        
+       
+
+            <label class="task-label">Priority:</label>
+            <div class="priority-group">
+                <div class="priority-btn active">
+                    <i class="fa fa-arrow-up" id="pri_high"></i>
+                    <span>High</span>
+                </div>
+
+                <div class="priority-btn">
+                    <i class="fa fa-minus " id="pri_medium"></i>
+                    <span>Medium</span>
+                </div>
+
+                <div class="priority-btn">
+                    <i class="fa fa-arrow-down" id="pri_low"></i>
+                    <span>Low</span>
+                </div>
+            </div>
+            <div class="task-row">
+                <div class="task-title-form">
+                    <label class="task-label">Due Date:</label>
+                    <div class="date-wrapper">
+                        <input type="date" class="task-input" id="due_date">
+                    </div>
+                </div>
+                <div class="task-title-form">
+                    <label class="task-label">Status</label>
+                    <select class="task-select" id="ddl_status">
+                        <option value="Pending">Pending</option>
+                        <option value="Complete">Complete</option>
+                        <option value="Close">Close</option>
+                    </select>
+                </div>
+            </div>
+
+            <label class="task-label">Assign To:</label>
+            <select class="task-select" id="ddl_assignto">  </select>
+
+            <div class="task-row">
+                <div class="task-title-form">
+                    <label class="task-label">CC To:</label>
+                    <select class="task-select" id="ddl_CCto">  </select>
+                </div>
+                <div class="task-title-form">
+                    <label class="task-label">BCC To:</label>
+                    <select class="task-select" id="ddl_BCCto">  </select>
+                </div>
+            </div>
+
+            <label class="task-label">Duration</label>
+            <select class="task-select" id="ddl_duration">
+                <option value="">Select Duration</option>
+                <option value="One Time">One Time</option>
+                <option value="weekly">weekly</option>
+                <option value="Monthly">Monthly</option>
+            </select>
+
+            <label class="task-label">Attachments:</label>
+            <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+                <i class="fa fa-upload"></i>
+                <span>Upload Files</span>
+            </div>
+
+            <input type="file" id="fileInput" multiple hidden>
+            <div id="fileList" class="file-list"></div>
+
+            <div class="task-footer">
+                <button class="create-btn" id="btn_createtask">Create Task</button>
+                <button class="cancel-btn" onclick="closeTaskModal()">Cancel</button>
+            </div>
+
+        </div>
+    </div>
+    <!-- Card Section (Task Summary) -->
+    <div class="timesheet-cards">
+        <div class="tcard tcard-1">
+            <div class="timesheetcard-icon1">
+                <i class="fa fa-tasks"></i> <!-- Tasks Icon -->
+            </div>
+            <h3 class="theading">Total Tasks</h3>
+            <p class="tp1" id="TotalTaskID">0</p>
+        </div>
+        <div class="tcard tcard-2">
+            <div class="timesheetcard-icon2">
+                <i class="fa fa-check-circle"></i> <!-- Completed Tasks Icon -->
+            </div>
+            <h3 class="theading">Tasks Completed</h3>
+            <p class="tp2" id="CompletetaskID">0</p>
+        </div>
+        <div class="tcard tcard-3">
+            <div class="timesheetcard-icon3">
+                <i class="fa fa-clock"></i> <!-- Pending Tasks Icon -->
+            </div>
+            <h3 class="theading">Tasks Pending</h3>
+            <p class="tp3" id="PendingTaskID">0</p>
+        </div>
+        <div class="tcard tcard-4">
+            <div class="timesheetcard-icon4">
+                <i class="fa fa-exclamation-circle"></i> <!-- Overdue Tasks Icon -->
+            </div>
+            <h3 class="theading">Tasks Overdue</h3>
+            <p class="tp4" id="TaskOverdueID">0</p>
+        </div>
+    </div>
+
+
+
+    <!-- Recent Activities Section -->
+
+    <div class="recent-activities glass-activities">
+
+        <div class="recent-header">
+            <h3>Recent Activities</h3>
+
+            <div class="recent-filters">
+                <button class="filter-btn active" data-type="ALL">All</button>
+                <button class="filter-btn" data-type="CREATED">Created</button>
+                <button class="filter-btn" data-type="COMPLETED">Completed</button>
+            </div>
+        </div>
+
+        <!-- Dynamic Data Will Load Here -->
+        <div class="recent-timeline" id="recentTimeline"></div>
+
+    </div>
+
+</div>
+
+<script>
+        const toggle = document.getElementById('languageToggle');
+    const label = document.getElementById('languageLabel');
+
+    toggle.addEventListener('change', () => {
+      if (toggle.checked) {
+        label.textContent = 'हिन्दी'; // Hindi
+      } else {
+        label.textContent = 'English';
+      }
+    });
+    </script>
+
+<script>
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const rowId = urlParams.get('id');
+        const fileInput = document.getElementById("fileInput");
+        const fileList = document.getElementById("fileList");
+
+        let selectedFiles = [];
+
+        document.addEventListener("DOMContentLoaded", async function () {
+
+            await initDashboard();
+    
+            if (rowId) {
+              loadTask(rowId);
+              openTaskModalReadOnly();
+            }
+            else{
+               $('#due_date').val(new Date(Date.now() + 24*60*60*1000).toISOString().split('T')[0]);
+            }
+
+
+
+            // Priority Selection
+            document.querySelectorAll(".priority-btn").forEach(btn => {
+                btn.addEventListener("click", function () {
+                    document.querySelectorAll(".priority-btn")
+                        .forEach(b => b.classList.remove("active"));
+                    this.classList.add("active");
+                });
+            });
+
+            // File Upload Handling
+            if (fileInput) {
+                fileInput.addEventListener("change", function () {
+                    const files = Array.from(this.files);
+                    files.forEach(file => selectedFiles.push(file));
+                    renderFileList();
+                    this.value = "";
+                });
+            }
+
+            // Create Task
+            $("#btn_createtask").click(function (e) {
+                e.preventDefault();
+                createTask();
+            });
+
+            // Filter Buttons
+            $(document).on("click", ".filter-btn", function () {
+                $(".filter-btn").removeClass("active");
+                $(this).addClass("active");
+                let type = $(this).data("type");
+                loadRecentActivities(type);
+            });
+
+            $('#btn_createtaskmodel').on('click', function(){
+                      openTaskModal();
+                             // Clear text inputs
+                        $('#txt_tasktitle').val('');
+                        $('#txt_disc').val('');
+                        $('#due_date').val('');
+                        // Reset dropdowns
+                        $('#ddl_assignto').val('').trigger('change');
+                        $('#ddl_CCto').val('').trigger('change');
+                        $('#ddl_BCCto').val('').trigger('change');
+                        $('#ddl_duration').val('');
+                        // Clear file input
+                        $('#fileInput').val('');
+                        // Clear file list display
+                        $('#fileList').html('');
+
+                         $('#due_date').val(new Date(Date.now() + 24*60*60*1000).toISOString().split('T')[0]);
+
+                });
+
+
+            $('#TotalTaskID').on('click', function() {
+
+                window.location.href = `/TimesheetTaskList/Index?Status=${encodeURIComponent("All")}`;
+            });
+
+            $('#CompletetaskID').on('click', function() {
+
+            window.location.href = `/TimesheetTaskList/Index?Status=${encodeURIComponent("Complete")}`;
+            });
+
+            $('#PendingTaskID').on('click', function() {
+
+            window.location.href = `/TimesheetTaskList/Index?Status=${encodeURIComponent("Pending")}`;
+            });
+
+                $('#TaskOverdueID').on('click', function() {
+                window.location.href = `/TimesheetTaskList/Index?Status=${encodeURIComponent("Overdue")}`;
+            });
+
+
+
+
+        });
+
+        // =============================
+        // INITIALIZER
+        // =============================
+
+        async function initDashboard() {
+            await Promise.all([
+                loadAllUserDropdowns(),
+                FetchDashBoardcount(),
+                loadRecentActivities('ALL'),
+                rowId ? Promise.resolve() : GetVNo()
+            ]);
+        }
+
+        // =============================
+        // DROPDOWNS
+        // =============================
+
+        async function loadAllUserDropdowns() {
+            try {
+                const response = await fetch('/TimesheetDashboard/DDLUserMast');
+                const data = await response.json();
+
+                fillDropdown("ddl_assignto", data, "Select Assign To");
+                fillDropdown("ddl_CCto", data, "Select CC To");
+                fillDropdown("ddl_BCCto", data, "Select BCC To");
+
+            } catch (error) {
+                console.error("Dropdown load failed:", error);
+            }
+        }
+
+        function fillDropdown(id, data, defaultText) {
+            const ddl = document.getElementById(id);
+            if (!ddl) return;
+
+            ddl.innerHTML = `<option value="">${defaultText}</option>`;
+
+            data.forEach(item => {
+                const option = document.createElement("option");
+                option.value = item.value;
+                option.textContent = item.text;
+                ddl.appendChild(option);
+            });
+        }
+
+        // =============================
+        // GET DOCUMENT NUMBER
+        // =============================
+
+        async function GetVNo() {
+            try {
+                const res = await fetch('/TimesheetDashboard/GetVNo');
+                const data = await res.json();
+                $('#txt_vNo').val(data.v_NO);
+            }
+            catch (e) {
+                toastr.error('Error loading Document Number');
+            }
+        }
+
+        // =============================
+        // CREATE TASK
+        // =============================
+
+        function createTask() {
+            const V_NO = parseInt($("#txt_vNo").val()) || null;
+            const TaskTitle = $.trim($("#txt_tasktitle").val());
+            const TaskDescription = $.trim($("#txt_disc").val());
+            const DueDate = formatDate($("#due_date").val());
+            const Status = $("#ddl_status").val();
+            const AssignedToID = $("#ddl_assignto").val() ? parseInt($("#ddl_assignto").val()) : null;
+            const CCTOID = $("#ddl_CCto").val() ? parseInt($("#ddl_CCto").val()) : null;
+            const BCCTOID = $("#ddl_BCCto").val() ? parseInt($("#ddl_BCCto").val()) : null;
+            const DURATION = $("#ddl_duration").val();
+            let Priority = $(".priority-btn.active span").text();
+
+            if (!TaskTitle) {
+                toastr.warning("Please enter Task Title");
+                return;
+            }
+
+            if (!TaskDescription) {
+                toastr.warning("Please enter Task Description");
+                return;
+            }
+
+              if (!AssignedToID) {
+                toastr.warning("Please select Assigned To");
+                return;
+            }
+
+            if (!DueDate) {
+                toastr.warning("Please select Due Date");
+                return;
+            }
+
+            const Header = {
+                TaskTitle,
+                TaskDescription,
+                Priority,
+                StartDate: DueDate,
+                EndDate: DueDate,
+                AssignedToID,
+                Status,
+                V_NO,
+                CCTOID,
+                BCCTOID,DURATION,
+                action: "INSERT"
+            };
+
+            const attachments = selectedFiles.map(file => ({
+                FileName: file.name
+            }));
+
+            const payload = {
+                Header,
+                Detail: [],
+                Attachment: attachments
+            };
+
+            $.ajax({
+                url: '/TimesheetDashboard/SavedData',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(payload),
+                success: function (response) {
+                    if (response.success) {
+                        toastr.success("Task saved successfully!");
+                        setTimeout(() => {
+                        window.location.href = '/TimesheetDashboard/Index';
+                        }, 2000); // 2 seconds
+
+
+                    } else {
+                        toastr.error(response.message);
+                    }
+                },
+                error: function () {
+                    toastr.error("Server error occurred.");
+                }
+            });
+        }
+
+        // =============================
+        // DASHBOARD COUNTS
+        // =============================
+
+        async function FetchDashBoardcount() {
+            try {
+                const res = await $.ajax({
+                    url: '/TimesheetDashboard/Dashboardcount',
+                    type: 'GET'
+                });
+
+                $('#TotalTaskID').text(res.totalCount);
+                $('#CompletetaskID').text(res.completeCount);
+                $('#PendingTaskID').text(res.pendingCount);
+                $('#TaskOverdueID').text(res.upcomingCount);
+            }
+            catch (error) {
+                toastr.error("Error fetching dashboard data");
+            }
+        }
+
+        // =============================
+        // RECENT ACTIVITIES
+        // =============================
+
+        function loadRecentActivities(TYPE) {
+            $.ajax({
+                url: '/TimesheetDashboard/RECENTACTIVITY',
+                type: 'GET',
+                data: { TYPE: TYPE },
+                success: function (response) {
+
+                    let timeline = $("#recentTimeline");
+                    timeline.empty();
+
+                    if (!response.success || !response.data.length) {
+                        timeline.append("<p>No Recent Task Found.</p>");
+                        return;
+                    }
+
+                    response.data.forEach(item => {
+
+                        let badgeColor = "";
+
+                        switch ((item.status || "").toLowerCase()) {
+                            case "pending":
+                                badgeColor = "background:#ffe8a3;color:#b58900;";
+                                break;
+                            case "complete":
+                                badgeColor = "background:#d4edda;color:#155724;";
+                                break;
+                            case "close":
+                                badgeColor = "background:#e2e3e5;color:#333;";
+                                break;
+                            default:
+                                badgeColor = "background:#f8d7da;color:#721c24;";
+                        }
+
+                        let html = `
+                            <div class="recent-item">
+                                <div class="recent-card">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                                        <div style="display:flex;align-items:center;gap:10px;">
+                                   
+                                            <div>
+                                                <div style="font-weight:600;">
+                                                    ${item.taskTitle}
+                                                </div>
+                                                <div style="font-size:13px;color:#777;">
+                                                    By ${item.userName || "System"}
+                                                </div>
+                                                <div style="font-size:12px;color:#999;">
+                                                    ${item.v_date}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <span style="
+                                            padding:6px 14px;
+                                            border-radius:20px;
+                                            font-size:12px;
+                                            font-weight:600;
+                                            ${badgeColor}
+                                        ">
+                                            ${item.status}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+
+                        timeline.append(html);
+                    });
+                },
+                error: function () {
+                    toastr.error("Error loading recent activities.");
+                }
+            });
+        }
+
+        // =============================
+        // MODAL
+        // =============================
+
+        function openTaskModal() {
+            document.getElementById("taskModal").style.display = "flex";
+        }
+
+        function closeTaskModal() {
+           // document.getElementById("taskModal").style.display = "none";
+                     window.location.href = '/TimesheetDashboard/Index';
+
+        }
+
+        // =============================
+        // FILE HANDLING
+        // =============================
+
+        function renderFileList() {
+            fileList.innerHTML = "";
+
+            selectedFiles.forEach((file, index) => {
+                const div = document.createElement("div");
+                div.classList.add("file-item");
+
+                div.innerHTML = `
+                    <span>${file.name}</span>
+                    <i class="fa fa-times"></i>
+                `;
+
+                div.querySelector("i").addEventListener("click", function () {
+                    removeFile(index);
+                });
+
+                fileList.appendChild(div);
+            });
+        }
+
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            renderFileList();
+        }
+
+        // =============================
+        // SEARCH
+        // =============================
+
+       function searchTasks() {
+            const searchValue = document.getElementById("searchInput").value;
+            alert("Searching for: " + searchValue);
+        }
+
+       function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const d = new Date(dateStr);
+            if (isNaN(d)) return '';
+            return d.toISOString().slice(0, 10);
+        }
+
+       async function loadTask(rowId) {
+            try {
+                const res = await $.ajax({
+                    url: '/TimesheetDashboard/GetDatabyId',
+                    type: 'GET',
+                    data: { rowId: rowId },
+                    dataType: 'json'
+                });
+
+                if (res.success && res.data) {
+
+                    const data = res.data;
+                    const attachments = res.attachments || [];
+
+                    $('#txt_vNo').val(data.v_NO);
+
+                    $('#txt_tasktitle').val(data.taskTitle || "");
+
+                    $('#txt_disc').val(data.taskDescription || "");
+
+                    if (data.endDate) {
+                        $('#due_date').val(formatDate(data.endDate));
+                    }
+
+                    $('#ddl_status').val(data.status || "Pending");
+
+                    $('#ddl_assignto').val(data.assignedToID || "");
+                    $('#ddl_CCto').val(data.cctoid > 0 ? data.cctoid : "");
+                    $('#ddl_BCCto').val(data.bcctoid > 0 ? data.bcctoid : "");
+
+                    $('#ddl_duration').val(data.duration || "");
+
+                    $(".priority-btn").removeClass("active");
+
+                    $(".priority-btn").each(function () {
+                        const btnText = $(this).find("span").text().toLowerCase();
+                        if (btnText === (data.priority || "").toLowerCase()) {
+                            $(this).addClass("active");
+                        }
+                    });
+
+
+                    selectedFiles = [];
+                    fileList.innerHTML = "";
+
+                    attachments.forEach((file, index) => {
+                        const div = document.createElement("div");
+                        div.classList.add("file-item");
+
+                        div.innerHTML = `
+                            <span>${file.fileName}</span>
+                            <i class="fa fa-times"></i>
+                        `;
+
+                        div.querySelector("i").addEventListener("click", function () {
+                            div.remove();
+                        });
+
+                        fileList.appendChild(div);
+                    });
+
+                    openTaskModal();
+
+                } else {
+                    toastr.error(res.message || "Data not found.");
+                }
+
+            } catch (error) {
+                console.error("Ajax Error:", error);
+                toastr.error("Error loading task data.");
+            }
+        }
+
+       function openTaskModalReadOnly() {
+
+        const modal = document.getElementById("taskModal");
+        modal.style.display = "flex";
+
+        const card = modal.querySelector(".task-card");
+
+        if (!card) return;
+
+        // 1️⃣ Disable all inputs, textareas, selects
+        card.querySelectorAll("input, textarea, select").forEach(el => {
+            el.setAttribute("disabled", true);
+        });
+
+        // 2️⃣ Disable priority buttons
+        card.querySelectorAll(".priority-btn").forEach(btn => {
+            btn.style.pointerEvents = "none";
+            btn.style.opacity = "0.7";
+        });
+
+        // 3️⃣ Disable upload section
+        const uploadBox = card.querySelector(".upload-box");
+        if (uploadBox) {
+            uploadBox.style.pointerEvents = "none";
+            uploadBox.style.opacity = "0.6";
+        }
+
+        // 4️⃣ Disable attachment remove (❌) buttons
+        card.querySelectorAll(".file-item i").forEach(icon => {
+            icon.style.pointerEvents = "none";
+            icon.style.opacity = "0.5";
+            icon.style.cursor = "not-allowed";
+        });
+
+        // 5️⃣ Hide Create button
+        const createBtn = document.getElementById("btn_createtask");
+        if (createBtn) {
+            createBtn.style.display = "none";
+        }
+    }
+
+</script>
+
+<script>
+    // Grab elements
+    const languageToggle = document.getElementById('languageToggle');
+    const textArea = document.getElementById('txt_disc');
+
+    // Event listener for input change (checkbox)
+    languageToggle.addEventListener('change', async () => {
+        const text = textArea.value.trim();
+        if (!text) {
+            alert('Please enter text to translate.');
+            return;
+        }
+
+        try {
+            // Determine language pair based on checkbox state
+            const langPair = languageToggle.checked ? 'en|hi' : 'hi|en';
+
+            const response = await fetch(
+                `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${langPair}`
+            );
+            const data = await response.json();
+
+            const translatedText = data.responseData.translatedText;
+            textArea.value = translatedText;
+        } catch (error) {
+            console.error('Translation error:', error);
+            alert('Failed to translate text.');
+        }
+    });
+</script>
+
+
+
+
+

@@ -1,0 +1,223 @@
+﻿@{
+    ViewBag.Title = "Manpower Requirement Master";
+    Layout = "~/Views/Shared/EmployeeLayout.cshtml";
+}
+
+<fieldset>
+    <legend class="legend-field">Manpower Requirement Master</legend>
+    <div class="row">
+        <div class="offset-md-10 col-md-2">
+            <div class="button-right mb-1">
+                <button onclick="window.location.href='@Url.Action("Index", "ManpowerRequirementMasterList")'" type="button" class="btn btn-draft">
+                    <i class="fa fa-list"></i>Back to list
+                </button>
+            </div>
+        </div>
+    </div>
+    <form id="ManpowerRequirementMaster">
+        
+        <div class="card">
+            <div class="table-responsive">
+                <table id="tblManpowerRequirementMaster" class="table-width">
+                    <thead class="table-head">
+                        <tr>
+                            <th>Code</th>
+                            <th>Department</th>
+                            <th>Designation</th>
+                            <th>Work Place</th>
+                            <th>No Position</th>
+                            <th>Salary Range</th>
+                            <th>Qualification</th>
+                            <th>Experience</th>   <!-- NEW COLUMN -->
+                            <th>Reason for Requirement</th>
+                            <th>Active Type</th>
+                            <th>Remarks</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+
+                </table>
+
+                <div style="text-align:right; padding:10px;">
+                    <button type="button" id="btnAddRow" class="btn btn-primary">
+                        + Add
+                    </button>
+                </div>
+            </div>
+            <!-- Pagination container -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="pagination-end">
+                        <div class="custom-pagination" id="tablePagination"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="offset-md-9 col-md-3">
+                <div class="button-right btn-mt">
+                    <button id="btn-save" type="submit" class="btn btn-primary"><i class="fa fa-save"></i>Save</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</fieldset>
+
+<script>
+    $(document).ready(function () {
+        let departmentList = [];
+        let designationList = [];
+        let rowCount = 0;
+
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+        const Code = getQueryParam('id');
+        // ================= LOAD DROPDOWNS FIRST =================
+        function loadDropdownData(callback) {
+            $.when(
+                $.getJSON('/ManpowerRequirementMaster/GetddlDepartment'),
+                $.getJSON('/ManpowerRequirementMaster/GetddlDesignation')
+            ).done(function (deptData, desgData) {
+                departmentList = deptData[0];
+                designationList = desgData[0];
+                if (callback) callback();
+            });
+        }
+        // ================= ADD ROW =================
+        function addRow(data = null) {
+            rowCount++;
+            var deptOptions = '<option value="">-- Select Department --</option>';
+            $.each(departmentList, function (i, x) {
+                deptOptions += `<option value="${x.value}">${x.text}</option>`;
+            });
+
+            var desgOptions = '<option value="">-- Select Designation --</option>';
+            $.each(designationList, function (i, x) {
+                desgOptions += `<option value="${x.value}">${x.text}</option>`;
+            });
+
+            var newRow = `
+            <tr>
+                <td>${rowCount}</td>
+                <td><select class="form-control ddlDepartment">${deptOptions}</select></td>
+                <td><select class="form-control ddlDesignation">${desgOptions}</select></td>
+                <td><input type="text" class="form-control workplace" /></td>
+                <td><input type="number" class="form-control noposition" /></td>
+                <td><input type="text" class="form-control salaryrange" /></td>
+                <td><input type="text" class="form-control qualification" /></td>
+                <td><input type="text" class="form-control experience" /></td>
+                <td>
+                    <select class="form-control reason">
+                        <option value="0">New Employee</option>
+                        <option value="1">Replace Employee</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="form-control activestatus">
+                        <option value="1">Active</option>
+                        <option value="0">Non-Active</option>
+                    </select>
+                </td>
+                <td><input type="text" class="form-control remarks" /></td>
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm btnDelete">
+                        Delete
+                    </button>
+                </td>
+            </tr>`;
+
+            $("#tblManpowerRequirementMaster tbody").append(newRow);
+
+            if (data) {
+                var currentRow = $("#tblManpowerRequirementMaster tbody tr:last");
+
+                currentRow.find(".ddlDepartment").val(data.departmentCode);
+                currentRow.find(".ddlDesignation").val(data.designationCode);
+                currentRow.find(".workplace").val(data.workPlace);
+                currentRow.find(".noposition").val(data.noPosition);
+                currentRow.find(".salaryrange").val(data.salaryRange);
+                currentRow.find(".qualification").val(data.qualification);
+                currentRow.find(".experience").val(data.experience);
+                currentRow.find(".reason").val(data.reason);
+                currentRow.find(".activestatus").val(data.activeStatus);
+                currentRow.find(".remarks").val(data.remarks);
+            }
+        }
+
+        // ================= DELETE ROW =================
+
+        $(document).on("click", ".btnDelete", function () {
+            $(this).closest("tr").remove();
+            rowCount = 0;
+            $("#tblManpowerRequirementMaster tbody tr").each(function () {
+                rowCount++;
+                $(this).find("td:first").text(rowCount);
+            });
+        });
+
+        $("#btnAddRow").click(function () {
+            addRow();
+        });
+        // ================= LOAD EDIT DATA =================
+        loadDropdownData(function () {
+            if (Code) {
+                $.ajax({
+                    url: '/ManpowerRequirementMaster/GetManpowerRequirementMasterCode',
+                    type: 'GET',
+                    data: { code: Code },
+                    success: function (response) {
+                        $("#btnAddRow").hide();
+                        $("#tblManpowerRequirementMaster tbody").empty();
+                        rowCount = 0;
+                        $.each(response, function (i, item) {
+                            addRow(item);
+                        });
+                    }
+                });
+
+            } else {
+                addRow();
+            }
+        });
+        // ================= SAVE =================
+        $("#ManpowerRequirementMaster").submit(function (e) {
+        e.preventDefault();
+        var manpowerList = [];
+        $("#tblManpowerRequirementMaster tbody tr").each(function () {
+            manpowerList.push({
+                Code: Code ? parseInt(Code) : 0,
+                DepartmentCode: parseInt($(this).find(".ddlDepartment").val()) || 0,
+                DesignationCode: parseInt($(this).find(".ddlDesignation").val()) || 0,
+                WorkPlace: parseInt($(this).find(".workplace").val()) || 0,
+                NoPosition: parseInt($(this).find(".noposition").val()) || 0,
+                SalaryRange: $(this).find(".salaryrange").val(),
+                Qualification: $(this).find(".qualification").val(),
+                Experience: $(this).find(".experience").val(),
+                Reason: $(this).find(".reason").val(),
+                ActiveStatus: parseInt($(this).find(".activestatus").val()) || 0,
+                Remarks: $(this).find(".remarks").val(),
+                Code: Code && parseInt(Code) > 0 ? parseInt(Code) : 0,
+            });
+        });
+        $.ajax({
+            url: '/ManpowerRequirementMaster/SaveManpowerRequirement',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(manpowerList),
+            success: function (res) {
+                if (res.success) {
+                    alert("Saved Successfully");
+                    window.location.href = "/ManpowerRequirementMasterList";
+                } else {
+                    alert(res.message);
+                }
+            }
+        });
+    });
+
+    });
+</script>
+

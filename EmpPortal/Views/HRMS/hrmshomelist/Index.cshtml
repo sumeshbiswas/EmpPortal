@@ -1,0 +1,250 @@
+﻿@{
+	ViewBag.Title = "HRMS Home List";
+	Layout = "~/Views/Shared/EmployeeLayout.cshtml";
+}
+
+<fieldset>
+	<legend class="legend-field">HRMS Home List</legend>
+	<div class="row">
+		<div class="col-lg-6">
+			<div class="input-group shadow-sm rounded-pill overflow-hidden">
+				<input type="text" id="searchBox" class="form-control" placeholder="Search by All Columns Name..." aria-label="Search term">
+			</div>
+		</div>
+		<div class="col-lg-6">
+			<div class="btn-rightalign">
+				<button id="btnSave" onclick="window.location.href='@Url.Action("Index", "hrmshome")'" type="submit" class="btn btn-add">
+					<i class="fa fa-plus"></i>Add
+				</button>
+				<button class="btn btn-print" onclick="printCityMasterReport()">
+					<i class="fa fa-print"></i> Print
+				</button>
+				<button class="btn btn-export">
+					<i class="fas fa-file-export"></i> Export
+				</button>
+				<button class="btn btn-mail">
+					<i class="fa fa-envelope"></i> Mail
+				</button>
+				<button class="btn btn-approved">
+					<i class="fa fa-check"></i> Approved
+				</button>
+			</div>
+		</div>
+	</div>
+	<div class="card">
+		<div class="table-responsive">
+			<table id="tblhrmshomelist" class="table-width">
+				<thead class="table-head">
+					<tr>
+						<th>Code</th>
+						<th>Full Name</th>
+						<th>POST Applied</th>
+						<th>Unit</th>
+						<th>Current CTC</th>
+						<th>Expected CTC</th>
+						<th>Current Location</th>
+						<th>Email</th>
+						<th>Contact</th>
+						<th>ACTIVE</th>
+						<th>Action</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+		<!-- Pagination container -->
+		<div class="row">
+			<div class="col-md-12">
+				<div class="pagination-end">
+					<div class="custom-pagination" id="tablePagination"></div>
+				</div>
+			</div>
+		</div>
+
+		@* ===================================================================== *@
+		<div class="modal fade" id="resumeModal" tabindex="-1">
+			<div class="modal-dialog modal-xl">
+			  <div class="modal-content">
+			    <div class="modal-header">
+			      
+			      <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Close">x</button>
+			    </div>
+			    <div class="modal-body">
+			      <iframe id="resumeFrame" width="100%" height="900px" frameborder="0"></iframe>
+			    </div>
+			  </div>
+			</div>
+	 </div>
+		@* ===================================================================== *@
+
+	</div>
+</fieldset>
+
+<script>
+	let currentPage = 1;
+	let pageSize = 10;
+	$(document).ready(function () {
+		loadhrmshome();
+		$('#searchBox').on('keyup', function () {
+			currentPage = 1;
+			loadhrmshome();
+		});
+	});
+	function loadhrmshome() {
+		const searchTerm = $('#searchBox').val();
+		$.ajax({
+			url: '/hrmshomelist/Gethrmshomelist',
+			type: 'GET',
+			dataType: 'json',
+			data: {
+				searchTerm,
+				pageNumber: currentPage,
+				pageSize: pageSize
+			},
+			success: function (res) {
+				console.log('kks',res);
+				const docs = res.items || res.data || [];
+				const totalCount = res.totalCount || 0;
+				const tbody = $('#tblhrmshomelist tbody');
+				tbody.empty();
+
+				if (docs.length === 0) {
+					tbody.append(`<tr><td colspan="11" class="text-center text-muted">No records found.</td></tr>`);
+					renderPagination(0, pageSize, currentPage);
+					return;
+				}
+				docs.forEach(doc => {
+					tbody.append(`
+						<tr>
+							<td style="display:none;">${doc.searchCode || ''}</td>
+							<td>${doc.searchCode || ''}</td>
+							<td>${doc.firsT_NAME || ''}</td>
+							<td>${doc.posT_APPLIED1 || ''}</td>
+							<td>${doc.unit || ''}</td>
+							<td>${doc.curR_CTC || ''}</td>
+							<td>${doc.exP_CTC || ''}</td>
+							<td>${doc.curR_LOC || ''}</td>
+							<td>${doc.emaiL_ID || ''}</td>
+							<td>${doc.contacT_NO || ''}</td>
+						    <td>
+								<select class="form-control activestatus" data-code="${doc.searchCode}"	style="${doc.active == '1' ? 'color:#fff;background-color:green;' : 'color:#f12929;background-color:green;'}">
+								<option value="1" ${doc.active == "1" ? "selected" : ""}>Active</option>
+								<option value="0" ${doc.active == "0" ? "selected" : ""}>Non-Active</option>
+								</select>
+							</td>
+							<td>
+								<div class="action-icons">
+									<i class="fa fa-edit btn-edit" data-bs-toggle="tooltip" title="Edit" onclick="editDocStage('${doc.searchCode}')"></i>
+										<i class="fa fa-eye btn-view" onclick="Showinview('${doc.searchCode}')"> </i>
+									<i class="fa fa-download btn-document" data-bs-toggle="tooltip" data-bs-title="Download Resume" onclick="downloadResume('${doc.searchCode}')"></i>
+								</div>
+							</td>
+						</tr>
+					`);
+				});
+				renderPagination(totalCount, pageSize, currentPage);
+			},
+			error: function (xhr) {
+				toastr.error('Error loading document stages: ' + (xhr.responseJSON?.message || xhr.statusText));
+			}
+		});
+	}
+	function renderPagination(total, pageSize, currentPage) {
+		const totalPages = Math.ceil(total / pageSize);
+		const pagination = $('#tablePagination');
+		pagination.empty();
+
+		if (totalPages <= 1) return;
+		let html = '';
+		if (currentPage > 1) {
+			html += `<button class="btn btn-sm btn-light mx-1" onclick="goToPage(1)">First</button>`;
+			html += `<button class="btn btn-sm btn-light mx-1" onclick="goToPage(${currentPage - 1})">Prev</button>`;
+		}
+
+		const startPage = Math.max(1, currentPage - 2);
+		const endPage = Math.min(totalPages, currentPage + 2);
+
+		for (let i = startPage; i <= endPage; i++) {
+			html += `
+				<button class="btn btn-sm ${i === currentPage ? 'btn-primary' : 'btn-light'} mx-1" onclick="goToPage(${i})">${i}</button>`;
+		}
+		if (currentPage < totalPages) {
+			html += `<button class="btn btn-sm btn-light mx-1" onclick="goToPage(${currentPage + 1})">Next</button>`;
+			html += `<button class="btn btn-sm btn-light mx-1" onclick="goToPage(${totalPages})">Last</button>`;
+		}
+		pagination.html(html);
+	}
+	function goToPage(page) {
+		currentPage = page;
+		loadhrmshome();
+	}
+	function editDocStage(docCode) {
+		window.location.href = `/hrmshome/Index?docCode=${encodeURIComponent(docCode)}`;
+	}
+	function Showinview(searchCode) {
+    if (!searchCode) return;
+    let previewUrl = `/hrmshomelist/PreviewResume?searchCode=${searchCode}`;
+    document.getElementById("resumeFrame").src = previewUrl;
+    var myModal = new bootstrap.Modal(
+        document.getElementById('resumeModal')
+    );
+    myModal.show();
+}
+	function deleteDocStage(docCode) {
+		Swal.fire({
+			title: 'Are you sure?',
+			text: "You won't be able to revert this deletion!",
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#d33',
+			cancelButtonColor: '#3085d6',
+			confirmButtonText: 'Yes, delete it!'
+		}).then((result) => {
+			if (result.isConfirmed) {
+				$.ajax({
+					url: '/ApprovalStageMasterList/DeleteDocByCode',
+					type: 'POST',
+					data: { docCode: docCode },
+					success: function (response) {
+						if (response.success) {
+							
+							toastr.success(response.message || "Record deleted successfully.");
+							loadhrmshome();
+						} else {
+							toastr.warning("Delete failed.");
+						}
+					},
+					error: function () {
+						toastr.error("An error occurred while deleting.");
+					}
+				});
+			}
+		});
+	}
+	// ================= STATUS UPDATE =================
+	$(document).on('change', '.activestatus', function () {
+		const code = $(this).data('code');
+		const status = $(this).val();
+		$.ajax({
+			url: '/hrmshomelist/UpdateActiveStatus',
+			type: 'POST',
+			data: {
+				code: code,
+				status: status
+			},
+			success: function (response) {
+				if (response.success) {
+					toastr.success("Status updated successfully");
+				} else {
+					toastr.error("Update failed");
+				}
+			},
+			error: function () {
+				toastr.error("Server error");
+			}
+		});
+	});
+    function downloadResume(searchCode) {
+		window.location.href = `/hrmshomelist/DownloadResume?searchCode=${encodeURIComponent(searchCode)}`;
+	}
+</script>

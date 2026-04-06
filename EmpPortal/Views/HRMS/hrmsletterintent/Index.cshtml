@@ -1,0 +1,453 @@
+﻿@{
+    ViewBag.Title = "HRMS Home";
+    Layout = "~/Views/Shared/EmployeeLayout.cshtml";
+}
+@await Html.PartialAsync("Partial_Wizard")
+<div class="form-section active" id="formletterintent">
+    <p class="EmpLabel"><span>Intent Letter</span></p>
+    <fieldset>
+
+    
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="DtDocumentDate">Document Date</label>
+                    <input type="text" class="form-control" id="DtDocumentDate" />
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="ddlEmployeeName">Employee Name</label>
+
+                    <input type="text" class="form-control" id="ddlEmployeeName" />
+
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="ddlDepartment">Department</label>
+                <select class="form-control" id="ddlDepartment">
+                    <option value="">Select Department</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="ddlDesignation">Designation</label>
+                <select class="form-control" id="ddlDesignation">
+                    <option value="">Select Designation</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="ddlReportingTo">Reporting To</label>
+                <select class="form-control" id="ddlReportingTo">
+                    <option value="">Select Reporting To</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="TxtReportLocation">Report Location</label>
+                <input type="text" class="form-control" id="TxtReportLocation" />
+            </div>
+        </div>
+       
+    </div>
+    <div class="row">
+        
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="DtDiscussDate">Discuss Date</label>
+                    <input type="text" class="form-control" id="DtDiscussDate" />
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="DtDiscussDate">Effective Date</label>
+                    <input type="text" class="form-control" id="EffectiveDate" />
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="DtAcceptanceDate">Acceptance Date</label>
+                    <input type="text" class="form-control" id="DtAcceptanceDate" />
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="DtJoiningDate">Joining Date</label>
+                    <input type="text" class="form-control" id="DtJoiningDate" />
+            </div>
+        </div>
+        
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="NumHandSalary">In Hand Salary</label>
+                <input type="number" class="form-control" id="NumHandSalary" />
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="NumOtherAmount">Other Amount</label>
+                    <input type="number" class="form-control" id="OtherAmountID" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="btn-mt">
+                <button id="" type="button" class="btn btn-draft"><i class="fa fa-step-backward"></i>Previous</button>
+                <button id="" type="button" class="btn btn-success"><i class="fa fa-step-forward"></i>Next</button>
+            </div>
+        </div>
+        <div class="offset-md-2 col-md-4">
+            <div class="button-right btn-mt">
+                <button id="btn-print" type="button" class="btn btn-print"><i class="fa fa-print"></i>Print</button>
+                <button id="btn-Next" type="submit" class="btn btn-primary"><i class="fa fa-save"></i>Save</button>
+            </div>
+        </div>
+    </div>
+    </fieldset>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#btn-Next").hide();
+        const storedParams = JSON.parse(sessionStorage.getItem('globalParams') || '{}');
+        if (storedParams.readOnly) {
+            $('input, textarea, select, button').prop('disabled', true);
+        }
+        // ddlEmployeeName(function () {
+            ddlFinalDepartment(function () {
+                ddlFinalDesignation(function () {
+                    ddlReportingTo(function () {
+
+                        if (storedParams.docCode) {
+                            Getdropdownbanging(storedParams.docCode);
+                            hrmsletterintent(storedParams.docCode);
+                            Checkhrmstab(storedParams.docCode);
+                        }
+
+                    });
+                });
+            });
+        //});
+
+        // ================= SET TODAY DATE =================
+
+        setToday('#DtDocumentDate');
+        setToday('#DtDiscussDate');
+        setToday('#EffectiveDate');
+        setToday('#DtAcceptanceDate');
+        setToday('#DtJoiningDate');
+
+        function setToday(id) {
+            let d = new Date();
+            let day = String(d.getDate()).padStart(2, '0');
+            let month = String(d.getMonth() + 1).padStart(2, '0');
+            let year = d.getFullYear();
+            $(id).val(day + '/' + month + '/' + year);
+        }
+
+        // ================= SAVE BUTTON =================
+
+        $('#btn-Next').click(function () {
+            var obj = {
+                Code: parseInt(storedParams.docCode) || 0,
+
+                V_DATE: $('#DtDocumentDate').val(),
+
+                EmployeeCode: $('#ddlEmployeeName').val() || "",
+
+                DepartmentCode: parseInt($('#ddlDepartment').val()) || 0,
+                DesignationCode: parseInt($('#ddlDesignation').val()) || 0,
+                ReportingManager: parseInt($('#ddlReportingTo').val()) || 0,
+
+                ReportLocation: $('#TxtReportLocation').val(),
+
+                DiscussionDate: $('#DtDiscussDate').val(),
+                EffectiveDate: $('#EffectiveDate').val(),
+                AcceptanceDate: $('#DtAcceptanceDate').val(),
+                JoiningDate: $('#DtJoiningDate').val(),
+
+                TakeHomeSalary: parseFloat($('#NumHandSalary').val()) || 0,
+                GrossSalary: parseFloat($('#OtherAmountID').val()) || 0
+            };
+
+            console.log("Sending Data:", obj);
+
+            $.ajax({
+                url: '/hrmsletterintent/SaveIntent',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(obj),
+                success: function (res) {
+                    if (res.status) {
+                        alert('Intent Letter Saved Successfully ✅');
+                    } else {
+                        alert(res.message);
+                    }
+                },
+                error: function (xhr) {
+                    console.error("Error:", xhr.responseText);
+                    alert('Something went wrong ❌');
+                }
+            });
+        });
+
+    }); // ✅ READY CLOSED
+
+
+
+    // ================= DROPDOWN FUNCTIONS =================
+
+    // function ddlEmployeeName(callback) {
+    //     $.getJSON('/hrmsletterintent/GetEmployeeName', function (data) {
+    //         const ddl = $('#ddlEmployeeName');
+    //         ddl.empty().append('<option value="">-- Employee Name --</option>');
+    //         $.each(data, function (i, x) {
+    //             ddl.append(`<option value="${x.value}">${x.text}</option>`);
+    //         });
+    //         if (callback) callback();
+    //     });
+    // }
+
+    function ddlFinalDepartment(callback) {
+        $.getJSON('/hrmsletterintent/GetddlFinalDepartment', function (data) {
+            const ddl = $('#ddlDepartment');
+            ddl.empty().append('<option value="">-- Select Department --</option>');
+            $.each(data, function (i, x) {
+                ddl.append(`<option value="${x.value}">${x.text}</option>`);
+            });
+            if (callback) callback();
+        });
+    }
+
+    function ddlFinalDesignation(callback) {
+        $.getJSON('/hrmsletterintent/GetddlFinalDesignation', function (data) {
+            const ddl = $('#ddlDesignation');
+            ddl.empty().append('<option value="">-- Select Designation --</option>');
+            $.each(data, function (i, x) {
+                ddl.append(`<option value="${x.value}">${x.text}</option>`);
+            });
+            if (callback) callback();
+        });
+    }
+
+    function ddlReportingTo(callback) {
+        $.getJSON('/hrmsletterintent/GetddlReportingTo', function (data) {
+            const ddl = $('#ddlReportingTo');
+            ddl.empty().append('<option value="">-- Select Report --</option>');
+            $.each(data, function (i, x) {
+                ddl.append(`<option value="${x.value}">${x.text}</option>`);
+            });
+            if (callback) callback();
+        });
+    }
+
+
+    // ================= LOAD DROPDOWN VALUES =================
+
+    function Getdropdownbanging(code) {
+
+        $.ajax({
+            url: '/hrmsletterintent/Getdropdownbanging',
+            type: 'GET',
+            data: { code: code },
+            success: function (res) {
+
+                if (res && res.length > 0) {
+
+                    var item = res[0];
+
+                    // $('#ddlEmployeeName').val(item.finalLevelName).trigger('change');
+                    $('#ddlDepartment').val(item.finalDepartment).trigger('change');
+                    $('#ddlDesignation').val(item.finalDesignation).trigger('change');
+                }
+            },
+            error: function () {
+                alert('Dropdown loading failed ❌');
+            }
+        });
+    }
+
+
+    // ================= CHECK TAB STATUS =================
+
+    function Checkhrmstab(code) {
+        $.ajax({
+            url: '/hrmsletterintent/Checkhrmstable',
+            type: 'GET',
+            data: { code: code },
+            success: function (data) {
+
+                console.log("khushahal singh", data);
+
+                let isBasicComplete = data.firstname && data.firstname.trim() !== "";
+                let isInterviewComplete = parseInt(data.checkInterviewData) === 1;
+
+                if (isBasicComplete) {
+                    $('#ddlEmployeeName').val(data.firstname);
+                }
+
+                // ✅ Final Button Logic with Toastr
+                if (isBasicComplete && isInterviewComplete) {
+
+                    $("#btn-Next").show();
+
+                } else {
+
+                    $("#btn-Next").hide();
+
+                    if (!isBasicComplete) {
+                        toastr.warning("Please complete Basic Details first.");
+                    }
+                    else if (!isInterviewComplete) {
+                        toastr.warning("Please complete Interview process first.");
+                    }
+                }
+
+                // Step Completed UI
+                if (data.basic == 1)
+                    $('[data-step-index="1"]').addClass("completed");
+
+                if (data.personal == 1)
+                    $('[data-step-index="2"]').addClass("completed");
+
+                if (data.family == 1)
+                    $('[data-step-index="3"]').addClass("completed");
+
+                if (data.education == 1)
+                    $('[data-step-index="4"]').addClass("completed");
+
+                if (data.work == 1)
+                    $('[data-step-index="5"]').addClass("completed");
+
+                if (data.reference == 1)
+                    $('[data-step-index="6"]').addClass("completed");
+
+                if (data.interview == 1)
+                    $('[data-step-index="7"]').addClass("completed");
+
+                if (data.letterintent == 1)
+                    $('[data-step-index="8"]').addClass("completed");
+
+            },
+            error: function (xhr) {
+                toastr.error("Something went wrong!");
+                console.error("Error:", xhr.responseText);
+            }
+        });
+    }
+
+
+
+
+    //   function Checkhrmstab(code) {
+    //     $.ajax({
+    //         url: '/hrmsletterintent/Checkhrmstable',
+    //         type: 'GET',
+    //         data: { code: code },
+    //         success: function (data) {
+    //             console.log("khushahal singh", data);
+
+
+    //             if (data.firstname && data.firstname.trim() !== "") {
+    //             $('#ddlEmployeeName').val(data.firstname);
+                
+    //         }
+
+    //             // Home
+    //             if (data.basic == 1) {
+    //                 $('[data-step-index="1"]').addClass("completed");
+    //                 $("#btn-Next").show();
+    //             }
+    //             // Personal
+    //             if (data.personal == 1) {
+    //                 $('[data-step-index="2"]').addClass("completed");
+    //             }
+    //             // Family
+    //             if (data.family == 1) {
+    //                 $('[data-step-index="3"]').addClass("completed");
+    //             }
+    //             // Education
+    //             if (data.education == 1) {
+    //                 $('[data-step-index="4"]').addClass("completed");
+    //             }
+    //             // Work
+    //             if (data.work == 1) {
+    //                 $('[data-step-index="5"]').addClass("completed");
+    //             }
+    //             // Reference
+    //             if (data.reference == 1) {
+    //                 $('[data-step-index="6"]').addClass("completed");
+    //             }
+    //             // Interview
+    //             if (data.interview == 1) {
+    //                 $('[data-step-index="7"]').addClass("completed");
+    //             }
+    //              if (data.letterintent == 1)
+    //                {
+    //                $('[data-step-index="8"]').addClass("completed");
+    //                }
+
+    //         },
+    //         error: function (xhr) {
+    //             console.error("Error:", xhr.responseText);
+    //         }
+    //     });
+    // }
+
+
+    // ================= LOAD LETTER INTENT DATA =================
+
+    function hrmsletterintent(code) {
+
+        $.ajax({
+            url: '/hrmsletterintent/GethrmsletterintentDetailList',
+            type: 'GET',
+            data: { code: parseInt(code) },
+            success: function (res) {
+
+                if (res && res.letterIntentDetail && res.letterIntentDetail.length > 0) {
+
+                    var data = res.letterIntentDetail[0];
+
+                    $('#DtDocumentDate').val(formatDate(data.v_DATE));
+                    $('#DtDiscussDate').val(formatDate(data.discussioN_DATE));
+                    $('#EffectiveDate').val(formatDate(data.efF_DATE));
+                    $('#DtAcceptanceDate').val(formatDate(data.acceptancE_DATE));
+                    $('#DtJoiningDate').val(formatDate(data.joininG_DATE));
+                    //$('#ddlEmployeeName').val(data.intenT_NAME).trigger('change');
+                    $('#ddlEmployeeName').val(data.intenT_NAME);
+                    $('#ddlDepartment').val(data.depT_NAME).trigger('change');
+                    $('#ddlDesignation').val(data.desG_NAME).trigger('change');
+                    $('#ddlReportingTo').val(data.reportinG_MANAGER).trigger('change');
+
+                    $('#TxtReportLocation').val(data.reporT_LOCATION);
+                    $('#NumHandSalary').val(data.takE_HOME_SAL);
+                    $('#OtherAmountID').val(data.grosS_SAL);
+                }
+            }
+        });
+    }
+
+
+    // ================= SAFE DATE FORMAT =================
+
+    function formatDate(dateString) {
+
+        if (!dateString) return "";
+
+        let parts = dateString.split('T')[0].split('-');
+        return parts[2] + '/' + parts[1] + '/' + parts[0];
+    }
+</script>
+
