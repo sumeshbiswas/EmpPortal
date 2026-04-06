@@ -51,7 +51,7 @@
 
                         <div class="emp-options">
                             <label><input type="checkbox"> Remember me</label>
-                            <a href="#" id="btnShowForgot">Forgot PIN?</a>
+                            <a href="#" id="btnShowForgot">Forgot Password?</a>
                         </div>
                         <button class="emp-login-btn" id="btnLogin">Login</button>
                     </div>
@@ -96,16 +96,29 @@
                             </div>
                             <div class="emp-modal-body">
                                 <div class="emp-form-group">
-                                    <label for="Num_OTP">OTP</label>
-                                    <input type="number" id="Num_OTP" class="emp-form-control" placeholder="Enter OTP">
+                                    <p class="emploginmodal-subtitle">
+                                        Please Enter OTP
+                                    </p>
+
+                                    <div class="emploginmodal-pin-wrapper">
+                                        <input type="password" maxlength="1" class="emploginmodal-pin" id="Num_OTP" />
+                                        <input type="password" maxlength="1" class="emploginmodal-pin" id="OTP2" />
+                                        <input type="password" maxlength="1" class="emploginmodal-pin" id="OTP3" />
+                                        <input type="password" maxlength="1" class="emploginmodal-pin" id="OTP4" />
+                                        <input type="password" maxlength="1" class="emploginmodal-pin" id="OTP5" />
+                                        <input type="password" maxlength="1" class="emploginmodal-pin" id="OTP6" />
+                                    </div>
+
+                                    @* <label for="Num_OTP">OTP</label>
+                                    <input type="number" id="Num_OTP" class="emp-form-control" placeholder="Enter OTP"> *@
                                 </div>
                                 <div class="emp-form-group">
-                                    <label for="modalNewPin">New PIN</label>
-                                    <input type="password" id="modalNewPin" class="emp-form-control" placeholder="Enter New PIN">
+                                    <label for="modalNewPin">Please Enter New Password</label>
+                                    <input type="password" id="modalNewPin" class="emp-form-control" placeholder="Enter New Password">
                                 </div>
                                 <div class="emp-form-group">
-                                    <label for="modalConfirmPin">Confirm PIN</label>
-                                    <input type="password" id="modalConfirmPin" class="emp-form-control" placeholder="Confirm New PIN">
+                                    <label for="modalConfirmPin">Re-Enter Password</label>
+                                    <input type="password" id="modalConfirmPin" class="emp-form-control" placeholder="Confirm New Password">
                                 </div>
                                 <button id="btnModalResetPin" class="emp-submit-btn">Reset PIN</button>
                             </div>
@@ -127,7 +140,18 @@
                             <button type="button" class="emp-otp-btn" id="btnSendOTP">Send OTP</button>
                         </div>
                         <div class="emp-input-group">
-                            <input type="text" id="regOTP" placeholder="Enter OTP">
+                            <p class="emploginmodalreg-subtitle">
+                                Please Enter OTP
+                            </p>
+                            <div class="emploginmodal-pin-wrapper">
+                                <input type="password" maxlength="1" class="emploginmodal-pin" id="regOTP" />
+                                <input type="password" maxlength="1" class="emploginmodal-pin" id="OTP2" />
+                                <input type="password" maxlength="1" class="emploginmodal-pin" id="OTP3" />
+                                <input type="password" maxlength="1" class="emploginmodal-pin" id="OTP4" />
+                                <input type="password" maxlength="1" class="emploginmodal-pin" id="OTP5" />
+                                <input type="password" maxlength="1" class="emploginmodal-pin" id="OTP6" />
+                            </div>
+                           @*  <input type="text" id="regOTP" placeholder="Enter OTP"> *@
                         </div>
                         <div class="emp-input-group">
                             <input type="password" id="regPin" placeholder="Password">
