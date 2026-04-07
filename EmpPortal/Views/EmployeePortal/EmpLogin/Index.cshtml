@@ -56,6 +56,8 @@
                         <button class="emp-login-btn" id="btnLogin">Login</button>
                     </div>
                     @* Modal popup for login *@
+
+
                     <div class="emploginmodal-overlay" id="emploginmodal_overlay">
 
                         <div class="emploginmodal-box">
@@ -75,6 +77,14 @@
                                 <input type="password" maxlength="1" class="emploginmodal-pin" id="OTP6" />
                             </div>
 
+
+                            <p class="emploginmodal-timer">
+                                Code expires in <span id="otpTimer">50</span>s
+                            </p>
+
+
+
+
                             <button class="emploginmodal-verify-btn" id="btnVerifyPin">
                                 Verify Code
                             </button>
@@ -86,6 +96,8 @@
                         </div>
 
                     </div>
+
+
                     <!-- Forgot PIN Modal -->
                     <div id="forgotPinModal" class="emp-modal d-none">
                         <div class="emp-modal-reset">
@@ -288,20 +300,20 @@
         });
     }
 
-    function sendOTP() {
-        let mobile = $("#regMob").val().trim();
-        let comp = $("#regCompany").val();
+    // function sendOTP() {
+    //     let mobile = $("#regMob").val().trim();
+    //     let comp = $("#regCompany").val();
 
-        if (mobile.length !== 10 || isNaN(mobile))
-            return toastr.error("Enter valid mobile");
+    //     if (mobile.length !== 10 || isNaN(mobile))
+    //         return toastr.error("Enter valid mobile");
 
-        if (!comp)
-            return toastr.error("Select company");
+    //     if (!comp)
+    //         return toastr.error("Select company");
 
-        $.post("/EmpLogin/SendOTP", { mobile, compCode: comp }, res => {
-            res.success ? toastr.success("OTP sent") : toastr.error(res.message);
-        });
-    }
+    //     $.post("/EmpLogin/SendOTP", { mobile, compCode: comp }, res => {
+    //         res.success ? toastr.success("OTP sent") : toastr.error(res.message);
+    //     });
+    // }
 
     function ForgotsendOTP() {
         let mobile = $("#loginMob").val().trim();
@@ -456,6 +468,88 @@
 
 
 </script>
+
+
+
+
+<script>
+    let countdownInterval;
+
+    function startOtpTimer(duration = 50) {
+        let timeLeft = duration;
+
+        const timerElement = document.getElementById("otpTimer");
+        const verifyBtn = document.getElementById("btnVerifyPin");
+
+        // Clear previous timer if any
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+        }
+
+        timerElement.textContent = timeLeft;
+        verifyBtn.disabled = false;
+        verifyBtn.innerText = "Verify Code";
+
+        countdownInterval = setInterval(() => {
+            timeLeft--;
+            timerElement.textContent = timeLeft;
+
+            if (timeLeft <= 0) {
+                clearInterval(countdownInterval);
+                timerElement.textContent = "Expired";
+
+                verifyBtn.disabled = true;
+                verifyBtn.innerText = "Code Expired";
+
+                showResendOption();
+            }
+        }, 1000);
+    }
+
+    function showResendOption() {
+        let existing = document.getElementById("resendBtn");
+        if (existing) return;
+
+        let resendBtn = document.createElement("button");
+        resendBtn.id = "resendBtn";
+        resendBtn.innerText = "Resend Code";
+        resendBtn.className = "emploginmodal-verify-btn";
+
+        resendBtn.onclick = () => {
+            sendOTP(); // call API again
+        };
+
+        document.querySelector(".emploginmodal-box").appendChild(resendBtn);
+    }
+
+    function sendOTP() {
+        let mobile = $("#regMob").val().trim();
+        let comp = $("#regCompany").val();
+
+        if (mobile.length !== 10 || isNaN(mobile))
+            return toastr.error("Enter valid mobile");
+
+        if (!comp)
+            return toastr.error("Select company");
+
+        $.post("/EmpLogin/SendOTP", { mobile, compCode: comp }, res => {
+
+            if (res.success) {
+                toastr.success("OTP sent");
+
+                // ✅ START TIMER ONLY AFTER SUCCESS
+                startOtpTimer(50);
+
+                // Remove resend button if exists
+                $("#resendBtn").remove();
+            } else {
+                toastr.error(res.message);
+            }
+
+        });
+    }
+</script>
+
 
 
 

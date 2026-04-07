@@ -136,9 +136,7 @@ namespace travelexpensemanagement.Controllers.EmployeePortal
             using SqlConnection con = _dbConnection.GetErpConnection();
             con.Open();
 
-            using SqlCommand cmdCount = new SqlCommand(@"  SELECT COUNT(MOBILE_NO) 
-                            FROM EmpPortalLogin 
-                            WHERE MOBILE_NO = @Mobile AND COMP_CODE = @CompCode", con);
+            using SqlCommand cmdCount = new SqlCommand(@"SELECT COUNT(MOBILE_NO)  FROM EmpPortalLogin   WHERE MOBILE_NO = @Mobile AND COMP_CODE = @CompCode", con);
 
             cmdCount.Parameters.AddWithValue("@Mobile", mobile);
             cmdCount.Parameters.AddWithValue("@CompCode", compCode);
