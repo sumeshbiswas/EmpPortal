@@ -92,6 +92,32 @@ body {
     color: #ffeb60;
     margin-bottom: 30px;
 }
+
+/*Login Two Way Authentication Start*/
+.emploginmodal-timer {
+    font-size: 14px;
+    font-weight: 400;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 20px;
+    float: right;
+    position: relative;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+    .emploginmodal-timer span#otpTimer {
+        font-weight: bold;
+        font-size: 14px;
+        color: #e74c3c; /* red for urgency */
+    }
+
+    
+
+
+
 /*Login Modal Popup*/
 
 /* overlay */
@@ -148,7 +174,7 @@ body {
     display: flex;
     justify-content: center;
     gap: 12px;
-    margin-bottom: 20px;
+    /*margin-bottom: 20px;*/
 }
 
 .emploginmodal-pin {
@@ -502,6 +528,7 @@ body {
 }
 
 /* Menu */
+/* Menu */
 .emp-menu a {
     display: flex;
     align-items: center;
@@ -515,20 +542,42 @@ body {
     margin-bottom: 8px;
 }
 
-    .emp-menu a:hover {
-        background: #13293d;
-        color: #fff;
-    }
+/* ONLY dropdown parent */
+.emp-dropdown {
+    justify-content: space-between;
+}
 
-    /* ACTIVE */
-    .emp-menu a.active {
-        background: rgba(30,60,114,0.35);
-        color: #fff;
-        font-weight: 500;
-        border-left: 6px solid #198754;
-    }
+/* left content */
+.emp-link-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
 
-       
+/* hover */
+.emp-menu a:hover {
+    background: #13293d;
+    color: #fff;
+}
+
+/* ACTIVE */
+.emp-menu a.active {
+    background: rgba(30,60,114,0.35);
+    color: #fff;
+    font-weight: 500;
+    border-left: 6px solid #198754;
+}
+
+/* arrow */
+.emp-arrow {
+    font-size: 12px;
+    transition: transform 0.3s ease;
+}
+
+/* rotate arrow */
+.emp-dropdown[aria-expanded="true"] .emp-arrow {
+    transform: rotate(180deg);
+}
 
 /* Submenu */
 .emp-submenu {
@@ -537,8 +586,8 @@ body {
 
     .emp-submenu a {
         font-size: 13px;
+        justify-content: flex-start; /* force left alignment */
     }
-
 
 /* Overlay */
 .emp-overlay {

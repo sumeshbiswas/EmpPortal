@@ -54,8 +54,73 @@
                 <span class="emp-logo-text">Employee Portal</span>
             </div>
         </div>
-
         <div class="emp-menu">
+
+            <!-- ALL DASHBOARD -->
+            <a data-bs-toggle="collapse" href="#allDashboard" class="emp-dropdown">
+                <div class="emp-link-left">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span class="emp-text">All Dashboard</span>
+                </div>
+
+                <i class="fa-solid fa-chevron-down emp-arrow"></i>
+            </a>
+
+            <div class="collapse emp-submenu" id="allDashboard">
+
+                <a href="@Url.Action("Index", "EmployeeDashboard")">
+                    <i class="fa-solid fa-user"></i>
+                    <span class="emp-text">Employee</span>
+                </a>
+
+                <a href="@Url.Action("Index", "TimesheetDashboard")">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span class="emp-text">Timesheet</span>
+                </a>
+
+                <a href="@Url.Action("Index", "TravelDashboard")">
+                    <i class="fa-solid fa-plane"></i>
+                    <span class="emp-text">Travel</span>
+                </a>
+
+                <a href="@Url.Action("Index", "RecruitmentDashboard")">
+                    <i class="fa-solid fa-user-tie"></i>
+                    <span class="emp-text">HRMS Recruitment</span>
+                </a>
+
+            </div>
+
+
+            <!-- ATTENDANCE -->
+            <a href="@Url.Action("Index", "EmpAttendance")">
+                <i class="fa-regular fa-clock"></i>
+                <span class="emp-text">Attendance</span>
+            </a>
+
+
+            <!-- PAYROLL -->
+            <a data-bs-toggle="collapse" href="#empPayroll" class="emp-dropdown">
+
+                <div class="emp-link-left">
+                    <i class="fa-solid fa-money-bill-wave"></i>
+                    <span class="emp-text">Payroll</span>
+                </div>
+
+                <i class="fa-solid fa-chevron-down emp-arrow"></i>
+
+            </a>
+
+            <div class="collapse emp-submenu" id="empPayroll">
+
+                <a href="@Url.Action("Index", "EmpPayslip")">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                    <span class="emp-text">Salary Slip</span>
+                </a>
+
+            </div>
+
+        </div>
+        @* <div class="emp-menu">
             <a href="@Url.Action("Index", "EmployeeDashboard")">
                 <i class="fa-solid fa-chart-pie"></i>
                 <span class="emp-text">Dashboard</span>
@@ -83,7 +148,7 @@
                     <span class="emp-text">Salary Slip</span>
                 </a>
             </div>
-        </div>
+        </div> *@
     </div>
 
     <!-- MAIN -->
