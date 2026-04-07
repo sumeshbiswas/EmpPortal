@@ -177,7 +177,7 @@
 
 <script>
     $(document).ready(function () {
-
+        debugger;
         loadCompany("#loginCompany");
         loadCompany("#regCompany");
         $("#btnShowRegister").click(() => toggleForms(false));
@@ -301,6 +301,7 @@
     }
 
     function loadCompany(selector) {
+      debugger;
         $.get("/EmpLogin/GetddlCompany", function (res) {
             let ddl = $(selector).empty().append('<option value="">Select Company</option>');
             $.each(res, (_, x) => ddl.append(`<option value="${x.value}">${x.text}</option>`));
@@ -366,23 +367,22 @@
             var otp = `${OTP1}${OTP2}${OTP3}${OTP4}${OTP5}${OTP6}`;
 
             // API call
-            $.post("/EmpLogin/
-            ", {
-                mobile: $("#regMob").val(),
-                compCode: $("#regCompany").val(),
-                otp: otp,
-                pin: pin
-            }, res => {
+                $.post("/EmpLogin/VerifyOTP", {
+                    mobile: $("#regMob").val(),
+                    compCode: $("#regCompany").val(),
+                    otp: otp,
+                    pin: pin
+                }, function (res) {
 
-                if (res.success) {
-                    toastr.success("Registration successful");
-                    toggleForms(true);
-                }
-                else {
-                    toastr.error(res.message);
-                }
+                    if (res.success) {
+                        toastr.success("Registration successful");
+                        toggleForms(true);
+                    }
+                    else {
+                        toastr.error(res.message);
+                    }
 
-            });
+    });
         }
 
         function loginUser() {
