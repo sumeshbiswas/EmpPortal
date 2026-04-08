@@ -4,6 +4,7 @@ using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
 using System.Data;
 using System.Net;
 using System.Net.Http;
@@ -297,9 +298,39 @@ namespace travelexpensemanagement.Controllers.EmployeePortal
                 return Json(new { success = false, message = "Invalid PIN" });
             }
 
+
+
+
+            string empQuery = @"SELECT EMP_ID, COMP_CODE 
+                        FROM EMP_MAST 
+                        WHERE MOBILE=@Mobile AND COMP_CODE=@CompCode";
+
+            using SqlCommand empCmd = new SqlCommand(empQuery, con);
+            empCmd.Parameters.AddWithValue("@Mobile", mobile);
+            empCmd.Parameters.AddWithValue("@CompCode", compCode);
+
+            using SqlDataReader empDr = empCmd.ExecuteReader();
+
+            if (!empDr.Read())
+            {
+                return Json(new { success = false, message = "Employee not found" });
+            }
+
+            int empId = empDr["EMP_ID"] != DBNull.Value
+             ? Convert.ToInt32(empDr["EMP_ID"])
+             : 0;
+
+
+
             // Set session variables
             HttpContext.Session.SetString("MOBILE", mobile);
             HttpContext.Session.SetString("COMP_CODE", compCode.ToString());
+            HttpContext.Session.SetInt32("EMP_ID", empId);
+
+
+
+
+
 
             // Return success
             return Json(new
