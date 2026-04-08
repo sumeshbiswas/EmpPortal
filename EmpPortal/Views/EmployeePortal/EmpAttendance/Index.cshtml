@@ -620,105 +620,205 @@
 
                 let holidayName = holidayMap[fullDate];
 
+                    let cellClass="calendar-cell";
+                    let status="";
+                    let inTime="";
+                    let outTime="";
+                    let deduction="";
 
-                let cellClass="calendar-cell offday";
+                    let dayNumber = new Date(year, monthIndex, date).getDay();
 
-                let status="";
+                    /* PRIORITY ORDER */
 
-                let inTime="";
+                    /* 1️⃣ Holiday */
+                    if(holidayName){
 
-                let outTime="";
-
-                let deduction=""; // FIXED scope
-
-
-                /* priority */
-
-                if(holidayName){
-
-                    cellClass="calendar-cell holiday";
-
-                    status="Holiday";
-
-                    /* 🔹 count holiday */
-                    holidayCount++;
-
-                }
-
-
-                else if(record){
-
-                    status = record.status || "";
-
-                    inTime = record.inTime || "";
-
-                    outTime = record.outTime || "";
-
-
-                    let shiftStart="09:30";
-
-
-                    if(inTime){
-
-                        let inDate = new Date("1970-01-01 "+inTime);
-
-                        let shiftDate = new Date("1970-01-01 "+shiftStart);
-
-
-                        let lateMinutes = (inDate-shiftDate)/60000;
-
-
-                        if(lateMinutes>0 && lateMinutes<=30)
-
-                            deduction="0.50";
-
-
-                        else if(lateMinutes>30)
-
-                            deduction="0.10";
-
+                        cellClass="calendar-cell holiday";
+                        status="Holiday";
+                        holidayCount++;
                     }
 
+                    /* 2️⃣ Sunday Off */
+                    else if(dayNumber === 0){
 
-                    if(status=="P"){
-
-                        cellClass="calendar-cell present";
-
-                        /* 🔹 count present */
-                        presentCount++;
-
+                        cellClass="calendar-cell offday";
+                        status="O"; // Sunday Off
                     }
 
+                    /* 3️⃣ Attendance Data Available */
+                    else if(record){
 
-                    else if(status=="A"){
+                        status = record.status || "";
 
-                        cellClass="calendar-cell absent";
+                        inTime = record.inTime || "";
+                        outTime = record.outTime || "";
 
-                        /* 🔹 count absent */
-                        absentCount++;
+                        let shiftStart="09:30";
 
+                        if(inTime){
+
+                            let inDate = new Date("1970-01-01 "+inTime);
+                            let shiftDate = new Date("1970-01-01 "+shiftStart);
+
+                            let lateMinutes = (inDate-shiftDate)/60000;
+
+                            if(lateMinutes>5 && lateMinutes<=30)
+                                deduction="30 m";
+
+                            else if(lateMinutes>30 && lateMinutes<=60)
+                                deduction="1 h";
+
+                            else if(lateMinutes>60 && lateMinutes<=90)
+                                deduction="1:30 h";
+
+                            else if(lateMinutes>90 && lateMinutes<=120)
+                                deduction="2:00 h";
+
+                            else if(lateMinutes>120 && lateMinutes<=150)
+                                deduction="2:30 h";
+                        }
+
+                        if(status=="P"){
+                            cellClass="calendar-cell present";
+                            presentCount++;
+                        }
+
+                        else if(status=="A"){
+                            cellClass="calendar-cell absent";
+                            absentCount++;
+                        }
+
+                        else if(status=="L"){
+                            cellClass="calendar-cell leave";
+                            leaveCount++;
+                        }
+
+                        else if(status=="E"){
+                            cellClass="calendar-cell earnedleave";
+                            leaveCount++;
+                        }
                     }
 
+                    /* 4️⃣ Weekday but no data → light yellow */
+                       else{
 
-                    else if(status=="L"){
+                            cellClass="calendar-cell default-data";
+                            status=""; // keep blank
+                        }
 
-                        cellClass="calendar-cell leave";
+                // let cellClass="calendar-cell offday";
 
-                        /* 🔹 count leave */
-                        leaveCount++;
+                // let status="";
 
-                    }
+                // let inTime="";
+
+                // let outTime="";
+
+                // let deduction=""; // FIXED scope
 
 
-                    else if(status=="E"){
+                // /* priority */
 
-                        cellClass="calendar-cell earnedleave";
+                // if(holidayName){
 
-                        /* 🔹 earned leave counted in leave */
-                        leaveCount++;
+                //     cellClass="calendar-cell holiday";
 
-                    }
-                }
+                //     status="Holiday";
+
+                //     /* 🔹 count holiday */
+                //     holidayCount++;
+
+                // }
+
+
+                // else if(record){
+
+                //     status = record.status || "";
+
+                //     inTime = record.inTime || "";
+
+                //     outTime = record.outTime || "";
+
+
+                //     let shiftStart="09:30";
+
+
+                //     if(inTime){
+
+                //         let inDate = new Date("1970-01-01 "+inTime);
+
+                //         let shiftDate = new Date("1970-01-01 "+shiftStart);
+
+
+                //         let lateMinutes = (inDate-shiftDate)/60000;
+
+
+                //          if(lateMinutes>5 && lateMinutes<=30)
+
+                //             deduction="30 m";
+
+
+                //         else if(lateMinutes>30 && lateMinutes<=60)
+
+                //             deduction="1 h";
+
+
+                //         else if(lateMinutes>60 && lateMinutes<=90)
+
+                //         deduction="1:30 h";
+
+
+                //         else if(lateMinutes>90 && lateMinutes<=120)
+
+                //         deduction="2:00 h";
+
+                //         else if(lateMinutes>120 && lateMinutes<=150)
+
+                //         deduction="2:30 h";
+
+
+                //     }
+
+
+                //     if(status=="P"){
+
+                //         cellClass="calendar-cell present";
+
+                //         /* 🔹 count present */
+                //         presentCount++;
+
+                //     }
+
+
+                //     else if(status=="A"){
+
+                //         cellClass="calendar-cell absent";
+
+                //         /* 🔹 count absent */
+                //         absentCount++;
+
+                //     }
+
+
+                //     else if(status=="L"){
+
+                //         cellClass="calendar-cell leave";
+
+                //         /* 🔹 count leave */
+                //         leaveCount++;
+
+                //     }
+
+
+                //     else if(status=="E"){
+
+                //         cellClass="calendar-cell earnedleave";
+
+                //         /* 🔹 earned leave counted in leave */
+                //         leaveCount++;
+
+                //     }
+                // }
 
 
                 let highlightToday=

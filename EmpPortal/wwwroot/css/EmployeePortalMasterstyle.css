@@ -203,6 +203,7 @@ body {
     border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
+    margin-top: 20px;
 }
 
     .emploginmodal-verify-btn:hover {
@@ -1379,11 +1380,7 @@ body {
     text-align: center;
 }
 
-.offday-cell {
-    background-color: #9ccbff; /* same as calendar */
-    color: #000;
-    text-align: center;
-}
+
 /*Employee attendance css ends here*/
 
 

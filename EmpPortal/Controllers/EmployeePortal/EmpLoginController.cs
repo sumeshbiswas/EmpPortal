@@ -310,6 +310,40 @@ namespace travelexpensemanagement.Controllers.EmployeePortal
         }
 
 
+
+        [HttpPost]
+        public IActionResult CheckPassword(string mobile, string pin, int compCode)
+        {
+            /* SET SESSION FIRST */
+            HttpContext.Session.SetString("COMP_CODE", compCode.ToString());
+
+            using SqlConnection con = _dbConnection.GetErpConnection();
+            con.Open();
+
+            SqlCommand cmd = new SqlCommand(@"
+        SELECT PIN, ACTIVE
+        FROM EmpPortalLogin
+        WHERE MOBILE_NO=@Mobile AND COMP_CODE=@CompCode", con);
+
+            cmd.Parameters.AddWithValue("@Mobile", mobile);
+            cmd.Parameters.AddWithValue("@CompCode", compCode);
+
+            using SqlDataReader dr = cmd.ExecuteReader();
+
+            if (!dr.Read())
+                return Json(new { success = false, message = "User not found" });
+
+            if (Convert.ToInt32(dr["ACTIVE"]) != 1)
+                return Json(new { success = false, message = "Please complete registration first" });
+
+            bool validPin = BCrypt.Net.BCrypt.Verify(pin, dr["PIN"].ToString());
+
+            if (!validPin)
+                return Json(new { success = false, message = "Please enter correct password" });
+
+            return Json(new { success = true });
+        }
+
         [HttpPost]
         public IActionResult updatePin(string mobile, int compCode,  string pin , string otp)
         {

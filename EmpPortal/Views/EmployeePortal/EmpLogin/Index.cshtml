@@ -177,7 +177,7 @@
 
 <script>
     $(document).ready(function () {
-        debugger;
+       
         loadCompany("#loginCompany");
         loadCompany("#regCompany");
         $("#btnShowRegister").click(() => toggleForms(false));
@@ -203,7 +203,7 @@
         });
 
         $('#btnModalResetPin').on('click', function(){
-           debugger
+        
             let mob = $("#loginMob").val().trim();
             let comp = $("#loginCompany").val();
             let pin = $("#modalNewPin").val().trim();
@@ -286,12 +286,48 @@
         });
 
 
+        //commented by sumesh
+        // $('#btnLogin').on('click' , function() {
+        //    sendOTPLogin();
+        //   $('#emploginmodal_overlay').show();       
+        // });
+        //add below code
+             $('#btnLogin').on('click', function () {
 
-        $('#btnLogin').on('click' , function() {
-           sendOTPLogin();
-          $('#emploginmodal_overlay').show();       
+        let mob = $("#loginMob").val().trim();
+        let pin = $("#loginPin").val().trim();
+        let comp = $("#loginCompany").val();
+
+        if (mob.length != 10)
+            return toastr.error("Enter valid mobile number");
+
+        if (!pin)
+            return toastr.error("Enter password");
+
+        if (!comp)
+            return toastr.error("Select company");
+
+        $.post("/EmpLogin/CheckPassword", {
+            mobile: mob,
+            pin: pin,
+            compCode: comp
+        }, function (res) {
+
+            if (!res.success) {
+                toastr.error(res.message);
+                return;
+            }
+
+            /* send OTP only if password correct */
+            sendOTPLogin();
+
+            $('#emploginmodal_overlay').show();
+
+            $('#OTP1').focus();
+
         });
 
+    });
 
     });
 
@@ -301,7 +337,7 @@
     }
 
     function loadCompany(selector) {
-      debugger;
+     
         $.get("/EmpLogin/GetddlCompany", function (res) {
             let ddl = $(selector).empty().append('<option value="">Select Company</option>');
             $.each(res, (_, x) => ddl.append(`<option value="${x.value}">${x.text}</option>`));
@@ -333,7 +369,7 @@
     }
 
          function verifyOTP() {
-             debugger ;
+             
             let pin = $("#regPin").val().trim();
             let rePin = $("#regRetypePin").val().trim();             
 
