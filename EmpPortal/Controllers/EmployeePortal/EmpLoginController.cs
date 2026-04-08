@@ -177,55 +177,6 @@ namespace travelexpensemanagement.Controllers.EmployeePortal
             return Json(new { success = true, message = "Registration successful" });
         }
 
-        //[HttpPost]
-        //public IActionResult EmployeeLogin(string mobile, string pin, int compCode) 
-        //{
-        //    //HttpContext.Session.Clear();
-        //    HttpContext.Session.Clear();
-        //    //Response.Cookies.Delete(".TravelExpense.Session");
-        //    //Response.Cookies.Delete(".AspNetCore.Session");
-        //    HttpContext.Session.SetString("COMP_CODE", compCode.ToString());
-
-        //    using SqlConnection con = _dbConnection.GetErpConnection();
-        //    con.Open();
-
-        //    SqlCommand cmd = new SqlCommand(@"SELECT PIN, ACTIVE FROM EmpPortalLogin WHERE MOBILE_NO=@Mobile AND COMP_CODE=@CompCode", con);
-
-        //    cmd.Parameters.AddWithValue("@Mobile", mobile);
-        //    cmd.Parameters.AddWithValue("@CompCode", compCode);
-
-        //    using SqlDataReader dr = cmd.ExecuteReader();
-
-        //    if (!dr.HasRows)  // Check if any rows were returned
-        //    {
-        //        return Json(new { success = false, message = "Invalid credentials" });
-        //    }
-
-
-        //    if (Convert.ToInt32(dr["ACTIVE"]) != 1)
-        //    {
-        //        return Json(new { success = false, message = "Please complete registration first" });
-        //    }
-
-
-        //    bool validPin = BCrypt.Net.BCrypt.Verify(pin, dr["PIN"].ToString());
-
-        //    if (!validPin)
-        //    {
-        //        return Json(new { success = false, message = "Invalid PIN" });
-        //    }
-
-
-        //    HttpContext.Session.SetString("MOBILE", mobile);
-        //    HttpContext.Session.SetString("COMP_CODE", compCode.ToString());
-
-        //    return Json(new
-        //    {
-        //        success = true,
-        //        redirectUrl = Url.Action("Index", "EmployeeDashboard")
-        //    });
-        //}
-
 
         [HttpPost]
         public IActionResult EmployeeLogin(string mobile, string pin, int compCode , string COMBINEOTP)
@@ -298,12 +249,14 @@ namespace travelexpensemanagement.Controllers.EmployeePortal
                 return Json(new { success = false, message = "Invalid PIN" });
             }
 
+            //string empQuery = @"SELECT  TOP 1 EMP_ID, COMP_CODE 
+            //            FROM EMP_MAST 
+            //            WHERE MOBILE=@Mobile AND COMP_CODE=@CompCode";
 
-
-
-            string empQuery = @"SELECT EMP_ID, COMP_CODE 
-                        FROM EMP_MAST 
-                        WHERE MOBILE=@Mobile AND COMP_CODE=@CompCode";
+            string empQuery = @"SELECT TOP 1 EMP_ID, COMP_CODE
+                    FROM EMP_MAST   
+                    WHERE MOBILE=@Mobile AND COMP_CODE=@CompCode
+                    ORDER BY EMP_ID ASC";
 
             using SqlCommand empCmd = new SqlCommand(empQuery, con);
             empCmd.Parameters.AddWithValue("@Mobile", mobile);

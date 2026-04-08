@@ -30,7 +30,8 @@ namespace travelexpensemanagement.Controllers.EmployeePortal
             {
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@compcode", Comcode);
-                cmd.Parameters.AddWithValue("@empcode", EmpCode);
+                //cmd.Parameters.AddWithValue("@empcode", EmpCode);
+                cmd.Parameters.Add("@empcode", SqlDbType.Int).Value = EmpCode;
                 cmd.Parameters.AddWithValue("@vdate", vdate);
 
                 SqlDataAdapter da = new SqlDataAdapter(cmd);
@@ -73,7 +74,8 @@ namespace travelexpensemanagement.Controllers.EmployeePortal
                 Address = r["Address"]
             };
 
-            return Json(new { success = true, payslip });
+            //return Json(new { success = true, payslip });
+            return Json(new { success = true, empId = EmpCode, payslip });
         }
 
     }

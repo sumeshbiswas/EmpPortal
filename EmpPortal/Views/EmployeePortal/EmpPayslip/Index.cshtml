@@ -265,9 +265,10 @@
                          return;
                      }
                      const p = res.payslip;
-                       console.log('p',p);
-                        $("#companyName").text(p.company);
-                        $("#Compddress").text(p.address);
+                     console.log('p',p);
+                     console.log("EMP_ID:", res.empId);
+                     $("#companyName").text(p.company);
+                     $("#Compddress").text(p.address);
                      $("#salaryMonth").text(
                          new Date(p.sDate).toLocaleString('default', { month: 'short', year: 'numeric' })
                      );
