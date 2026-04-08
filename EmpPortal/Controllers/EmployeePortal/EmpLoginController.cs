@@ -316,21 +316,12 @@ namespace travelexpensemanagement.Controllers.EmployeePortal
                 return Json(new { success = false, message = "Employee not found" });
             }
 
-            int empId = empDr["EMP_ID"] != DBNull.Value
-             ? Convert.ToInt32(empDr["EMP_ID"])
-             : 0;
-
-
+            int empId = empDr["EMP_ID"] != DBNull.Value ? Convert.ToInt32(empDr["EMP_ID"])  : 0;
 
             // Set session variables
             HttpContext.Session.SetString("MOBILE", mobile);
             HttpContext.Session.SetString("COMP_CODE", compCode.ToString());
             HttpContext.Session.SetInt32("EMP_ID", empId);
-
-
-
-
-
 
             // Return success
             return Json(new
