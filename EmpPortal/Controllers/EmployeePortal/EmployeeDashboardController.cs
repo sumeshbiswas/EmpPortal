@@ -75,6 +75,7 @@ namespace travelexpensemanagement.Controllers.EmployeePortal
                                 Email = dr["EMAIL"].ToString(),
                                 imagebyte = dr["imagebyte"] == DBNull.Value ? null : Convert.ToBase64String((byte[])dr["imagebyte"])
                             };
+                            HttpContext.Session.Clear();
                             HttpContext.Session.SetInt32("EMP_ID", emp.EMP_ID);
                         }
                     }
