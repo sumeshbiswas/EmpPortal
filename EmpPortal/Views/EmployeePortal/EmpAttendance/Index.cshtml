@@ -668,14 +668,29 @@
                         let lateMinutes = (inDate-shiftDate)/60000;
 
 
-                        if(lateMinutes>0 && lateMinutes<=30)
+                        if(lateMinutes>5 && lateMinutes<=30)
 
-                            deduction="0.50";
+                            deduction="30 m"; 
 
 
-                        else if(lateMinutes>30)
+                        else if(lateMinutes>30 && lateMinutes<=60)
 
-                            deduction="0.10";
+                            deduction="1 h";
+
+
+                        else if(lateMinutes>60 && lateMinutes<=90)
+
+                        deduction="1:30 h";
+
+
+                        else if(lateMinutes>90 && lateMinutes<=120)
+
+                        deduction="2:00 h";
+
+                        else if(lateMinutes>120 && lateMinutes<=150)
+
+                        deduction="2:30 h";
+
 
                     }
 
